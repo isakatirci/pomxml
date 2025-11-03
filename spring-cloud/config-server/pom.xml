@@ -17,9 +17,26 @@
 
 
 
-    <properties>
-        <java.version>17</java.version> <!-- Kullanılan Java sürümünü kontrol edin -->
-    </properties>
+<!--    <properties>
+        <java.version>17</java.version> &lt;!&ndash; Kullanılan Java sürümünü kontrol edin &ndash;&gt;
+    </properties>-->
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.2.0</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>se.magnus.springcloud.configserver.ConfigServerApplication</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
     <dependencyManagement>
         <dependencies>
