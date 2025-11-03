@@ -1,6 +1,8 @@
 package se.magnus.api.exceptions;
 
 public class EventProcessingException extends RuntimeException {
+  private static final long serialVersionUID = -973437739292953285L; // Add this for warning
+
   public EventProcessingException() {
   }
 

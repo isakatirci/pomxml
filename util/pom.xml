@@ -10,46 +10,56 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <groupId>se.magnus.springcloud</groupId>
     <artifactId>util</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
-    <name>util</name>
-
-
+    <name>Util Module</name>
+    <description>Common utility classes and helper functions for microservices</description>
 
     <dependencies>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-
+        <!-- Spring WebFlux for reactive utilities -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webflux</artifactId>
         </dependency>
 
+        <!-- API Module -->
+        <dependency>
+            <groupId>se.magnus.springcloud</groupId>
+            <artifactId>api</artifactId>
+        </dependency>
+
+        <!-- Logging - versions managed by Spring Boot BOM -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+
+        <!-- Micrometer for observability -->
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-core</artifactId>
+        </dependency>
+
+        <!-- Testing -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.7.32</version> <!-- veya en güncel versiyon -->
-        </dependency>
-
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>1.2.3</version> <!-- veya en güncel versiyon -->
-        </dependency>
-
-        <dependency>
-            <groupId>se.magnus.springcloud</groupId>
-            <artifactId>api</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <groupId>io.projectreactor</groupId>
+            <artifactId>reactor-test</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <!-- This is a library module, no executable JAR needed -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
 </project>
