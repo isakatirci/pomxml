@@ -1,10 +1,158 @@
+Tamam, size Spring Boot 3.x + Java 17 için mock SOAP server'ın tüm kodlarını baştan sona veriyorum.
+
+## 1. Maven Bağımlılıkları (pom.xml)
+
+```xml
+<dependencies>
+    <!-- Spring Boot Starter -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+    
+    <!-- Spring WS Dependencies -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-web-services</artifactId>
+    </dependency>
+    
+    <!-- JAXB Dependencies for Java 17 -->
+    <dependency>
+        <groupId>jakarta.xml.bind</groupId>
+        <artifactId>jakarta.xml.bind-api</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.glassfish.jaxb</groupId>
+        <artifactId>jaxb-runtime</artifactId>
+    </dependency>
+    
+    <!-- Jakarta Activation for DataHandler -->
+    <dependency>
+        <groupId>jakarta.activation</groupId>
+        <artifactId>jakarta.activation-api</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.eclipse.angus</groupId>
+        <artifactId>angus-activation</artifactId>
+    </dependency>
+    
+    <!-- SOAP Attachment Support (SAAJ) -->
+    <dependency>
+        <groupId>com.sun.xml.messaging.saaj</groupId>
+        <artifactId>saaj-impl</artifactId>
+    </dependency>
+    
+    <!-- Lombok (optional but recommended) -->
+    <dependency>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok</artifactId>
+        <optional>true</optional>
+    </dependency>
+    
+    <!-- Spring Boot Test -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-test</artifactId>
+        <scope>test</scope>
+    </dependency>
+</dependencies>
+```
+
+## 2. Mevcut GetAckResponse Class'ınız
+
+```java
+package com.ykb.cosmos.commonservices.saaadapter.external.model;
+
+import jakarta.activation.DataHandler;
+import jakarta.xml.bind.annotation.*;
+import org.w3c.dom.Element;
+
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "", propOrder = {
+        "any",
+        "attachment"
+})
+@XmlRootElement(name = "GetAckResponse", namespace = "urn:swift:saa:xsd:soapha")
+public class GetAckResponse {
+
+    @XmlAnyElement
+    protected Element any;
+    
+    @XmlElement(namespace = "urn:swift:saa:xsd:soapha", type = String.class)
+    @XmlAttachmentRef
+    @XmlSchemaType(name = "anyURI")
+    @XmlMimeType("application/octet-stream")
+    protected DataHandler attachment;
+
+    public Element getAny() {
+        return any;
+    }
+
+    public void setAny(Element value) {
+        this.any = value;
+    }
+
+    public DataHandler getAttachment() {
+        return attachment;
+    }
+
+    public void setAttachment(DataHandler value) {
+        this.attachment = value;
+    }
+}
+```
+
+## 3. ByteArrayDataSource Helper Class
+
+```java
+package com.ykb.cosmos.commonservices.saaadapter.endpoint;
+
+import jakarta.activation.DataSource;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+public class ByteArrayDataSource implements DataSource {
+    
+    private final byte[] data;
+    private final String contentType;
+    
+    public ByteArrayDataSource(byte[] data, String contentType) {
+        this.data = data;
+        this.contentType = contentType;
+    }
+    
+    @Override
+    public InputStream getInputStream() {
+        return new ByteArrayInputStream(data);
+    }
+    
+    @Override
+    public OutputStream getOutputStream() {
+        return new ByteArrayOutputStream();
+    }
+    
+    @Override
+    public String getContentType() {
+        return contentType;
+    }
+    
+    @Override
+    public String getName() {
+        return "ByteArrayDataSource";
+    }
+}
+```
+
+## 4. Mock SOAP Endpoint
+
+```java
 package com.ykb.cosmos.commonservices.saaadapter.endpoint;
 
 import com.ykb.cosmos.commonservices.saaadapter.external.model.GetAckResponse;
 import jakarta.activation.DataHandler;
-import jakarta.xml.bind.JAXBContext;
-import jakarta.xml.bind.JAXBException;
-import jakarta.xml.bind.Marshaller;
+import jakarta.xml.soap.AttachmentPart;
 import jakarta.xml.soap.SOAPException;
 import jakarta.xml.soap.SOAPHeader;
 import jakarta.xml.soap.SOAPHeaderElement;
@@ -21,8 +169,6 @@ import org.w3c.dom.Element;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.ByteArrayInputStream;
-import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 
 @Slf4j
@@ -51,8 +197,7 @@ public class MockSwiftSoapEndpoint {
             response.setAny(dataPduElement);
             
             // Add MTOM Attachment
-            DataHandler attachmentHandler = createAttachment();
-            response.setAttachment(attachmentHandler);
+            addMtomAttachment(messageContext, response);
             
             log.info("Mock SOAP Server: Response created successfully");
             return response;
@@ -82,6 +227,65 @@ public class MockSwiftSoapEndpoint {
                 .setTextContent("93825");
         
         log.debug("SOAP Header added successfully");
+    }
+
+    private void addMtomAttachment(MessageContext messageContext, GetAckResponse response) {
+        try {
+            String attachmentContent = """
+                    <?xml version="1.0" encoding="UTF-8"?>
+                    <AppHdr xmlns="urn:iso:std:iso:20022:tech:xsd:head.001.001.01">
+                        <Fr>
+                            <FIId>
+                                <FinInstnId>
+                                    <BICFI>TRGTXEPMRTG</BICFI>
+                                </FinInstnId>
+                            </FIId>
+                        </Fr>
+                        <To>
+                            <FIId>
+                                <FinInstnId>
+                                    <BICFI>KABANL2AXXX</BICFI>
+                                </FinInstnId>
+                            </FIId>
+                        </To>
+                        <BizMsgIdr>864993564</BizMsgIdr>
+                        <MsgDefIdr>camt.053.001.08</MsgDefIdr>
+                        <CreDt>2025-11-24T19:53:06.338Z</CreDt>
+                    </AppHdr>
+                    <Document xmlns="urn:iso:std:iso:20022:tech:xsd:camt.053.001.08">
+                        <BkToCstmrStmt>
+                            <GrpHdr>
+                                <MsgId>NONREF</MsgId>
+                                <CreDtTm>2025-11-24T19:53:06.241+00:00</CreDtTm>
+                            </GrpHdr>
+                        </BkToCstmrStmt>
+                    </Document>
+                    """;
+            
+            byte[] attachmentBytes = attachmentContent.getBytes(StandardCharsets.UTF_8);
+            
+            // Create DataHandler
+            ByteArrayDataSource dataSource = new ByteArrayDataSource(attachmentBytes, "application/octet-stream");
+            DataHandler dataHandler = new DataHandler(dataSource);
+            
+            // Add attachment to SOAP message
+            SaajSoapMessage soapResponse = (SaajSoapMessage) messageContext.getResponse();
+            jakarta.xml.soap.SOAPMessage saajMessage = soapResponse.getSaajMessage();
+            
+            AttachmentPart attachmentPart = saajMessage.createAttachmentPart(dataHandler);
+            attachmentPart.setContentId("39379f5a-a83b-4226-851e-fe9e5f9aa9f3");
+            attachmentPart.setContentType("application/octet-stream");
+            saajMessage.addAttachmentPart(attachmentPart);
+            
+            // Set attachment reference in response
+            response.setAttachment(dataHandler);
+            
+            log.debug("MTOM Attachment added successfully");
+            
+        } catch (Exception e) {
+            log.error("Error adding MTOM attachment", e);
+            throw new RuntimeException("Failed to add MTOM attachment", e);
+        }
     }
 
     private Element createDataPDUElement() {
@@ -280,43 +484,409 @@ public class MockSwiftSoapEndpoint {
             throw new RuntimeException("Failed to create DataPDU element", e);
         }
     }
+}
+```
 
-    private DataHandler createAttachment() {
-        String attachmentContent = """
-                <?xml version="1.0" encoding="UTF-8"?>
-                <AppHdr xmlns="urn:iso:std:iso:20022:tech:xsd:head.001.001.01">
-                    <Fr>
-                        <FIId>
-                            <FinInstnId>
-                                <BICFI>TRGTXEPMRTG</BICFI>
-                            </FinInstnId>
-                        </FIId>
-                    </Fr>
-                    <To>
-                        <FIId>
-                            <FinInstnId>
-                                <BICFI>KABANL2AXXX</BICFI>
-                            </FinInstnId>
-                        </FIId>
-                    </To>
-                    <BizMsgIdr>864993564</BizMsgIdr>
-                    <MsgDefIdr>camt.053.001.08</MsgDefIdr>
-                    <CreDt>2025-11-24T19:53:06.338Z</CreDt>
-                </AppHdr>
-                <Document xmlns="urn:iso:std:iso:20022:tech:xsd:camt.053.001.08">
-                    <BkToCstmrStmt>
-                        <GrpHdr>
-                            <MsgId>NONREF</MsgId>
-                            <CreDtTm>2025-11-24T19:53:06.241+00:00</CreDtTm>
-                        </GrpHdr>
-                    </BkToCstmrStmt>
-                </Document>
-                """;
+## 5. Web Service Configuration
+
+```java
+package com.ykb.cosmos.commonservices.saaadapter.config;
+
+import org.springframework.boot.web.servlet.ServletRegistrationBean;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.ws.config.annotation.EnableWs;
+import org.springframework.ws.config.annotation.WsConfigurerAdapter;
+import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
+import org.springframework.ws.transport.http.MessageDispatcherServlet;
+import org.springframework.ws.wsdl.wsdl11.DefaultWsdl11Definition;
+import org.springframework.xml.xsd.SimpleXsdSchema;
+import org.springframework.xml.xsd.XsdSchema;
+
+import jakarta.xml.soap.MessageFactory;
+import jakarta.xml.soap.SOAPConstants;
+
+@EnableWs
+@Configuration
+@Profile("mock")
+public class MockWebServiceConfig extends WsConfigurerAdapter {
+
+    @Bean
+    public ServletRegistrationBean<MessageDispatcherServlet> messageDispatcherServlet(
+            ApplicationContext applicationContext) {
+        MessageDispatcherServlet servlet = new MessageDispatcherServlet();
+        servlet.setApplicationContext(applicationContext);
+        servlet.setTransformWsdlLocations(true);
+        return new ServletRegistrationBean<>(servlet, "/mock-ws/*");
+    }
+
+    @Bean
+    public SaajSoapMessageFactory messageFactory() {
+        SaajSoapMessageFactory messageFactory = new SaajSoapMessageFactory();
         
-        byte[] attachmentBytes = attachmentContent.getBytes(StandardCharsets.UTF_8);
-        ByteArrayDataSource dataSource = new ByteArrayDataSource(attachmentBytes, "application/octet-stream");
+        try {
+            MessageFactory saajMessageFactory = MessageFactory.newInstance(SOAPConstants.SOAP_1_1_PROTOCOL);
+            messageFactory.setMessageFactory(saajMessageFactory);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to create SAAJ MessageFactory", e);
+        }
         
-        log.debug("Attachment created successfully");
-        return new DataHandler(dataSource);
+        return messageFactory;
+    }
+
+    @Bean(name = "swiftService")
+    public DefaultWsdl11Definition defaultWsdl11Definition(XsdSchema swiftSchema) {
+        DefaultWsdl11Definition wsdl11Definition = new DefaultWsdl11Definition();
+        wsdl11Definition.setPortTypeName("SwiftPort");
+        wsdl11Definition.setLocationUri("/mock-ws");
+        wsdl11Definition.setTargetNamespace("urn:swift:saa:xsd:soapha");
+        wsdl11Definition.setSchema(swiftSchema);
+        return wsdl11Definition;
+    }
+
+    @Bean
+    public XsdSchema swiftSchema() {
+        return new SimpleXsdSchema(new ClassPathResource("swift-schema.xsd"));
     }
 }
+```
+
+## 6. XSD Schema Dosyası
+
+**Dosya Yolu:** `src/main/resources/swift-schema.xsd`
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="urn:swift:saa:xsd:soapha"
+           xmlns:tns="urn:swift:saa:xsd:soapha"
+           elementFormDefault="qualified">
+
+    <xs:element name="GetAckRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="clientRef" type="xs:string" minOccurs="0"/>
+                <xs:element name="ackClientRef" type="xs:string" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="GetAckResponse">
+        <xs:complexType>
+            <xs:sequence minOccurs="0">
+                <xs:any processContents="skip"/>
+                <xs:element name="attachment" type="xs:anyURI" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>
+```
+
+## 7. Application Properties
+
+**Dosya Yolu:** `src/main/resources/application.yml`
+
+```yaml
+server:
+  port: 8080
+
+spring:
+  application:
+    name: saa-adapter
+    
+logging:
+  level:
+    root: INFO
+    com.ykb.cosmos.commonservices.saaadapter: DEBUG
+    org.springframework.ws: DEBUG
+```
+
+**Dosya Yolu:** `src/main/resources/application-mock.yml`
+
+```yaml
+server:
+  port: 8080
+
+spring:
+  application:
+    name: saa-adapter-mock
+
+logging:
+  level:
+    root: INFO
+    com.ykb.cosmos.commonservices.saaadapter: DEBUG
+    org.springframework.ws: DEBUG
+    org.springframework.ws.server.endpoint: TRACE
+```
+
+## 8. Test Service (Opsiyonel - Test için)
+
+```java
+package com.ykb.cosmos.commonservices.saaadapter.service;
+
+import com.ykb.cosmos.commonservices.saaadapter.external.model.GetAckResponse;
+import jakarta.activation.DataHandler;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.ws.client.core.WebServiceTemplate;
+import org.w3c.dom.Element;
+
+import javax.xml.namespace.QName;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
+
+@Slf4j
+@Service
+public class SwiftTestService {
+    
+    @Autowired
+    private WebServiceTemplate webServiceTemplate;
+    
+    @Value("${swift.mock.url:http://localhost:8080/mock-ws}")
+    private String mockUrl;
+    
+    public Map<String, Object> testMockSoap(String sessionToken, Integer sequenceNumber, 
+                                             String clientRef, String ackClientRef) {
+        
+        Map<String, Object> results = new HashMap<>();
+        
+        try {
+            // Create Request Element
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            factory.setNamespaceAware(true);
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            org.w3c.dom.Document document = builder.newDocument();
+            
+            Element request = document.createElementNS("urn:swift:saa:xsd:soapha", "GetAckRequest");
+            
+            if (clientRef != null) {
+                Element clientRefElement = document.createElementNS("urn:swift:saa:xsd:soapha", "clientRef");
+                clientRefElement.setTextContent(clientRef);
+                request.appendChild(clientRefElement);
+            }
+            
+            if (ackClientRef != null) {
+                Element ackClientRefElement = document.createElementNS("urn:swift:saa:xsd:soapha", "ackClientRef");
+                ackClientRefElement.setTextContent(ackClientRef);
+                request.appendChild(ackClientRefElement);
+            }
+            
+            log.info("Calling mock SOAP service at: {}", mockUrl);
+            
+            // Make SOAP Call
+            Object body = webServiceTemplate.marshalSendAndReceive(
+                mockUrl, 
+                request
+                // Add your SoapHaWebServiceMessageCallback here if needed
+                // new SoapHaWebServiceMessageCallback(sessionToken, sequenceNumber, clientRef, ackClientRef)
+            );
+            
+            if (body instanceof GetAckResponse) {
+                GetAckResponse response = (GetAckResponse) body;
+                
+                // Get DataPDU content
+                Element dataPDU = response.getAny();
+                if (dataPDU != null) {
+                    log.info("DataPDU received: {}", dataPDU.getLocalName());
+                    results.put("dataPDU", dataPDU);
+                    
+                    // Extract some values from DataPDU
+                    String revision = extractTextContent(dataPDU, "Revision");
+                    log.info("Revision: {}", revision);
+                    results.put("revision", revision);
+                }
+                
+                // Get Attachment content
+                DataHandler attachment = response.getAttachment();
+                if (attachment != null) {
+                    try (InputStream is = attachment.getInputStream()) {
+                        String attachmentContent = new String(is.readAllBytes(), StandardCharsets.UTF_8);
+                        log.info("Attachment content length: {} bytes", attachmentContent.length());
+                        log.debug("Attachment content: {}", attachmentContent);
+                        results.put("attachment", attachmentContent);
+                    }
+                } else {
+                    log.warn("No attachment received");
+                }
+                
+                results.put("body", response);
+                results.put("success", true);
+            } else {
+                log.warn("Unexpected response type: {}", body != null ? body.getClass().getName() : "null");
+                results.put("success", false);
+                results.put("error", "Unexpected response type");
+            }
+            
+        } catch (Exception e) {
+            log.error("Error calling mock SOAP service: {}", e.getMessage(), e);
+            results.put("success", false);
+            results.put("error", e.getMessage());
+        }
+        
+        return results;
+    }
+    
+    private String extractTextContent(Element parent, String tagName) {
+        try {
+            org.w3c.dom.NodeList nodeList = parent.getElementsByTagNameNS("*", tagName);
+            if (nodeList.getLength() > 0) {
+                return nodeList.item(0).getTextContent();
+            }
+        } catch (Exception e) {
+            log.warn("Error extracting text content for tag: {}", tagName, e);
+        }
+        return null;
+    }
+}
+```
+
+## 9. Test Controller (Opsiyonel - Test için)
+
+```java
+package com.ykb.cosmos.commonservices.saaadapter.controller;
+
+import com.ykb.cosmos.commonservices.saaadapter.service.SwiftTestService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Map;
+
+@Slf4j
+@RestController
+@RequestMapping("/api/test")
+@Profile("mock")
+public class TestController {
+    
+    @Autowired
+    private SwiftTestService swiftTestService;
+    
+    @GetMapping("/mock-soap")
+    public ResponseEntity<Map<String, Object>> testMockSoap(
+            @RequestParam(required = false, defaultValue = "test-session") String sessionToken,
+            @RequestParam(required = false, defaultValue = "1") Integer sequenceNumber,
+            @RequestParam(required = false, defaultValue = "test-client-ref") String clientRef,
+            @RequestParam(required = false, defaultValue = "test-ack-ref") String ackClientRef) {
+        
+        log.info("Testing mock SOAP service with clientRef: {}", clientRef);
+        
+        Map<String, Object> results = swiftTestService.testMockSoap(
+            sessionToken, sequenceNumber, clientRef, ackClientRef
+        );
+        
+        return ResponseEntity.ok(results);
+    }
+}
+```
+
+## 10. Main Application Class
+
+```java
+package com.ykb.cosmos.commonservices.saaadapter;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class SaaAdapterApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(SaaAdapterApplication.class, args);
+    }
+}
+```
+
+## Kullanım
+
+### 1. Uygulamayı Mock Profile ile Başlatma
+
+```bash
+# Maven ile
+mvn spring-boot:run -Dspring-boot.run.profiles=mock
+
+# JAR ile
+java -jar saa-adapter.jar --spring.profiles.active=mock
+
+# IDE'den
+# Run Configuration'da VM Options: -Dspring.profiles.active=mock
+```
+
+### 2. Mock Server Test Etme
+
+Mock server başladıktan sonra:
+
+- **SOAP Endpoint:** `http://localhost:8080/mock-ws`
+- **WSDL:** `http://localhost:8080/mock-ws/swiftService.wsdl`
+- **Test API (Eğer controller'ı eklediyseniz):** `http://localhost:8080/api/test/mock-soap?clientRef=test123`
+
+### 3. Kendi WebServiceTemplate ile Çağırma
+
+```java
+// Mevcut kodunuzda kullanım
+try {
+    Object body = webServiceTemplate.marshalSendAndReceive(
+        "http://localhost:8080/mock-ws", 
+        request, 
+        new SoapHaWebServiceMessageCallback(sessionToken, sequenceNumber, clientRef, ackClientRef)
+    );
+    
+    if (body instanceof GetAckResponse) {
+        GetAckResponse response = (GetAckResponse) body;
+        
+        // DataPDU içeriği
+        Element dataPDU = response.getAny();
+        
+        // Attachment içeriği
+        DataHandler attachment = response.getAttachment();
+        if (attachment != null) {
+            InputStream is = attachment.getInputStream();
+            // Attachment'ı oku
+        }
+    }
+} catch (Exception e) {
+    log.error("Error", e);
+}
+```
+
+## Proje Yapısı
+
+```
+src/
+├── main/
+│   ├── java/
+│   │   └── com/ykb/cosmos/commonservices/saaadapter/
+│   │       ├── SaaAdapterApplication.java
+│   │       ├── config/
+│   │       │   └── MockWebServiceConfig.java
+│   │       ├── controller/
+│   │       │   └── TestController.java
+│   │       ├── endpoint/
+│   │       │   ├── MockSwiftSoapEndpoint.java
+│   │       │   └── ByteArrayDataSource.java
+│   │       ├── external/
+│   │       │   └── model/
+│   │       │       └── GetAckResponse.java
+│   │       └── service/
+│   │           └── SwiftTestService.java
+│   └── resources/
+│       ├── application.yml
+│       ├── application-mock.yml
+│       └── swift-schema.xsd
+```
+
+Bu yapı ile mock SOAP server'ınız tamamen hazır! Sorularınız varsa yardımcı olabilirim.
