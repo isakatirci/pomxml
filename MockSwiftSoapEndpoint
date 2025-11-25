@@ -1,0 +1,322 @@
+package com.ykb.cosmos.commonservices.saaadapter.endpoint;
+
+import com.ykb.cosmos.commonservices.saaadapter.external.model.GetAckResponse;
+import jakarta.activation.DataHandler;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.soap.SOAPException;
+import jakarta.xml.soap.SOAPHeader;
+import jakarta.xml.soap.SOAPHeaderElement;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.ws.context.MessageContext;
+import org.springframework.ws.server.endpoint.annotation.Endpoint;
+import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
+import org.springframework.ws.server.endpoint.annotation.RequestPayload;
+import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
+import org.springframework.ws.soap.saaj.SaajSoapMessage;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+import javax.xml.namespace.QName;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.ByteArrayInputStream;
+import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
+
+@Slf4j
+@Endpoint
+public class MockSwiftSoapEndpoint {
+
+    private static final String NAMESPACE_URI = "urn:swift:saa:xsd:soapha";
+    private static final String HEADER_NAMESPACE = "urn:swift:saa:xsd:soapha";
+    private static final String SAA_NAMESPACE = "urn:swift:saa:xsd:saa.2.0";
+
+    @PayloadRoot(namespace = NAMESPACE_URI, localPart = "GetAckRequest")
+    @ResponsePayload
+    public GetAckResponse getAck(@RequestPayload Element request, MessageContext messageContext) {
+        
+        log.info("Mock SOAP Server: GetAck request received");
+        
+        try {
+            // Add SOAP Header to Response
+            addSoapHeader(messageContext);
+            
+            // Create Response
+            GetAckResponse response = new GetAckResponse();
+            
+            // Create DataPDU Element (any element)
+            Element dataPduElement = createDataPDUElement();
+            response.setAny(dataPduElement);
+            
+            // Add MTOM Attachment
+            DataHandler attachmentHandler = createAttachment();
+            response.setAttachment(attachmentHandler);
+            
+            log.info("Mock SOAP Server: Response created successfully");
+            return response;
+            
+        } catch (Exception e) {
+            log.error("Error creating mock response", e);
+            throw new RuntimeException("Failed to create mock response", e);
+        }
+    }
+
+    private void addSoapHeader(MessageContext messageContext) throws SOAPException {
+        SaajSoapMessage soapResponse = (SaajSoapMessage) messageContext.getResponse();
+        jakarta.xml.soap.SOAPMessage saajMessage = soapResponse.getSaajMessage();
+        SOAPHeader soapHeader = saajMessage.getSOAPHeader();
+        
+        if (soapHeader == null) {
+            soapHeader = saajMessage.getSOAPPart().getEnvelope().addHeader();
+        }
+        
+        QName headerQName = new QName(HEADER_NAMESPACE, "SAAHeader", "ns2");
+        SOAPHeaderElement headerElement = soapHeader.addHeaderElement(headerQName);
+        headerElement.setAttribute("Id", "SAAHeader");
+        
+        headerElement.addChildElement(new QName(HEADER_NAMESPACE, "SessionToken", "ns2"))
+                .setTextContent("da1351f1-654b-45f5-aebc-c12218cf");
+        headerElement.addChildElement(new QName(HEADER_NAMESPACE, "SequenceNumber", "ns2"))
+                .setTextContent("93825");
+        
+        log.debug("SOAP Header added successfully");
+    }
+
+    private Element createDataPDUElement() {
+        try {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            factory.setNamespaceAware(true);
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            Document document = builder.newDocument();
+            
+            // Create DataPDU root element
+            Element dataPDU = document.createElementNS(SAA_NAMESPACE, "Saa:DataPDU");
+            dataPDU.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:Saa", SAA_NAMESPACE);
+            dataPDU.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:Sw", "urn:swift:snl:ns.Sw");
+            dataPDU.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:SwGbl", "urn:swift:snl:ns.SwGbl");
+            dataPDU.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:SwInt", "urn:swift:snl:ns.SwInt");
+            dataPDU.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:SwSec", "urn:swift:snl:ns.SwSec");
+            
+            // Revision
+            Element revision = document.createElementNS(SAA_NAMESPACE, "Saa:Revision");
+            revision.setTextContent("2.0.7");
+            dataPDU.appendChild(revision);
+            
+            // Header
+            Element header = document.createElementNS(SAA_NAMESPACE, "Saa:Header");
+            
+            // Message
+            Element message = document.createElementNS(SAA_NAMESPACE, "Saa:Message");
+            
+            // SenderReference
+            Element senderReference = document.createElementNS(SAA_NAMESPACE, "Saa:SenderReference");
+            senderReference.setTextContent("OTRGTXEPMXXX053$2511242151610");
+            message.appendChild(senderReference);
+            
+            // MessageIdentifier
+            Element messageIdentifier = document.createElementNS(SAA_NAMESPACE, "Saa:MessageIdentifier");
+            messageIdentifier.setTextContent("camt.053.001.08");
+            message.appendChild(messageIdentifier);
+            
+            // Format
+            Element format = document.createElementNS(SAA_NAMESPACE, "Saa:Format");
+            format.setTextContent("File");
+            message.appendChild(format);
+            
+            // SubFormat
+            Element subFormat = document.createElementNS(SAA_NAMESPACE, "Saa:SubFormat");
+            subFormat.setTextContent("Output");
+            message.appendChild(subFormat);
+            
+            // Sender
+            Element sender = document.createElementNS(SAA_NAMESPACE, "Saa:Sender");
+            Element senderDN = document.createElementNS(SAA_NAMESPACE, "Saa:DN");
+            senderDN.setTextContent("cn=rtgs,o=trgtxepm,o=swift");
+            sender.appendChild(senderDN);
+            
+            Element senderFullName = document.createElementNS(SAA_NAMESPACE, "Saa:FullName");
+            Element senderX1 = document.createElementNS(SAA_NAMESPACE, "Saa:X1");
+            senderX1.setTextContent("TRGTXEPMXXX");
+            senderFullName.appendChild(senderX1);
+            sender.appendChild(senderFullName);
+            message.appendChild(sender);
+            
+            // Receiver
+            Element receiver = document.createElementNS(SAA_NAMESPACE, "Saa:Receiver");
+            Element receiverDN = document.createElementNS(SAA_NAMESPACE, "Saa:DN");
+            receiverDN.setTextContent("cn=t2a2aprod,o=kabanl2a,o=swift");
+            receiver.appendChild(receiverDN);
+            
+            Element receiverFullName = document.createElementNS(SAA_NAMESPACE, "Saa:FullName");
+            Element receiverX1 = document.createElementNS(SAA_NAMESPACE, "Saa:X1");
+            receiverX1.setTextContent("KABANL2AXXX");
+            receiverFullName.appendChild(receiverX1);
+            receiver.appendChild(receiverFullName);
+            message.appendChild(receiver);
+            
+            // InterfaceInfo
+            Element interfaceInfo = document.createElementNS(SAA_NAMESPACE, "Saa:InterfaceInfo");
+            Element messageCreator = document.createElementNS(SAA_NAMESPACE, "Saa:MessageCreator");
+            messageCreator.setTextContent("SWIFTNetInterface");
+            interfaceInfo.appendChild(messageCreator);
+            
+            Element messageContext = document.createElementNS(SAA_NAMESPACE, "Saa:MessageContext");
+            messageContext.setTextContent("Copy");
+            interfaceInfo.appendChild(messageContext);
+            
+            Element messageNature = document.createElementNS(SAA_NAMESPACE, "Saa:MessageNature");
+            messageNature.setTextContent("Financial");
+            interfaceInfo.appendChild(messageNature);
+            
+            Element sumid = document.createElementNS(SAA_NAMESPACE, "Saa:Sumid");
+            sumid.setTextContent("16DB4721FFDF2B45");
+            interfaceInfo.appendChild(sumid);
+            message.appendChild(interfaceInfo);
+            
+            // NetworkInfo
+            Element networkInfo = document.createElementNS(SAA_NAMESPACE, "Saa:NetworkInfo");
+            Element priority = document.createElementNS(SAA_NAMESPACE, "Saa:Priority");
+            priority.setTextContent("Normal");
+            networkInfo.appendChild(priority);
+            
+            Element isPossibleDuplicate = document.createElementNS(SAA_NAMESPACE, "Saa:IsPossibleDuplicate");
+            isPossibleDuplicate.setTextContent("true");
+            networkInfo.appendChild(isPossibleDuplicate);
+            
+            Element service = document.createElementNS(SAA_NAMESPACE, "Saa:Service");
+            service.setTextContent("esmig.t2.fast");
+            networkInfo.appendChild(service);
+            
+            Element network = document.createElementNS(SAA_NAMESPACE, "Saa:Network");
+            network.setTextContent("SWIFTNet");
+            networkInfo.appendChild(network);
+            
+            Element sessionNr = document.createElementNS(SAA_NAMESPACE, "Saa:SessionNr");
+            sessionNr.setTextContent("000615");
+            networkInfo.appendChild(sessionNr);
+            
+            Element seqNr = document.createElementNS(SAA_NAMESPACE, "Saa:SeqNr");
+            seqNr.setTextContent("000000705");
+            networkInfo.appendChild(seqNr);
+            
+            // SWIFTNetNetworkInfo
+            Element swiftNetInfo = document.createElementNS(SAA_NAMESPACE, "Saa:SWIFTNetNetworkInfo");
+            Element requestType = document.createElementNS(SAA_NAMESPACE, "Saa:RequestType");
+            requestType.setTextContent("camt.053.001.08");
+            swiftNetInfo.appendChild(requestType);
+            
+            Element snlRef = document.createElementNS(SAA_NAMESPACE, "Saa:SNLRef");
+            snlRef.setTextContent("snp02145-2025-11-24T19:53:28.32451.608679Z");
+            swiftNetInfo.appendChild(snlRef);
+            
+            Element queueName = document.createElementNS(SAA_NAMESPACE, "Saa:SnFQueueName");
+            queueName.setTextContent("kabanl2a_t2file");
+            swiftNetInfo.appendChild(queueName);
+            
+            Element inputTime = document.createElementNS(SAA_NAMESPACE, "Saa:SnFInputTime");
+            inputTime.setTextContent("0102:2025-11-24T19:53:28");
+            swiftNetInfo.appendChild(inputTime);
+            
+            Element deliveryTime = document.createElementNS(SAA_NAMESPACE, "Saa:SnFDeliveryTime");
+            deliveryTime.setTextContent("2025-11-24T19:54:05Z");
+            swiftNetInfo.appendChild(deliveryTime);
+            
+            Element transferRef = document.createElementNS(SAA_NAMESPACE, "Saa:TransferRef");
+            transferRef.setTextContent("SNL51616D11764014045671568C");
+            swiftNetInfo.appendChild(transferRef);
+            
+            Element storedTransferRef = document.createElementNS(SAA_NAMESPACE, "Saa:StoredTransferRef");
+            storedTransferRef.setTextContent("snp02145D11764014008677451S");
+            swiftNetInfo.appendChild(storedTransferRef);
+            
+            Element fileInfo = document.createElementNS(SAA_NAMESPACE, "Saa:FileInfo");
+            fileInfo.setTextContent("SwCompression=None;ESMIGMessageId=tgw201.84864f34-8dfb-4647-a08d-6816db6be9a4");
+            swiftNetInfo.appendChild(fileInfo);
+            
+            Element fileStartTime = document.createElementNS(SAA_NAMESPACE, "Saa:FileStartTime");
+            fileStartTime.setTextContent("20251124205405");
+            swiftNetInfo.appendChild(fileStartTime);
+            
+            Element fileEndTime = document.createElementNS(SAA_NAMESPACE, "Saa:FileEndTime");
+            fileEndTime.setTextContent("20251124205407");
+            swiftNetInfo.appendChild(fileEndTime);
+            
+            networkInfo.appendChild(swiftNetInfo);
+            message.appendChild(networkInfo);
+            
+            // SecurityInfo
+            Element securityInfo = document.createElementNS(SAA_NAMESPACE, "Saa:SecurityInfo");
+            Element swiftNetSecurityInfo = document.createElementNS(SAA_NAMESPACE, "Saa:SWIFTNetSecurityInfo");
+            Element fileDigestAlgorithm = document.createElementNS(SAA_NAMESPACE, "Saa:FileDigestAlgorithm");
+            fileDigestAlgorithm.setTextContent("SHA-256");
+            swiftNetSecurityInfo.appendChild(fileDigestAlgorithm);
+            
+            Element fileDigestValue = document.createElementNS(SAA_NAMESPACE, "Saa:FileDigestValue");
+            fileDigestValue.setTextContent("72voJYePENeYmW8xh8lKhVgmHCcbuRaQ6+yzn5sOMEo=");
+            swiftNetSecurityInfo.appendChild(fileDigestValue);
+            securityInfo.appendChild(swiftNetSecurityInfo);
+            message.appendChild(securityInfo);
+            
+            // FileLogicalName
+            Element fileLogicalName = document.createElementNS(SAA_NAMESPACE, "Saa:FileLogicalName");
+            fileLogicalName.setTextContent("snp02145D11764014008677451");
+            message.appendChild(fileLogicalName);
+            
+            // ExpiryDateTime
+            Element expiryDateTime = document.createElementNS(SAA_NAMESPACE, "Saa:ExpiryDateTime");
+            expiryDateTime.setTextContent("20251214195407");
+            message.appendChild(expiryDateTime);
+            
+            header.appendChild(message);
+            dataPDU.appendChild(header);
+            
+            log.debug("DataPDU Element created successfully");
+            return dataPDU;
+            
+        } catch (Exception e) {
+            log.error("Error creating DataPDU element", e);
+            throw new RuntimeException("Failed to create DataPDU element", e);
+        }
+    }
+
+    private DataHandler createAttachment() {
+        String attachmentContent = """
+                <?xml version="1.0" encoding="UTF-8"?>
+                <AppHdr xmlns="urn:iso:std:iso:20022:tech:xsd:head.001.001.01">
+                    <Fr>
+                        <FIId>
+                            <FinInstnId>
+                                <BICFI>TRGTXEPMRTG</BICFI>
+                            </FinInstnId>
+                        </FIId>
+                    </Fr>
+                    <To>
+                        <FIId>
+                            <FinInstnId>
+                                <BICFI>KABANL2AXXX</BICFI>
+                            </FinInstnId>
+                        </FIId>
+                    </To>
+                    <BizMsgIdr>864993564</BizMsgIdr>
+                    <MsgDefIdr>camt.053.001.08</MsgDefIdr>
+                    <CreDt>2025-11-24T19:53:06.338Z</CreDt>
+                </AppHdr>
+                <Document xmlns="urn:iso:std:iso:20022:tech:xsd:camt.053.001.08">
+                    <BkToCstmrStmt>
+                        <GrpHdr>
+                            <MsgId>NONREF</MsgId>
+                            <CreDtTm>2025-11-24T19:53:06.241+00:00</CreDtTm>
+                        </GrpHdr>
+                    </BkToCstmrStmt>
+                </Document>
+                """;
+        
+        byte[] attachmentBytes = attachmentContent.getBytes(StandardCharsets.UTF_8);
+        ByteArrayDataSource dataSource = new ByteArrayDataSource(attachmentBytes, "application/octet-stream");
+        
+        log.debug("Attachment created successfully");
+        return new DataHandler(dataSource);
+    }
+}
