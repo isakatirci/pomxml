@@ -1,85 +1,6 @@
-Bu hata, JAXB'nin attachment'ı marshal ederken `AttachmentMarshaller`'ı bulamadığından kaynaklanıyor. Spring WS'nin MTOM/SWA desteğini düzgün yapılandırmamız gerekiyor. İşte düzeltilmiş kod:
+Ah anladım! `attachment` elementi CID (Content-ID) referansı içermeli, gerçek DataHandler değil. İşte düzeltilmiş kod:
 
-## 1. Güncellenmiş MockWebServiceConfig.java
-
-```java
-package com.ykb.cosmos.commonservices.saaadapter.config;
-
-import org.springframework.boot.web.servlet.ServletRegistrationBean;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.oxm.jaxb.Jaxb2Marshaller;
-import org.springframework.ws.config.annotation.EnableWs;
-import org.springframework.ws.config.annotation.WsConfigurerAdapter;
-import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
-import org.springframework.ws.transport.http.MessageDispatcherServlet;
-import org.springframework.ws.wsdl.wsdl11.DefaultWsdl11Definition;
-import org.springframework.xml.xsd.SimpleXsdSchema;
-import org.springframework.xml.xsd.XsdSchema;
-
-import jakarta.xml.soap.MessageFactory;
-import jakarta.xml.soap.SOAPConstants;
-
-@EnableWs
-@Configuration
-@Profile("mock")
-public class MockWebServiceConfig extends WsConfigurerAdapter {
-
-    @Bean
-    public ServletRegistrationBean<MessageDispatcherServlet> messageDispatcherServlet(
-            ApplicationContext applicationContext) {
-        MessageDispatcherServlet servlet = new MessageDispatcherServlet();
-        servlet.setApplicationContext(applicationContext);
-        servlet.setTransformWsdlLocations(true);
-        return new ServletRegistrationBean<>(servlet, "/mock-ws/*");
-    }
-
-    @Bean
-    public SaajSoapMessageFactory messageFactory() {
-        SaajSoapMessageFactory messageFactory = new SaajSoapMessageFactory();
-        messageFactory.setAttachmentCacheDir("/tmp"); // Temporary directory for attachments
-        
-        try {
-            MessageFactory saajMessageFactory = MessageFactory.newInstance(SOAPConstants.SOAP_1_1_PROTOCOL);
-            messageFactory.setMessageFactory(saajMessageFactory);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to create SAAJ MessageFactory", e);
-        }
-        
-        return messageFactory;
-    }
-
-    @Bean
-    public Jaxb2Marshaller marshaller() {
-        Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
-        marshaller.setPackagesToScan("com.ykb.cosmos.commonservices.saaadapter.external.model");
-        marshaller.setMtomEnabled(true); // Enable MTOM support
-        return marshaller;
-    }
-
-    @Bean(name = "swiftService")
-    public DefaultWsdl11Definition defaultWsdl11Definition(XsdSchema swiftSchema) {
-        DefaultWsdl11Definition wsdl11Definition = new DefaultWsdl11Definition();
-        wsdl11Definition.setPortTypeName("SwiftPort");
-        wsdl11Definition.setLocationUri("/mock-ws");
-        wsdl11Definition.setTargetNamespace("urn:swift:saa:xsd:soapha");
-        wsdl11Definition.setSchema(swiftSchema);
-        return wsdl11Definition;
-    }
-
-    @Bean
-    public XsdSchema swiftSchema() {
-        return new SimpleXsdSchema(new ClassPathResource("swift-schema.xsd"));
-    }
-}
-```
-
-## 2. Güncellenmiş MockSwiftSoapEndpoint.java
-
-Endpoint'te attachment'ı farklı şekilde handle etmemiz gerekiyor:
+## 1. Güncellenmiş MockSwiftSoapEndpoint.java
 
 ```java
 package com.ykb.cosmos.commonservices.saaadapter.endpoint;
@@ -96,7 +17,7 @@ import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
-import org.springframework.ws.soap.SaajSoapMessage;
+import org.springframework.ws.soap.saaj.SaajSoapMessage;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -124,6 +45,9 @@ public class MockSwiftSoapEndpoint {
             // Add SOAP Header to Response
             addSoapHeader(messageContext);
             
+            // Add attachment to SOAP message first
+            addAttachmentToSoapMessage(messageContext);
+            
             // Create Response
             GetAckResponse response = new GetAckResponse();
             
@@ -131,14 +55,15 @@ public class MockSwiftSoapEndpoint {
             Element dataPduElement = createDataPDUElement();
             response.setAny(dataPduElement);
             
-            // Add attachment to SOAP message first (before marshalling)
-            addAttachmentToSoapMessage(messageContext);
+            // Create CID reference as DataHandler
+            String cidReference = "cid:" + ATTACHMENT_CID;
+            ByteArrayDataSource cidDataSource = new ByteArrayDataSource(
+                cidReference.getBytes(StandardCharsets.UTF_8), 
+                "text/plain"
+            );
+            response.setAttachment(new DataHandler(cidDataSource));
             
-            // Set attachment reference (CID reference, not DataHandler)
-            // We'll set this as null and let the attachment work through SOAP message
-            response.setAttachment(null);
-            
-            log.info("Mock SOAP Server: Response created successfully");
+            log.info("Mock SOAP Server: Response created successfully with CID reference: {}", cidReference);
             return response;
             
         } catch (Exception e) {
@@ -423,118 +348,10 @@ public class MockSwiftSoapEndpoint {
 }
 ```
 
-## 3. Alternatif Çözüm: Custom Message Interceptor
-
-Eğer yukarıdaki çözüm çalışmazsa, interceptor kullanarak attachment ekleyebiliriz:
+## 2. ByteArrayDataSource (Aynı Kalıyor)
 
 ```java
-package com.ykb.cosmos.commonservices.saaadapter.interceptor;
-
-import jakarta.activation.DataHandler;
-import jakarta.xml.soap.AttachmentPart;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
-import org.springframework.ws.WebServiceMessage;
-import org.springframework.ws.context.MessageContext;
-import org.springframework.ws.server.EndpointInterceptor;
-import org.springframework.ws.soap.saaj.SaajSoapMessage;
-
-import java.nio.charset.StandardCharsets;
-
-@Slf4j
-@Component
-public class AttachmentInterceptor implements EndpointInterceptor {
-
-    @Override
-    public boolean handleRequest(MessageContext messageContext, Object endpoint) {
-        return true;
-    }
-
-    @Override
-    public boolean handleResponse(MessageContext messageContext, Object endpoint) {
-        try {
-            WebServiceMessage response = messageContext.getResponse();
-            
-            if (response instanceof SaajSoapMessage) {
-                SaajSoapMessage soapResponse = (SaajSoapMessage) response;
-                jakarta.xml.soap.SOAPMessage saajMessage = soapResponse.getSaajMessage();
-                
-                // Check if we need to add attachment (check if endpoint is MockSwiftSoapEndpoint)
-                if (endpoint.getClass().getSimpleName().equals("MockSwiftSoapEndpoint")) {
-                    addAttachment(saajMessage);
-                }
-            }
-        } catch (Exception e) {
-            log.error("Error in AttachmentInterceptor", e);
-        }
-        return true;
-    }
-
-    @Override
-    public boolean handleFault(MessageContext messageContext, Object endpoint) {
-        return true;
-    }
-
-    @Override
-    public void afterCompletion(MessageContext messageContext, Object endpoint, Exception ex) {
-        // Nothing to do
-    }
-
-    private void addAttachment(jakarta.xml.soap.SOAPMessage saajMessage) {
-        try {
-            String attachmentContent = """
-                    <?xml version="1.0" encoding="UTF-8"?>
-                    <AppHdr xmlns="urn:iso:std:iso:20022:tech:xsd:head.001.001.01">
-                        <Fr>
-                            <FIId>
-                                <FinInstnId>
-                                    <BICFI>TRGTXEPMRTG</BICFI>
-                                </FinInstnId>
-                            </FIId>
-                        </Fr>
-                        <To>
-                            <FIId>
-                                <FinInstnId>
-                                    <BICFI>KABANL2AXXX</BICFI>
-                                </FinInstnId>
-                            </FIId>
-                        </To>
-                        <BizMsgIdr>864993564</BizMsgIdr>
-                        <MsgDefIdr>camt.053.001.08</MsgDefIdr>
-                        <CreDt>2025-11-24T19:53:06.338Z</CreDt>
-                    </AppHdr>
-                    <Document xmlns="urn:iso:std:iso:20022:tech:xsd:camt.053.001.08">
-                        <BkToCstmrStmt>
-                            <GrpHdr>
-                                <MsgId>NONREF</MsgId>
-                                <CreDtTm>2025-11-24T19:53:06.241+00:00</CreDtTm>
-                            </GrpHdr>
-                        </BkToCstmrStmt>
-                    </Document>
-                    """;
-            
-            byte[] attachmentBytes = attachmentContent.getBytes(StandardCharsets.UTF_8);
-            
-            ByteArrayDataSource dataSource = new ByteArrayDataSource(attachmentBytes, "application/octet-stream");
-            DataHandler dataHandler = new DataHandler(dataSource);
-            
-            AttachmentPart attachmentPart = saajMessage.createAttachmentPart(dataHandler);
-            attachmentPart.setContentId("<39379f5a-a83b-4226-851e-fe9e5f9aa9f3>");
-            attachmentPart.setContentType("application/octet-stream");
-            saajMessage.addAttachmentPart(attachmentPart);
-            
-            log.debug("Attachment added via interceptor");
-        } catch (Exception e) {
-            log.error("Error adding attachment", e);
-        }
-    }
-}
-```
-
-ByteArrayDataSource için:
-
-```java
-package com.ykb.cosmos.commonservices.saaadapter.interceptor;
+package com.ykb.cosmos.commonservices.saaadapter.endpoint;
 
 import jakarta.activation.DataSource;
 import java.io.ByteArrayInputStream;
@@ -574,92 +391,33 @@ public class ByteArrayDataSource implements DataSource {
 }
 ```
 
-Config'e interceptor'ı ekleyin:
+Şimdi response şu şekilde olacak:
+
+```xml
+<GetAckResponse>
+    <Saa:DataPDU xmlns:Saa="urn:swift:saa:xsd:saa.2.0">
+        <!-- DataPDU içeriği -->
+    </Saa:DataPDU>
+    <attachment>cid:39379f5a-a83b-4226-851e-fe9e5f9aa9f3</attachment>
+</GetAckResponse>
+```
+
+Ve SOAP mesajının attachment kısmında gerçek XML içeriği olacak.
+
+Client tarafında da bu CID referansını kullanarak attachment'ı bulabilirsiniz:
 
 ```java
-package com.ykb.cosmos.commonservices.saaadapter.config;
-
-import com.ykb.cosmos.commonservices.saaadapter.interceptor.AttachmentInterceptor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.servlet.ServletRegistrationBean;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.oxm.jaxb.Jaxb2Marshaller;
-import org.springframework.ws.config.annotation.EnableWs;
-import org.springframework.ws.config.annotation.WsConfigurerAdapter;
-import org.springframework.ws.server.EndpointInterceptor;
-import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
-import org.springframework.ws.transport.http.MessageDispatcherServlet;
-import org.springframework.ws.wsdl.wsdl11.DefaultWsdl11Definition;
-import org.springframework.xml.xsd.SimpleXsdSchema;
-import org.springframework.xml.xsd.XsdSchema;
-
-import jakarta.xml.soap.MessageFactory;
-import jakarta.xml.soap.SOAPConstants;
-import java.util.List;
-
-@EnableWs
-@Configuration
-@Profile("mock")
-public class MockWebServiceConfig extends WsConfigurerAdapter {
-
-    @Autowired
-    private AttachmentInterceptor attachmentInterceptor;
-
-    @Override
-    public void addInterceptors(List<EndpointInterceptor> interceptors) {
-        interceptors.add(attachmentInterceptor);
-    }
-
-    @Bean
-    public ServletRegistrationBean<MessageDispatcherServlet> messageDispatcherServlet(
-            ApplicationContext applicationContext) {
-        MessageDispatcherServlet servlet = new MessageDispatcherServlet();
-        servlet.setApplicationContext(applicationContext);
-        servlet.setTransformWsdlLocations(true);
-        return new ServletRegistrationBean<>(servlet, "/mock-ws/*");
-    }
-
-    @Bean
-    public SaajSoapMessageFactory messageFactory() {
-        SaajSoapMessageFactory messageFactory = new SaajSoapMessageFactory();
+if (body instanceof GetAckResponse) {
+    GetAckResponse response = (GetAckResponse) body;
+    
+    // Get CID reference
+    DataHandler cidHandler = response.getAttachment();
+    if (cidHandler != null) {
+        String cid = new String(cidHandler.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+        log.info("Attachment CID: {}", cid); // cid:39379f5a-a83b-4226-851e-fe9e5f9aa9f3
         
-        try {
-            MessageFactory saajMessageFactory = MessageFactory.newInstance(SOAPConstants.SOAP_1_1_PROTOCOL);
-            messageFactory.setMessageFactory(saajMessageFactory);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to create SAAJ MessageFactory", e);
-        }
-        
-        return messageFactory;
-    }
-
-    @Bean
-    public Jaxb2Marshaller marshaller() {
-        Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
-        marshaller.setPackagesToScan("com.ykb.cosmos.commonservices.saaadapter.external.model");
-        marshaller.setMtomEnabled(true);
-        return marshaller;
-    }
-
-    @Bean(name = "swiftService")
-    public DefaultWsdl11Definition defaultWsdl11Definition(XsdSchema swiftSchema) {
-        DefaultWsdl11Definition wsdl11Definition = new DefaultWsdl11Definition();
-        wsdl11Definition.setPortTypeName("SwiftPort");
-        wsdl11Definition.setLocationUri("/mock-ws");
-        wsdl11Definition.setTargetNamespace("urn:swift:saa:xsd:soapha");
-        wsdl11Definition.setSchema(swiftSchema);
-        return wsdl11Definition;
-    }
-
-    @Bean
-    public XsdSchema swiftSchema() {
-        return new SimpleXsdSchema(new ClassPathResource("swift-schema.xsd"));
+        // Now get actual attachment from SOAP message using this CID
+        // You'll need to access the SOAP message attachments
     }
 }
 ```
-
-Bu yaklaşımla attachment JAXB marshalling'den sonra eklenir ve NullPointerException sorunu çözülür. Hangi yaklaşımı tercih ederseniz edin, attachment'lar doğru şekilde çalışacaktır.
