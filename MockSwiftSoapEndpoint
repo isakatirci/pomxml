@@ -1,122 +1,198 @@
-`AttachmentMarshaller` null olması, Spring WS'nin JAXB marshaller'ı doğru yapılandırmadığı anlamına geliyor. Bu sorunu çözmek için birkaç yol var:
+Spring Boot 4 henüz yayınlanmadı (en son stable sürüm 3.4.1). Ancak sizin için **Spring Boot 3.4.1** (en güncel) ve **Java 21** için tüm kodları güncelleyeyim:
 
-## Çözüm 1: Custom Marshaller ile AttachmentMarshaller'ı Set Etme
+## 1. pom.xml (Spring Boot 3.4.1 + Java 21)
 
-```java
-package com.ykb.cosmos.commonservices.saaadapter.config;
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-import com.ykb.cosmos.commonservices.saaadapter.interceptor.AttachmentInterceptor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.servlet.ServletRegistrationBean;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.oxm.jaxb.Jaxb2Marshaller;
-import org.springframework.ws.config.annotation.EnableWs;
-import org.springframework.ws.config.annotation.WsConfigurerAdapter;
-import org.springframework.ws.server.EndpointInterceptor;
-import org.springframework.ws.server.endpoint.adapter.DefaultMethodEndpointAdapter;
-import org.springframework.ws.server.endpoint.adapter.method.MarshallingPayloadMethodProcessor;
-import org.springframework.ws.server.endpoint.adapter.method.MethodArgumentResolver;
-import org.springframework.ws.server.endpoint.adapter.method.MethodReturnValueHandler;
-import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
-import org.springframework.ws.soap.server.endpoint.adapter.SoapMethodEndpointAdapter;
-import org.springframework.ws.transport.http.MessageDispatcherServlet;
-import org.springframework.ws.wsdl.wsdl11.DefaultWsdl11Definition;
-import org.springframework.xml.xsd.SimpleXsdSchema;
-import org.springframework.xml.xsd.XsdSchema;
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.4.1</version>
+        <relativePath/>
+    </parent>
 
-import jakarta.xml.soap.MessageFactory;
-import jakarta.xml.soap.SOAPConstants;
-import java.util.ArrayList;
-import java.util.List;
+    <groupId>com.ykb.cosmos.commonservices</groupId>
+    <artifactId>saa-adapter</artifactId>
+    <version>1.0.0</version>
+    <name>saa-adapter</name>
+    <description>SAA Adapter Mock Server with Spring Boot 3.4.1</description>
 
-@EnableWs
-@Configuration
-@Profile("mock")
-public class MockWebServiceConfig extends WsConfigurerAdapter {
+    <properties>
+        <java.version>21</java.version>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <spring-ws.version>4.0.11</spring-ws.version>
+    </properties>
 
-    @Autowired
-    private AttachmentInterceptor attachmentInterceptor;
+    <dependencies>
+        <!-- Spring Boot Starter Web -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
 
-    @Override
-    public void addInterceptors(List<EndpointInterceptor> interceptors) {
-        interceptors.add(attachmentInterceptor);
-    }
+        <!-- Spring Boot Starter Web Services -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web-services</artifactId>
+        </dependency>
 
-    @Bean
-    public ServletRegistrationBean<MessageDispatcherServlet> messageDispatcherServlet(
-            ApplicationContext applicationContext) {
-        MessageDispatcherServlet servlet = new MessageDispatcherServlet();
-        servlet.setApplicationContext(applicationContext);
-        servlet.setTransformWsdlLocations(true);
-        
-        ServletRegistrationBean<MessageDispatcherServlet> registration = 
-            new ServletRegistrationBean<>(servlet, "/mock-ws", "/mock-ws/*");
-        registration.setLoadOnStartup(1);
-        
-        return registration;
-    }
+        <!-- Spring Boot Starter Validation -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
 
-    @Bean
-    public SaajSoapMessageFactory messageFactory() {
-        SaajSoapMessageFactory messageFactory = new SaajSoapMessageFactory();
-        
-        try {
-            MessageFactory saajMessageFactory = MessageFactory.newInstance(SOAPConstants.SOAP_1_1_PROTOCOL);
-            messageFactory.setMessageFactory(saajMessageFactory);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to create SAAJ MessageFactory", e);
-        }
-        
-        return messageFactory;
-    }
+        <!-- JAXB API for Java 21 -->
+        <dependency>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
+            <version>4.0.2</version>
+        </dependency>
 
-    @Bean
-    public Jaxb2Marshaller marshaller() {
-        Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
-        marshaller.setPackagesToScan("com.ykb.cosmos.commonservices.saaadapter.external.model");
-        marshaller.setMtomEnabled(true);
-        return marshaller;
-    }
+        <!-- JAXB Runtime -->
+        <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
+            <version>4.0.5</version>
+        </dependency>
 
-    @Bean
-    public SoapMethodEndpointAdapter soapMethodEndpointAdapter() {
-        SoapMethodEndpointAdapter adapter = new SoapMethodEndpointAdapter();
-        
-        List<MethodArgumentResolver> argumentResolvers = new ArrayList<>();
-        argumentResolvers.add(new MarshallingPayloadMethodProcessor(marshaller()));
-        adapter.setCustomMethodArgumentResolvers(argumentResolvers);
-        
-        List<MethodReturnValueHandler> returnValueHandlers = new ArrayList<>();
-        returnValueHandlers.add(new MarshallingPayloadMethodProcessor(marshaller()));
-        adapter.setCustomMethodReturnValueHandlers(returnValueHandlers);
-        
-        return adapter;
-    }
+        <!-- Jakarta Activation API -->
+        <dependency>
+            <groupId>jakarta.activation</groupId>
+            <artifactId>jakarta.activation-api</artifactId>
+            <version>2.1.3</version>
+        </dependency>
 
-    @Bean(name = "swiftService")
-    public DefaultWsdl11Definition defaultWsdl11Definition(XsdSchema swiftSchema) {
-        DefaultWsdl11Definition wsdl11Definition = new DefaultWsdl11Definition();
-        wsdl11Definition.setPortTypeName("SwiftPort");
-        wsdl11Definition.setLocationUri("/mock-ws");
-        wsdl11Definition.setTargetNamespace("urn:swift:saa:xsd:soapha");
-        wsdl11Definition.setSchema(swiftSchema);
-        return wsdl11Definition;
-    }
+        <!-- Angus Activation (Eclipse Implementation) -->
+        <dependency>
+            <groupId>org.eclipse.angus</groupId>
+            <artifactId>angus-activation</artifactId>
+            <version>2.0.2</version>
+        </dependency>
 
-    @Bean
-    public XsdSchema swiftSchema() {
-        return new SimpleXsdSchema(new ClassPathResource("swift-schema.xsd"));
-    }
-}
+        <!-- SOAP with Attachments API for Java (SAAJ) -->
+        <dependency>
+            <groupId>com.sun.xml.messaging.saaj</groupId>
+            <artifactId>saaj-impl</artifactId>
+            <version>3.0.4</version>
+        </dependency>
+
+        <!-- Jakarta SOAP API -->
+        <dependency>
+            <groupId>jakarta.xml.soap</groupId>
+            <artifactId>jakarta.xml.soap-api</artifactId>
+            <version>3.0.2</version>
+        </dependency>
+
+        <!-- Lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.34</version>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- Spring Boot Actuator (Monitoring) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+        <!-- Micrometer for Metrics -->
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-core</artifactId>
+        </dependency>
+
+        <!-- Spring Boot Configuration Processor -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- Spring Boot Starter Test -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Spring WS Test -->
+        <dependency>
+            <groupId>org.springframework.ws</groupId>
+            <artifactId>spring-ws-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Spring Boot Maven Plugin -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </exclude>
+                    </excludes>
+                    <image>
+                        <name>${project.artifactId}:${project.version}</name>
+                    </image>
+                </configuration>
+            </plugin>
+
+            <!-- Maven Compiler Plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.13.0</version>
+                <configuration>
+                    <source>21</source>
+                    <target>21</target>
+                    <release>21</release>
+                    <compilerArgs>
+                        <arg>--enable-preview</arg>
+                    </compilerArgs>
+                </configuration>
+            </plugin>
+
+            <!-- Maven Surefire Plugin (for tests) -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.2.5</version>
+                <configuration>
+                    <argLine>--enable-preview</argLine>
+                </configuration>
+            </plugin>
+
+            <!-- Maven Failsafe Plugin (for integration tests) -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>3.2.5</version>
+                <configuration>
+                    <argLine>--enable-preview</argLine>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
 ```
 
-## Çözüm 2: GetAckResponse'u Basitleştirme (En Kolay Çözüm)
-
-`attachment` field'ını String olarak tanımlayın, DataHandler yerine:
+## 2. GetAckResponse.java (Spring Boot 3.4.1)
 
 ```java
 package com.ykb.cosmos.commonservices.saaadapter.external.model;
@@ -124,19 +200,34 @@ package com.ykb.cosmos.commonservices.saaadapter.external.model;
 import jakarta.xml.bind.annotation.*;
 import org.w3c.dom.Element;
 
+import java.io.Serial;
+import java.io.Serializable;
+
+/**
+ * GetAckResponse model for SOAP response
+ * Spring Boot 3.4.1 + Java 21
+ */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-        "any",
-        "attachment"
-})
+@XmlType(name = "", propOrder = {"any", "attachment"})
 @XmlRootElement(name = "GetAckResponse", namespace = "urn:swift:saa:xsd:soapha")
-public class GetAckResponse {
+public final class GetAckResponse implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     @XmlAnyElement
-    protected Element any;
+    private Element any;
     
     @XmlElement(namespace = "urn:swift:saa:xsd:soapha")
-    protected String attachment;  // String olarak değiştirdik
+    private String attachment;
+
+    public GetAckResponse() {
+    }
+
+    public GetAckResponse(Element any, String attachment) {
+        this.any = any;
+        this.attachment = attachment;
+    }
 
     public Element getAny() {
         return any;
@@ -153,60 +244,73 @@ public class GetAckResponse {
     public void setAttachment(String value) {
         this.attachment = value;
     }
-}
-```
 
-Ve endpoint'te:
-
-```java
-@PayloadRoot(namespace = NAMESPACE_URI, localPart = "GetAckRequest")
-@ResponsePayload
-public GetAckResponse getAck(@RequestPayload Element request, MessageContext messageContext) {
-    
-    log.info("Mock SOAP Server: GetAck request received");
-    
-    try {
-        // Add SOAP Header to Response
-        addSoapHeader(messageContext);
-        
-        // Add attachment to SOAP message first
-        addAttachmentToSoapMessage(messageContext);
-        
-        // Create Response
-        GetAckResponse response = new GetAckResponse();
-        
-        // Create DataPDU Element (any element)
-        Element dataPduElement = createDataPDUElement();
-        response.setAny(dataPduElement);
-        
-        // Set CID reference as String
-        response.setAttachment("cid:" + ATTACHMENT_CID);
-        
-        log.info("Mock SOAP Server: Response created successfully");
-        return response;
-        
-    } catch (Exception e) {
-        log.error("Error creating mock response", e);
-        throw new RuntimeException("Failed to create mock response", e);
+    @Override
+    public String toString() {
+        return STR."GetAckResponse[any=\{any != null ? any.getLocalName() : "null"}, attachment=\{attachment}]";
     }
 }
 ```
 
-## Çözüm 3: Manuel XML Response Oluşturma (En Garantili)
-
-JAXB yerine manuel olarak SOAP response oluşturun:
+## 3. ByteArrayDataSource.java (Java 21 Record)
 
 ```java
 package com.ykb.cosmos.commonservices.saaadapter.endpoint;
 
+import jakarta.activation.DataSource;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+/**
+ * ByteArrayDataSource for SOAP attachments
+ * Java 21 Record implementation
+ */
+public record ByteArrayDataSource(byte[] data, String contentType) implements DataSource {
+    
+    @Override
+    public InputStream getInputStream() {
+        return new ByteArrayInputStream(data);
+    }
+    
+    @Override
+    public OutputStream getOutputStream() {
+        return new ByteArrayOutputStream();
+    }
+    
+    @Override
+    public String getContentType() {
+        return contentType;
+    }
+    
+    @Override
+    public String getName() {
+        return "ByteArrayDataSource";
+    }
+}
+```
+
+## 4. MockSwiftSoapEndpoint.java (Spring Boot 3.4.1 + Java 21)
+
+```java
+package com.ykb.cosmos.commonservices.saaadapter.endpoint;
+
+import com.ykb.cosmos.commonservices.saaadapter.external.model.GetAckResponse;
 import jakarta.activation.DataHandler;
-import jakarta.xml.soap.*;
+import jakarta.xml.soap.AttachmentPart;
+import jakarta.xml.soap.SOAPException;
+import jakarta.xml.soap.SOAPHeader;
+import jakarta.xml.soap.SOAPHeaderElement;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import org.springframework.ws.context.MessageContext;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
+import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 import org.springframework.ws.soap.saaj.SaajSoapMessage;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import javax.xml.namespace.QName;
@@ -214,8 +318,13 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.nio.charset.StandardCharsets;
 
+/**
+ * Mock SOAP Endpoint for Swift SAA
+ * Spring Boot 3.4.1 + Java 21 LTS
+ */
 @Slf4j
 @Endpoint
+@Component
 public class MockSwiftSoapEndpoint {
 
     private static final String NAMESPACE_URI = "urn:swift:saa:xsd:soapha";
@@ -224,24 +333,23 @@ public class MockSwiftSoapEndpoint {
     private static final String ATTACHMENT_CID = "39379f5a-a83b-4226-851e-fe9e5f9aa9f3";
 
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "GetAckRequest")
-    public void getAck(@RequestPayload Element request, MessageContext messageContext) {
+    @ResponsePayload
+    public GetAckResponse getAck(@RequestPayload Element request, MessageContext messageContext) {
         
         log.info("Mock SOAP Server: GetAck request received");
+        log.debug("Request element: {}", request.getLocalName());
         
         try {
-            SaajSoapMessage soapResponse = (SaajSoapMessage) messageContext.getResponse();
-            SOAPMessage saajMessage = soapResponse.getSaajMessage();
+            addSoapHeader(messageContext);
+            addAttachmentToSoapMessage(messageContext);
             
-            // Add SOAP Header
-            addSoapHeader(saajMessage);
+            var response = new GetAckResponse();
+            var dataPduElement = createDataPDUElement();
+            response.setAny(dataPduElement);
+            response.setAttachment(STR."cid:\{ATTACHMENT_CID}");
             
-            // Add SOAP Body
-            addSoapBody(saajMessage);
-            
-            // Add Attachment
-            addAttachment(saajMessage);
-            
-            log.info("Mock SOAP Server: Response created successfully");
+            log.info("Mock SOAP Server: Response created successfully with CID: cid:{}", ATTACHMENT_CID);
+            return response;
             
         } catch (Exception e) {
             log.error("Error creating mock response", e);
@@ -249,144 +357,520 @@ public class MockSwiftSoapEndpoint {
         }
     }
 
-    private void addSoapHeader(SOAPMessage saajMessage) throws SOAPException {
-        SOAPHeader soapHeader = saajMessage.getSOAPHeader();
-        
-        if (soapHeader == null) {
-            soapHeader = saajMessage.getSOAPPart().getEnvelope().addHeader();
+    private void addSoapHeader(MessageContext messageContext) throws SOAPException {
+        if (messageContext.getResponse() instanceof SaajSoapMessage soapResponse) {
+            var saajMessage = soapResponse.getSaajMessage();
+            var soapHeader = saajMessage.getSOAPHeader() != null 
+                ? saajMessage.getSOAPHeader() 
+                : saajMessage.getSOAPPart().getEnvelope().addHeader();
+            
+            var headerQName = new QName(HEADER_NAMESPACE, "SAAHeader", "ns2");
+            var headerElement = soapHeader.addHeaderElement(headerQName);
+            headerElement.setAttribute("Id", "SAAHeader");
+            
+            headerElement.addChildElement(new QName(HEADER_NAMESPACE, "SessionToken", "ns2"))
+                    .setTextContent("da1351f1-654b-45f5-aebc-c12218cf");
+            headerElement.addChildElement(new QName(HEADER_NAMESPACE, "SequenceNumber", "ns2"))
+                    .setTextContent("93825");
+            
+            log.debug("SOAP Header added successfully");
         }
-        
-        QName headerQName = new QName(HEADER_NAMESPACE, "SAAHeader", "ns2");
-        SOAPHeaderElement headerElement = soapHeader.addHeaderElement(headerQName);
-        headerElement.setAttribute("Id", "SAAHeader");
-        
-        headerElement.addChildElement(new QName(HEADER_NAMESPACE, "SessionToken", "ns2"))
-                .setTextContent("da1351f1-654b-45f5-aebc-c12218cf");
-        headerElement.addChildElement(new QName(HEADER_NAMESPACE, "SequenceNumber", "ns2"))
-                .setTextContent("93825");
-        
-        log.debug("SOAP Header added successfully");
     }
 
-    private void addSoapBody(SOAPMessage saajMessage) throws Exception {
-        SOAPBody soapBody = saajMessage.getSOAPBody();
-        
-        // Create GetAckResponse element
-        SOAPElement getAckResponse = soapBody.addChildElement("GetAckResponse", "ns1", NAMESPACE_URI);
-        
-        // Add DataPDU
-        Element dataPDU = createDataPDUElement();
-        getAckResponse.appendChild(saajMessage.getSOAPPart().importNode(dataPDU, true));
-        
-        // Add attachment CID reference
-        SOAPElement attachmentElement = getAckResponse.addChildElement("attachment", "ns1", NAMESPACE_URI);
-        attachmentElement.setTextContent("cid:" + ATTACHMENT_CID);
-        
-        log.debug("SOAP Body added successfully");
+    private void addAttachmentToSoapMessage(MessageContext messageContext) {
+        try {
+            var attachmentContent = """
+                    <?xml version="1.0" encoding="UTF-8"?>
+                    <AppHdr xmlns="urn:iso:std:iso:20022:tech:xsd:head.001.001.01">
+                        <Fr>
+                            <FIId>
+                                <FinInstnId>
+                                    <BICFI>TRGTXEPMRTG</BICFI>
+                                </FinInstnId>
+                            </FIId>
+                        </Fr>
+                        <To>
+                            <FIId>
+                                <FinInstnId>
+                                    <BICFI>KABANL2AXXX</BICFI>
+                                </FinInstnId>
+                            </FIId>
+                        </To>
+                        <BizMsgIdr>864993564</BizMsgIdr>
+                        <MsgDefIdr>camt.053.001.08</MsgDefIdr>
+                        <CreDt>2025-11-24T19:53:06.338Z</CreDt>
+                    </AppHdr>
+                    <Document xmlns="urn:iso:std:iso:20022:tech:xsd:camt.053.001.08">
+                        <BkToCstmrStmt>
+                            <GrpHdr>
+                                <MsgId>NONREF</MsgId>
+                                <CreDtTm>2025-11-24T19:53:06.241+00:00</CreDtTm>
+                            </GrpHdr>
+                        </BkToCstmrStmt>
+                    </Document>
+                    """;
+            
+            var attachmentBytes = attachmentContent.getBytes(StandardCharsets.UTF_8);
+            var dataSource = new ByteArrayDataSource(attachmentBytes, "application/octet-stream");
+            var dataHandler = new DataHandler(dataSource);
+            
+            if (messageContext.getResponse() instanceof SaajSoapMessage soapResponse) {
+                var saajMessage = soapResponse.getSaajMessage();
+                var attachmentPart = saajMessage.createAttachmentPart(dataHandler);
+                attachmentPart.setContentId(STR."<\{ATTACHMENT_CID}>");
+                attachmentPart.setContentType("application/octet-stream");
+                saajMessage.addAttachmentPart(attachmentPart);
+                
+                log.debug("Attachment added to SOAP message successfully with CID: {}", ATTACHMENT_CID);
+            }
+            
+        } catch (Exception e) {
+            log.error("Error adding attachment to SOAP message", e);
+            throw new RuntimeException("Failed to add attachment", e);
+        }
     }
 
-    private void addAttachment(SOAPMessage saajMessage) throws Exception {
-        String attachmentContent = """
-                <?xml version="1.0" encoding="UTF-8"?>
-                <AppHdr xmlns="urn:iso:std:iso:20022:tech:xsd:head.001.001.01">
-                    <Fr>
-                        <FIId>
-                            <FinInstnId>
-                                <BICFI>TRGTXEPMRTG</BICFI>
-                            </FinInstnId>
-                        </FIId>
-                    </Fr>
-                    <To>
-                        <FIId>
-                            <FinInstnId>
-                                <BICFI>KABANL2AXXX</BICFI>
-                            </FinInstnId>
-                        </FIId>
-                    </To>
-                    <BizMsgIdr>864993564</BizMsgIdr>
-                    <MsgDefIdr>camt.053.001.08</MsgDefIdr>
-                    <CreDt>2025-11-24T19:53:06.338Z</CreDt>
-                </AppHdr>
-                <Document xmlns="urn:iso:std:iso:20022:tech:xsd:camt.053.001.08">
-                    <BkToCstmrStmt>
-                        <GrpHdr>
-                            <MsgId>NONREF</MsgId>
-                            <CreDtTm>2025-11-24T19:53:06.241+00:00</CreDtTm>
-                        </GrpHdr>
-                    </BkToCstmrStmt>
-                </Document>
-                """;
-        
-        byte[] attachmentBytes = attachmentContent.getBytes(StandardCharsets.UTF_8);
-        
-        ByteArrayDataSource dataSource = new ByteArrayDataSource(attachmentBytes, "application/octet-stream");
-        DataHandler dataHandler = new DataHandler(dataSource);
-        
-        AttachmentPart attachmentPart = saajMessage.createAttachmentPart(dataHandler);
-        attachmentPart.setContentId("<" + ATTACHMENT_CID + ">");
-        attachmentPart.setContentType("application/octet-stream");
-        saajMessage.addAttachmentPart(attachmentPart);
-        
-        log.debug("Attachment added successfully with CID: {}", ATTACHMENT_CID);
+    private Element createDataPDUElement() {
+        try {
+            var factory = DocumentBuilderFactory.newInstance();
+            factory.setNamespaceAware(true);
+            factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+            factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+            
+            var builder = factory.newDocumentBuilder();
+            var document = builder.newDocument();
+            
+            // Create DataPDU root element
+            var dataPDU = document.createElementNS(SAA_NAMESPACE, "Saa:DataPDU");
+            dataPDU.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:Saa", SAA_NAMESPACE);
+            dataPDU.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:Sw", "urn:swift:snl:ns.Sw");
+            dataPDU.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:SwGbl", "urn:swift:snl:ns.SwGbl");
+            dataPDU.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:SwInt", "urn:swift:snl:ns.SwInt");
+            dataPDU.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:SwSec", "urn:swift:snl:ns.SwSec");
+            
+            addRevision(document, dataPDU);
+            addHeader(document, dataPDU);
+            
+            log.debug("DataPDU Element created successfully");
+            return dataPDU;
+            
+        } catch (Exception e) {
+            log.error("Error creating DataPDU element", e);
+            throw new RuntimeException("Failed to create DataPDU element", e);
+        }
     }
 
-    private Element createDataPDUElement() throws Exception {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        factory.setNamespaceAware(true);
-        DocumentBuilder builder = factory.newDocumentBuilder();
-        org.w3c.dom.Document document = builder.newDocument();
-        
-        // Create DataPDU root element
-        Element dataPDU = document.createElementNS(SAA_NAMESPACE, "Saa:DataPDU");
-        dataPDU.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:Saa", SAA_NAMESPACE);
-        
-        // Revision
-        Element revision = document.createElementNS(SAA_NAMESPACE, "Saa:Revision");
+    private void addRevision(Document document, Element dataPDU) {
+        var revision = document.createElementNS(SAA_NAMESPACE, "Saa:Revision");
         revision.setTextContent("2.0.7");
         dataPDU.appendChild(revision);
+    }
+
+    private void addHeader(Document document, Element dataPDU) {
+        var header = document.createElementNS(SAA_NAMESPACE, "Saa:Header");
+        var message = document.createElementNS(SAA_NAMESPACE, "Saa:Message");
         
-        // Header
-        Element header = document.createElementNS(SAA_NAMESPACE, "Saa:Header");
-        
-        // Message
-        Element message = document.createElementNS(SAA_NAMESPACE, "Saa:Message");
-        
-        // SenderReference
-        Element senderReference = document.createElementNS(SAA_NAMESPACE, "Saa:SenderReference");
-        senderReference.setTextContent("OTRGTXEPMXXX053$2511242151610");
-        message.appendChild(senderReference);
-        
-        // MessageIdentifier
-        Element messageIdentifier = document.createElementNS(SAA_NAMESPACE, "Saa:MessageIdentifier");
-        messageIdentifier.setTextContent("camt.053.001.08");
-        message.appendChild(messageIdentifier);
-        
-        // FileLogicalName
-        Element fileLogicalName = document.createElementNS(SAA_NAMESPACE, "Saa:FileLogicalName");
-        fileLogicalName.setTextContent("snp02145D11764014008677451");
-        message.appendChild(fileLogicalName);
+        addMessageElements(document, message);
+        addSenderInfo(document, message);
+        addReceiverInfo(document, message);
+        addInterfaceInfo(document, message);
+        addNetworkInfo(document, message);
+        addSecurityInfo(document, message);
+        addFileInfo(document, message);
         
         header.appendChild(message);
         dataPDU.appendChild(header);
+    }
+
+    private void addMessageElements(Document document, Element message) {
+        createElement(document, message, "SenderReference", "OTRGTXEPMXXX053$2511242151610");
+        createElement(document, message, "MessageIdentifier", "camt.053.001.08");
+        createElement(document, message, "Format", "File");
+        createElement(document, message, "SubFormat", "Output");
+    }
+
+    private void addSenderInfo(Document document, Element message) {
+        var sender = document.createElementNS(SAA_NAMESPACE, "Saa:Sender");
+        createElement(document, sender, "DN", "cn=rtgs,o=trgtxepm,o=swift");
         
-        log.debug("DataPDU Element created successfully");
-        return dataPDU;
+        var fullName = document.createElementNS(SAA_NAMESPACE, "Saa:FullName");
+        createElement(document, fullName, "X1", "TRGTXEPMXXX");
+        sender.appendChild(fullName);
+        message.appendChild(sender);
+    }
+
+    private void addReceiverInfo(Document document, Element message) {
+        var receiver = document.createElementNS(SAA_NAMESPACE, "Saa:Receiver");
+        createElement(document, receiver, "DN", "cn=t2a2aprod,o=kabanl2a,o=swift");
+        
+        var fullName = document.createElementNS(SAA_NAMESPACE, "Saa:FullName");
+        createElement(document, fullName, "X1", "KABANL2AXXX");
+        receiver.appendChild(fullName);
+        message.appendChild(receiver);
+    }
+
+    private void addInterfaceInfo(Document document, Element message) {
+        var interfaceInfo = document.createElementNS(SAA_NAMESPACE, "Saa:InterfaceInfo");
+        createElement(document, interfaceInfo, "MessageCreator", "SWIFTNetInterface");
+        createElement(document, interfaceInfo, "MessageContext", "Copy");
+        createElement(document, interfaceInfo, "MessageNature", "Financial");
+        createElement(document, interfaceInfo, "Sumid", "16DB4721FFDF2B45");
+        message.appendChild(interfaceInfo);
+    }
+
+    private void addNetworkInfo(Document document, Element message) {
+        var networkInfo = document.createElementNS(SAA_NAMESPACE, "Saa:NetworkInfo");
+        createElement(document, networkInfo, "Priority", "Normal");
+        createElement(document, networkInfo, "IsPossibleDuplicate", "true");
+        createElement(document, networkInfo, "Service", "esmig.t2.fast");
+        createElement(document, networkInfo, "Network", "SWIFTNet");
+        createElement(document, networkInfo, "SessionNr", "000615");
+        createElement(document, networkInfo, "SeqNr", "000000705");
+        
+        addSwiftNetNetworkInfo(document, networkInfo);
+        message.appendChild(networkInfo);
+    }
+
+    private void addSwiftNetNetworkInfo(Document document, Element networkInfo) {
+        var swiftNetInfo = document.createElementNS(SAA_NAMESPACE, "Saa:SWIFTNetNetworkInfo");
+        createElement(document, swiftNetInfo, "RequestType", "camt.053.001.08");
+        createElement(document, swiftNetInfo, "SNLRef", "snp02145-2025-11-24T19:53:28.32451.608679Z");
+        createElement(document, swiftNetInfo, "SnFQueueName", "kabanl2a_t2file");
+        createElement(document, swiftNetInfo, "SnFInputTime", "0102:2025-11-24T19:53:28");
+        createElement(document, swiftNetInfo, "SnFDeliveryTime", "2025-11-24T19:54:05Z");
+        createElement(document, swiftNetInfo, "TransferRef", "SNL51616D11764014045671568C");
+        createElement(document, swiftNetInfo, "StoredTransferRef", "snp02145D11764014008677451S");
+        createElement(document, swiftNetInfo, "FileInfo", 
+            "SwCompression=None;ESMIGMessageId=tgw201.84864f34-8dfb-4647-a08d-6816db6be9a4");
+        createElement(document, swiftNetInfo, "FileStartTime", "20251124205405");
+        createElement(document, swiftNetInfo, "FileEndTime", "20251124205407");
+        networkInfo.appendChild(swiftNetInfo);
+    }
+
+    private void addSecurityInfo(Document document, Element message) {
+        var securityInfo = document.createElementNS(SAA_NAMESPACE, "Saa:SecurityInfo");
+        var swiftNetSecurityInfo = document.createElementNS(SAA_NAMESPACE, "Saa:SWIFTNetSecurityInfo");
+        createElement(document, swiftNetSecurityInfo, "FileDigestAlgorithm", "SHA-256");
+        createElement(document, swiftNetSecurityInfo, "FileDigestValue", 
+            "72voJYePENeYmW8xh8lKhVgmHCcbuRaQ6+yzn5sOMEo=");
+        securityInfo.appendChild(swiftNetSecurityInfo);
+        message.appendChild(securityInfo);
+    }
+
+    private void addFileInfo(Document document, Element message) {
+        createElement(document, message, "FileLogicalName", "snp02145D11764014008677451");
+        createElement(document, message, "ExpiryDateTime", "20251214195407");
+    }
+
+    private void createElement(Document document, Element parent, String name, String value) {
+        var element = document.createElementNS(SAA_NAMESPACE, STR."Saa:\{name}");
+        element.setTextContent(value);
+        parent.appendChild(element);
     }
 }
 ```
 
-## Önerilen Çözüm
+## 5. MockWebServiceConfig.java (Spring Boot 3.4.1)
 
-**Çözüm 2**'yi (String kullanma) öneriyorum çünkü:
-1. En basit ve anlaşılır
-2. JAXB marshalling sorunlarını bypass eder
-3. İstediğiniz XML formatını üretir
+```java
+package com.ykb.cosmos.commonservices.saaadapter.config;
 
-```xml
-<GetAckResponse>
-    <Saa:DataPDU>...</Saa:DataPDU>
-    <attachment>cid:39379f5a-a83b-4226-851e-fe9e5f9aa9f3</attachment>
-</GetAckResponse>
+import org.springframework.boot.web.servlet.ServletRegistrationBean;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.ws.config.annotation.EnableWs;
+import org.springframework.ws.config.annotation.WsConfigurerAdapter;
+import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
+import org.springframework.ws.transport.http.MessageDispatcherServlet;
+import org.springframework.ws.wsdl.wsdl11.DefaultWsdl11Definition;
+import org.springframework.xml.xsd.SimpleXsdSchema;
+import org.springframework.xml.xsd.XsdSchema;
+
+import jakarta.xml.soap.MessageFactory;
+import jakarta.xml.soap.SOAPConstants;
+
+/**
+ * Mock Web Service Configuration
+ * Spring Boot 3.4.1 + Java 21
+ */
+@EnableWs
+@Configuration
+@Profile("mock")
+public class MockWebServiceConfig extends WsConfigurerAdapter {
+
+    @Bean
+    public ServletRegistrationBean<MessageDispatcherServlet> messageDispatcherServlet(
+            ApplicationContext applicationContext) {
+        var servlet = new MessageDispatcherServlet();
+        servlet.setApplicationContext(applicationContext);
+        servlet.setTransformWsdlLocations(true);
+        
+        var registration = new ServletRegistrationBean<>(servlet, "/mock-ws", "/mock-ws/*");
+        registration.setLoadOnStartup(1);
+        registration.setName("MockWebServiceServlet");
+        
+        return registration;
+    }
+
+    @Bean
+    public SaajSoapMessageFactory messageFactory() {
+        var messageFactory = new SaajSoapMessageFactory();
+        
+        try {
+            var saajMessageFactory = MessageFactory.newInstance(SOAPConstants.SOAP_1_1_PROTOCOL);
+            messageFactory.setMessageFactory(saajMessageFactory);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to create SAAJ MessageFactory", e);
+        }
+        
+        return messageFactory;
+    }
+
+    @Bean(name = "swiftService")
+    public DefaultWsdl11Definition defaultWsdl11Definition(XsdSchema swiftSchema) {
+        var wsdl11Definition = new DefaultWsdl11Definition();
+        wsdl11Definition.setPortTypeName("SwiftPort");
+        wsdl11Definition.setLocationUri("/mock-ws");
+        wsdl11Definition.setTargetNamespace("urn:swift:saa:xsd:soapha");
+        wsdl11Definition.setSchema(swiftSchema);
+        return wsdl11Definition;
+    }
+
+    @Bean
+    public XsdSchema swiftSchema() {
+        return new SimpleXsdSchema(new ClassPathResource("swift-schema.xsd"));
+    }
+}
 ```
 
-Ve attachment gerçek içeriği SOAP message attachment'ında olur. Hangisini tercih edersiniz?
+## 6. application.yml (Spring Boot 3.4.1)
+
+```yaml
+spring:
+  application:
+    name: saa-adapter
+  
+  # Spring Boot 3.4.1 new configuration
+  threads:
+    virtual:
+      enabled: true  # Enable Virtual Threads (Java 21 feature)
+
+server:
+  port: 8080
+  shutdown: graceful
+  http2:
+    enabled: true
+
+# Management endpoints (Actuator)
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: when-authorized
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
+# Logging configuration
+logging:
+  level:
+    root: INFO
+    com.ykb.cosmos.commonservices.saaadapter: DEBUG
+    org.springframework.ws: DEBUG
+    org.springframework.web: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+```
+
+## 7. application-mock.yml (Spring Boot 3.4.1)
+
+```yaml
+spring:
+  application:
+    name: saa-adapter-mock
+  
+  threads:
+    virtual:
+      enabled: true
+
+server:
+  port: 8080
+
+swift:
+  soap:
+    url: http://localhost:8080/mock-ws
+
+# Management endpoints
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+
+# Logging
+logging:
+  level:
+    root: INFO
+    com.ykb.cosmos.commonservices.saaadapter: DEBUG
+    org.springframework.ws: DEBUG
+    org.springframework.web: DEBUG
+```
+
+## 8. TestController.java (Spring Boot 3.4.1)
+
+```java
+package com.ykb.cosmos.commonservices.saaadapter.controller;
+
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Profile;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.time.LocalDateTime;
+import java.util.Map;
+
+/**
+ * Test Controller
+ * Spring Boot 3.4.1 + Java 21
+ */
+@Slf4j
+@RestController
+@RequestMapping("/api")
+@Profile("mock")
+public class TestController {
+    
+    @GetMapping("/health")
+    public ResponseEntity<Map<String, Object>> health() {
+        log.info("Health check called");
+        
+        var response = Map.of(
+            "status", "UP",
+            "message", "Mock SOAP Server is running!",
+            "springBootVersion", "3.4.1",
+            "javaVersion", System.getProperty("java.version"),
+            "virtualThreadsEnabled", Thread.currentThread().isVirtual(),
+            "timestamp", LocalDateTime.now().toString()
+        );
+        
+        return ResponseEntity.ok(response);
+    }
+}
+```
+
+## 9. SaaAdapterApplication.java (Spring Boot 3.4.1)
+
+```java
+package com.ykb.cosmos.commonservices.saaadapter;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+/**
+ * SAA Adapter Application
+ * Spring Boot 3.4.1 + Java 21 LTS
+ * With Virtual Threads Support
+ */
+@SpringBootApplication
+public class SaaAdapterApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(SaaAdapterApplication.class, args);
+    }
+}
+```
+
+## 10. swift-schema.xsd (Aynı)
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="urn:swift:saa:xsd:soapha"
+           xmlns:tns="urn:swift:saa:xsd:soapha"
+           elementFormDefault="qualified">
+
+    <xs:element name="GetAckRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="clientRef" type="xs:string" minOccurs="0"/>
+                <xs:element name="ackClientRef" type="xs:string" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="GetAckResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:any processContents="skip" minOccurs="0"/>
+                <xs:element name="attachment" type="xs:string" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>
+```
+
+## 11. Dockerfile (Opsiyonel - Spring Boot 3.4.1 Native)
+
+```dockerfile
+FROM eclipse-temurin:21-jre-alpine
+WORKDIR /app
+COPY target/saa-adapter-1.0.0.jar app.jar
+EXPOSE 8080
+ENTRYPOINT ["java", "--enable-preview", "-jar", "app.jar"]
+```
+
+## Önemli Yenilikler (Spring Boot 3.4.1):
+
+1. ✅ **Virtual Threads** - Java 21'in Virtual Threads özelliği aktif
+2. ✅ **HTTP/2** - Varsayılan olarak etkin
+3. ✅ **Graceful Shutdown** - Güvenli kapanma
+4. ✅ **Enhanced Actuator** - Prometheus metrik desteği
+5. ✅ **Security Features** - XML XXE koruması
+6. ✅ **Pattern Matching** - Java 21 pattern matching
+7. ✅ **String Templates** - STR templates kullanımı
+
+## Çalıştırma:
+
+```bash
+# Maven ile build
+mvn clean install
+
+# Uygulamayı başlat (Virtual Threads ile)
+mvn spring-boot:run -Dspring-boot.run.profiles=mock -Dspring-boot.run.arguments="--enable-preview"
+
+# Veya JAR ile
+java --enable-preview -jar target/saa-adapter-1.0.0.jar --spring.profiles.active=mock
+
+# Docker ile
+docker build -t saa-adapter:1.0.0 .
+docker run -p 8080:8080 saa-adapter:1.0.0
+```
+
+## Test:
+
+```bash
+# Health Check
+curl http://localhost:8080/api/health
+
+# Actuator Health
+curl http://localhost:8080/actuator/health
+
+# Metrics
+curl http://localhost:8080/actuator/metrics
+
+# WSDL
+curl http://localhost:8080/mock-ws/swiftService.wsdl
+```
+
+Tüm kodlar **Spring Boot 3.4.1** ve **Java 21 LTS** için optimize edildi! 🚀
