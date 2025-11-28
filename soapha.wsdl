@@ -1,0 +1,598 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<wsdl:definitions xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xmime="http://www.w3.org/2005/05/xmlmime"
+                  xmlns:wsi="http://ws-i.org/profiles/basic/1.1/xsd" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+                  xmlns:typens="urn:swift:saa:xsd:soapha" xmlns:soapha="urn:swift:saa:wsdl:soapha"
+                  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" targetNamespace="urn:swift:saa:wsdl:soapha">
+    <wsdl:types>
+        <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xmime="http://www.w3.org/2005/05/xmlmime"
+                    xmlns:wsi="http://ws-i.org/profiles/basic/1.1/xsd" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+                    xmlns:typens="urn:swift:saa:xsd:soapha" xmlns:soapha="urn:swift:saa:wsdl:soapha"
+                    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" targetNamespace="http://ws-i.org/profiles/basic/1.1/xsd">
+
+            <xsd:simpleType name="swaRef">
+
+                <xsd:restriction base="xsd:anyURI"/>
+
+            </xsd:simpleType>
+
+        </xsd:schema>
+        <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xmime="http://www.w3.org/2005/05/xmlmime"
+                    xmlns:wsi="http://ws-i.org/profiles/basic/1.1/xsd" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+                    xmlns:typens="urn:swift:saa:xsd:soapha" xmlns:soapha="urn:swift:saa:wsdl:soapha"
+                    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" elementFormDefault="qualified" targetNamespace="urn:swift:saa:xsd:soapha">
+
+
+            <xsd:import namespace="http://ws-i.org/profiles/basic/1.1/xsd"/>
+
+
+            <xsd:simpleType name="MessagePartnerName">
+
+                <xsd:restriction base="xsd:string">
+
+                    <xsd:maxLength value="14"/>
+
+                </xsd:restriction>
+
+            </xsd:simpleType>
+
+
+            <xsd:simpleType name="Direction">
+
+                <xsd:restriction base="xsd:string">
+
+                    <xsd:enumeration value="To_MessagePartner"/>
+
+                    <xsd:enumeration value="From_MessagePartner"/>
+
+                    <xsd:enumeration value="To_And_From_MessagePartner"/>
+
+                </xsd:restriction>
+
+            </xsd:simpleType>
+
+
+            <xsd:simpleType name="WindowSize">
+
+                <xsd:restriction base="xsd:unsignedInt">
+
+                    <xsd:minExclusive value="0"/>
+
+                    <xsd:maxInclusive value="10"/>
+
+                </xsd:restriction>
+
+            </xsd:simpleType>
+
+
+            <xsd:simpleType name="SessionToken">
+
+                <xsd:restriction base="xsd:string"/>
+
+            </xsd:simpleType>
+
+
+            <xsd:simpleType name="SessionNumber">
+
+                <xsd:restriction base="xsd:unsignedInt">
+
+                    <xsd:maxInclusive value="9999"/>
+
+                </xsd:restriction>
+
+            </xsd:simpleType>
+
+
+            <xsd:simpleType name="SequenceNumber">
+
+                <xsd:restriction base="xsd:unsignedInt">
+
+                    <xsd:minExclusive value="0"/>
+
+                    <xsd:maxInclusive value="999999"/>
+
+                </xsd:restriction>
+
+            </xsd:simpleType>
+
+
+            <xsd:simpleType name="Timeout">
+
+                <xsd:restriction base="xsd:unsignedInt">
+
+                    <xsd:minExclusive value="0"/>
+
+                    <xsd:maxInclusive value="100"/>
+
+                </xsd:restriction>
+
+            </xsd:simpleType>
+
+
+            <xsd:simpleType name="ClientReference">
+
+                <xsd:restriction base="xsd:string">
+
+                    <xsd:minLength value="1"/>
+
+                    <xsd:maxLength value="40"/>
+
+                </xsd:restriction>
+
+            </xsd:simpleType>
+
+
+            <xsd:complexType name="FaultDetails">
+
+                <xsd:sequence>
+
+                    <xsd:element name="Reason" type="xsd:string"/>
+
+                    <xsd:element name="Context" type="xsd:string"/>
+
+                    <xsd:element name="Severity" type="xsd:string"/>
+
+                    <xsd:element name="Details" type="xsd:string"/>
+
+                </xsd:sequence>
+
+            </xsd:complexType>
+
+
+            <xsd:simpleType name="RoutingMode">
+
+                <xsd:restriction base="xsd:string">
+
+                    <xsd:enumeration value="Immediate"/>
+
+                    <xsd:enumeration value="Deferred"/>
+
+                </xsd:restriction>
+
+            </xsd:simpleType>
+
+
+            <xsd:simpleType name="RoutingAction">
+
+                <xsd:restriction base="xsd:string">
+
+                    <xsd:enumeration value="Commit"/>
+
+                    <xsd:enumeration value="Rollback"/>
+
+                </xsd:restriction>
+
+            </xsd:simpleType>
+
+
+            <xsd:simpleType name="Bic8">
+
+                <xsd:restriction base="xsd:string">
+
+                    <xsd:length value="8"/>
+
+                    <xsd:pattern value="[A-Z0-9]{8}"/>
+
+                </xsd:restriction>
+
+            </xsd:simpleType>
+
+
+            <xsd:element name="Open">
+
+                <xsd:complexType>
+
+                    <xsd:sequence>
+
+                        <xsd:element name="MessagePartnerName" type="typens:MessagePartnerName"/>
+
+                        <xsd:element minOccurs="0" name="SequenceNumberToSAA" type="typens:SequenceNumber"/>
+
+                        <xsd:element name="WindowSize" type="typens:WindowSize"/>
+
+                        <xsd:element name="FlowDirection" type="typens:Direction"/>
+
+                        <xsd:element minOccurs="0" name="RoutingMode" type="typens:RoutingMode"/>
+
+                        <xsd:element minOccurs="0" name="Bic8" type="typens:Bic8"/>
+
+                    </xsd:sequence>
+
+                </xsd:complexType>
+
+            </xsd:element>
+
+
+            <xsd:complexType name="OpenResponseDetails">
+
+                <xsd:sequence>
+
+                    <xsd:element name="SequenceNumberFromSAA" type="typens:SequenceNumber"/>
+
+                    <xsd:element name="WindowSize" type="typens:WindowSize"/>
+
+                </xsd:sequence>
+
+            </xsd:complexType>
+
+
+            <xsd:element name="OpenResponse">
+
+                <xsd:complexType>
+
+                    <xsd:sequence>
+
+                        <xsd:element name="OpenResponseDetails" type="typens:OpenResponseDetails"/>
+
+                    </xsd:sequence>
+
+                </xsd:complexType>
+
+            </xsd:element>
+
+
+            <xsd:element name="Close">
+
+                <xsd:complexType>
+
+                    <xsd:sequence>
+
+                        <xsd:element minOccurs="0" name="RoutingAction" type="typens:RoutingAction"/>
+
+                    </xsd:sequence>
+
+                </xsd:complexType>
+
+            </xsd:element>
+
+
+            <xsd:element name="CloseResponse">
+
+                <xsd:complexType>
+
+                    <xsd:sequence>
+
+                        <xsd:any processContents="skip"/>
+
+                    </xsd:sequence>
+
+                </xsd:complexType>
+
+            </xsd:element>
+
+
+            <xsd:element name="Put">
+
+                <xsd:complexType>
+
+                    <xsd:sequence>
+
+                        <xsd:any processContents="skip"/>
+
+                        <xsd:element minOccurs="0" name="attachment" type="wsi:swaRef">
+
+                            <xsd:annotation>
+
+                                <xsd:appinfo>
+
+                                    <xmime:expectedMediaType>application/octet-stream</xmime:expectedMediaType>
+
+                                </xsd:appinfo>
+
+                            </xsd:annotation>
+
+                        </xsd:element>
+
+                    </xsd:sequence>
+
+                </xsd:complexType>
+
+            </xsd:element>
+
+
+            <xsd:element name="PutResponse">
+
+                <xsd:complexType>
+
+                    <xsd:sequence>
+
+                        <xsd:any processContents="skip"/>
+
+                    </xsd:sequence>
+
+                </xsd:complexType>
+
+            </xsd:element>
+
+
+            <xsd:element name="GetAck">
+
+                <xsd:complexType>
+
+                    <xsd:sequence>
+
+                        <xsd:element minOccurs="0" name="Timeout" type="typens:Timeout"/>
+
+                    </xsd:sequence>
+
+                </xsd:complexType>
+
+            </xsd:element>
+
+
+            <xsd:element name="GetAckResponse">
+
+                <xsd:complexType>
+
+                    <xsd:sequence minOccurs="0">
+
+                        <xsd:any processContents="skip"/>
+
+                        <xsd:element minOccurs="0" name="attachment" type="wsi:swaRef">
+
+                            <xsd:annotation>
+
+                                <xsd:appinfo>
+
+                                    <xmime:expectedMediaType>application/octet-stream</xmime:expectedMediaType>
+
+                                </xsd:appinfo>
+
+                            </xsd:annotation>
+
+                        </xsd:element>
+
+                    </xsd:sequence>
+
+                </xsd:complexType>
+
+            </xsd:element>
+
+
+            <xsd:element name="Ack">
+
+                <xsd:complexType/>
+
+            </xsd:element>
+
+
+            <xsd:element name="AckResponse">
+
+                <xsd:complexType/>
+
+            </xsd:element>
+
+
+            <xsd:element name="SessionFault" type="typens:FaultDetails"/>
+
+
+            <xsd:element name="SAAFault" type="typens:FaultDetails"/>
+
+
+            <xsd:complexType name="SAAHeader">
+
+                <xsd:sequence>
+
+                    <xsd:element name="SessionToken" type="typens:SessionToken"/>
+
+                    <xsd:element minOccurs="0" name="SequenceNumber" type="typens:SequenceNumber"/>
+
+                    <xsd:element minOccurs="0" name="ClientRef" type="typens:ClientReference"/>
+
+                    <xsd:element minOccurs="0" name="AckClientRef" type="typens:ClientReference"/>
+
+                </xsd:sequence>
+
+                <xsd:attribute fixed="SAAHeader" name="Id" type="xsd:string" use="optional"/>
+
+            </xsd:complexType>
+
+
+            <xsd:element name="SAAHeader" type="typens:SAAHeader"/>
+
+
+        </xsd:schema>
+    </wsdl:types>
+    <wsdl:message name="CloseResponse">
+        <wsdl:part element="typens:CloseResponse" name="parameters">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="PutResponse">
+        <wsdl:part element="typens:PutResponse" name="parameters">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="HeaderSoap">
+        <wsdl:part element="typens:SAAHeader" name="SAAHeader">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="PutRequest">
+        <wsdl:part element="typens:Put" name="parameters">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="AckResponse">
+        <wsdl:part element="typens:AckResponse" name="parameters">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="SAAFault">
+        <wsdl:part element="typens:SAAFault" name="parameters">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="AckRequest">
+        <wsdl:part element="typens:Ack" name="parameters">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="GetAckResponse">
+        <wsdl:part element="typens:GetAckResponse" name="parameters">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="OpenRequest">
+        <wsdl:part element="typens:Open" name="parameters">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="OpenResponse">
+        <wsdl:part element="typens:OpenResponse" name="parameters">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="CloseRequest">
+        <wsdl:part element="typens:Close" name="parameters">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="SessionFault">
+        <wsdl:part element="typens:SessionFault" name="parameters">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="GetAckRequest">
+        <wsdl:part element="typens:GetAck" name="parameters">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:portType name="soapha">
+        <wsdl:operation name="Open">
+            <wsdl:input message="soapha:OpenRequest">
+            </wsdl:input>
+            <wsdl:output message="soapha:OpenResponse">
+            </wsdl:output>
+            <wsdl:fault message="soapha:SAAFault" name="saa">
+            </wsdl:fault>
+            <wsdl:fault message="soapha:SessionFault" name="session">
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="Close">
+            <wsdl:input message="soapha:CloseRequest">
+            </wsdl:input>
+            <wsdl:output message="soapha:CloseResponse">
+            </wsdl:output>
+            <wsdl:fault message="soapha:SAAFault" name="saa">
+            </wsdl:fault>
+            <wsdl:fault message="soapha:SessionFault" name="session">
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="Put">
+            <wsdl:input message="soapha:PutRequest">
+            </wsdl:input>
+            <wsdl:output message="soapha:PutResponse">
+            </wsdl:output>
+            <wsdl:fault message="soapha:SAAFault" name="saa">
+            </wsdl:fault>
+            <wsdl:fault message="soapha:SessionFault" name="session">
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="GetAck">
+            <wsdl:input message="soapha:GetAckRequest">
+            </wsdl:input>
+            <wsdl:output message="soapha:GetAckResponse">
+            </wsdl:output>
+            <wsdl:fault message="soapha:SAAFault" name="saa">
+            </wsdl:fault>
+            <wsdl:fault message="soapha:SessionFault" name="session">
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="Ack">
+            <wsdl:input message="soapha:AckRequest">
+            </wsdl:input>
+            <wsdl:output message="soapha:AckResponse">
+            </wsdl:output>
+            <wsdl:fault message="soapha:SAAFault" name="saa">
+            </wsdl:fault>
+            <wsdl:fault message="soapha:SessionFault" name="session">
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="soaphaSOAP" type="soapha:soapha">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <wsdl:operation name="Open">
+            <soap:operation soapAction="urn:swift:saa:wsdl:soapha:Open" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:header message="soapha:HeaderSoap" part="SAAHeader" use="literal">
+                </soap:header>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="saa">
+                <soap:fault name="saa" use="literal"/>
+            </wsdl:fault>
+            <wsdl:fault name="session">
+                <soap:fault name="session" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="Close">
+            <soap:operation soapAction="urn:swift:saa:wsdl:soapha:Close" style="document"/>
+            <wsdl:input>
+                <soap:header message="soapha:HeaderSoap" part="SAAHeader" use="literal">
+                </soap:header>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="saa">
+                <soap:fault name="saa" use="literal"/>
+            </wsdl:fault>
+            <wsdl:fault name="session">
+                <soap:fault name="session" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="Put">
+            <soap:operation soapAction="urn:swift:saa:wsdl:soapha:Put" style="document"/>
+            <wsdl:input>
+                <soap:header message="soapha:HeaderSoap" part="SAAHeader" use="literal">
+                </soap:header>
+                <soap:body parts="parameters" use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:header message="soapha:HeaderSoap" part="SAAHeader" use="literal">
+                </soap:header>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="saa">
+                <soap:fault name="saa" use="literal"/>
+            </wsdl:fault>
+            <wsdl:fault name="session">
+                <soap:fault name="session" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="GetAck">
+            <soap:operation soapAction="urn:swift:saa:wsdl:soapha:GetAck" style="document"/>
+            <wsdl:input>
+                <soap:header message="soapha:HeaderSoap" part="SAAHeader" use="literal">
+                </soap:header>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:header message="soapha:HeaderSoap" part="SAAHeader" use="literal">
+                </soap:header>
+                <soap:body parts="parameters" use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="saa">
+                <soap:fault name="saa" use="literal"/>
+            </wsdl:fault>
+            <wsdl:fault name="session">
+                <soap:fault name="session" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="Ack">
+            <soap:operation soapAction="urn:swift:saa:wsdl:soapha:Ack" style="document"/>
+            <wsdl:input>
+                <soap:header message="soapha:HeaderSoap" part="SAAHeader" use="literal">
+                </soap:header>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:header message="soapha:HeaderSoap" part="SAAHeader" use="literal">
+                </soap:header>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="saa">
+                <soap:fault name="saa" use="literal"/>
+            </wsdl:fault>
+            <wsdl:fault name="session">
+                <soap:fault name="session" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="soapha">
+        <wsdl:port binding="soapha:soaphaSOAP" name="soaphaSOAP">
+            <soap:address location="https://192.168.10.50:48200/soapha/"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>
