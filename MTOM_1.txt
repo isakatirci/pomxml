@@ -1,1 +1,669 @@
 
+Mükemmel! Şimdi anlıyorum. Bu bir **MTOM (Message Transmission Optimization Mechanism)** formatında SOAP mesajı. İki bölümden oluşuyor:
+
+1. **İlk bölüm**: SOAP envelope (XML)
+2. **İkinci bölüm**: Binary attachment (camt.053 ISO20022 belgesi)
+
+Size **MTOM destekli** profesyonel bir SOAP mock server projesi hazırlayacağım.
+
+## 🎯 MTOM Destekli SOAP Mock Server
+
+### **1. pom.xml**
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+         https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.2.0</version>
+        <relativePath/>
+    </parent>
+
+    <groupId>com.example</groupId>
+    <artifactId>soap-mock-server-mtom</artifactId>
+    <version>1.0.0</version>
+    <name>SOAP Mock Server with MTOM</name>
+    <description>SOAP Mock Server with Binary Attachment Support (MTOM)</description>
+
+    <properties>
+        <java.version>17</java.version>
+    </properties>
+
+    <dependencies>
+        <!-- Spring Boot Web Services -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web-services</artifactId>
+        </dependency>
+
+        <!-- WSDL Support -->
+        <dependency>
+            <groupId>wsdl4j</groupId>
+            <artifactId>wsdl4j</artifactId>
+        </dependency>
+
+        <!-- SAAJ Implementation for MTOM -->
+        <dependency>
+            <groupId>com.sun.xml.messaging.saaj</groupId>
+            <artifactId>saaj-impl</artifactId>
+        </dependency>
+
+        <!-- Lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- Spring Boot Actuator -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+        <!-- Test Dependencies -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.ws</groupId>
+            <artifactId>spring-ws-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
+```
+
+### **2. Application.java**
+
+```java
+package com.example.soapmock;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+/**
+ * SOAP Mock Server with MTOM Support
+ * Returns SOAP messages with binary attachments
+ */
+@SpringBootApplication
+public class SoapMockServerApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(SoapMockServerApplication.class, args);
+    }
+}
+```
+
+### **3. WebServiceConfig.java**
+
+```java
+package com.example.soapmock.config;
+
+import jakarta.xml.soap.MessageFactory;
+import jakarta.xml.soap.SOAPConstants;
+import jakarta.xml.soap.SOAPException;
+import org.springframework.boot.web.servlet.ServletRegistrationBean;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.ws.config.annotation.EnableWs;
+import org.springframework.ws.config.annotation.WsConfigurerAdapter;
+import org.springframework.ws.server.EndpointInterceptor;
+import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
+import org.springframework.ws.transport.http.MessageDispatcherServlet;
+import org.springframework.ws.wsdl.wsdl11.SimpleWsdl11Definition;
+import org.springframework.ws.wsdl.wsdl11.Wsdl11Definition;
+
+import java.util.List;
+
+/**
+ * Web Service Configuration with MTOM Support
+ */
+@EnableWs
+@Configuration
+public class WebServiceConfig extends WsConfigurerAdapter {
+
+    private final SoapLoggingInterceptor loggingInterceptor;
+
+    public WebServiceConfig(SoapLoggingInterceptor loggingInterceptor) {
+        this.loggingInterceptor = loggingInterceptor;
+    }
+
+    /**
+     * MTOM-enabled SOAP Message Factory
+     */
+    @Bean
+    public SaajSoapMessageFactory messageFactory() throws SOAPException {
+        MessageFactory messageFactory = MessageFactory.newInstance(SOAPConstants.SOAP_1_1_PROTOCOL);
+        SaajSoapMessageFactory saajSoapMessageFactory = new SaajSoapMessageFactory(messageFactory);
+        saajSoapMessageFactory.setMtomEnabled(true);
+        return saajSoapMessageFactory;
+    }
+
+    /**
+     * Message Dispatcher Servlet
+     */
+    @Bean
+    public ServletRegistrationBean<MessageDispatcherServlet> messageDispatcherServlet(
+            ApplicationContext applicationContext) {
+        MessageDispatcherServlet servlet = new MessageDispatcherServlet();
+        servlet.setApplicationContext(applicationContext);
+        servlet.setTransformWsdlLocations(true);
+        return new ServletRegistrationBean<>(servlet, "/ws/*");
+    }
+
+    /**
+     * WSDL Definition
+     */
+    @Bean(name = "soapha")
+    public Wsdl11Definition defaultWsdl11Definition() {
+        SimpleWsdl11Definition wsdl11Definition = new SimpleWsdl11Definition();
+        wsdl11Definition.setWsdl(new ClassPathResource("wsdl/soapha.wsdl"));
+        return wsdl11Definition;
+    }
+
+    /**
+     * Add interceptors
+     */
+    @Override
+    public void addInterceptors(List<EndpointInterceptor> interceptors) {
+        interceptors.add(loggingInterceptor);
+    }
+}
+```
+
+### **4. SoapLoggingInterceptor.java**
+
+```java
+package com.example.soapmock.config;
+
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
+import org.springframework.ws.context.MessageContext;
+import org.springframework.ws.server.EndpointInterceptor;
+import org.springframework.ws.soap.saaj.SaajSoapMessage;
+
+import java.io.ByteArrayOutputStream;
+
+/**
+ * SOAP Message Logging Interceptor
+ */
+@Slf4j
+@Component
+public class SoapLoggingInterceptor implements EndpointInterceptor {
+
+    @Override
+    public boolean handleRequest(MessageContext messageContext, Object endpoint) {
+        logSoapMessage("Incoming SOAP Request", messageContext);
+        return true;
+    }
+
+    @Override
+    public boolean handleResponse(MessageContext messageContext, Object endpoint) {
+        logSoapMessage("Outgoing SOAP Response", messageContext);
+        return true;
+    }
+
+    @Override
+    public boolean handleFault(MessageContext messageContext, Object endpoint) {
+        log.error("SOAP Fault occurred");
+        logSoapMessage("SOAP Fault", messageContext);
+        return true;
+    }
+
+    @Override
+    public void afterCompletion(MessageContext messageContext, Object endpoint, Exception ex) {
+        if (ex != null) {
+            log.error("Error processing SOAP message", ex);
+        }
+    }
+
+    private void logSoapMessage(String prefix, MessageContext messageContext) {
+        try {
+            SaajSoapMessage message = (SaajSoapMessage) messageContext.getRequest();
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            message.writeTo(outputStream);
+            String payload = outputStream.toString();
+            log.debug("{}: \n{}", prefix, payload);
+            log.info("{} - Content-Type: {}", prefix, message.getSaajMessage().getMimeHeaders().getHeader("Content-Type"));
+        } catch (Exception e) {
+            log.warn("Could not log SOAP message: {}", e.getMessage());
+        }
+    }
+}
+```
+
+### **5. MockSoapEndpoint.java**
+
+```java
+package com.example.soapmock.endpoint;
+
+import com.example.soapmock.service.MockResponseService;
+import jakarta.activation.DataHandler;
+import jakarta.xml.soap.AttachmentPart;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.ws.context.MessageContext;
+import org.springframework.ws.server.endpoint.annotation.Endpoint;
+import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
+import org.springframework.ws.server.endpoint.annotation.RequestPayload;
+import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
+import org.springframework.ws.soap.saaj.SaajSoapMessage;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
+
+/**
+ * Mock SOAP Endpoint with MTOM Attachment Support
+ */
+@Slf4j
+@Endpoint
+public class MockSoapEndpoint {
+
+    private static final String NAMESPACE_URI = "urn:swift:saa:xsd:soapha";
+    private final MockResponseService mockResponseService;
+
+    public MockSoapEndpoint(MockResponseService mockResponseService) {
+        this.mockResponseService = mockResponseService;
+    }
+
+    /**
+     * Handles GetAck requests and returns response with binary attachment
+     */
+    @PayloadRoot(namespace = NAMESPACE_URI, localPart = "GetAck")
+    @ResponsePayload
+    public Element handleGetAckRequest(
+            @RequestPayload Element request,
+            MessageContext messageContext) throws Exception {
+
+        log.info("Processing GetAck request");
+
+        // Get mock response data
+        var mockResponse = mockResponseService.getMockResponse();
+
+        // Add attachment to SOAP message
+        SaajSoapMessage soapResponse = (SaajSoapMessage) messageContext.getResponse();
+        
+        // Create attachment
+        DataHandler dataHandler = new DataHandler(
+                mockResponse.getAttachmentContent(),
+                "application/xml"
+        );
+        
+        AttachmentPart attachment = soapResponse.getSaajMessage().createAttachmentPart(dataHandler);
+        attachment.setContentId("<" + mockResponse.getAttachmentContentId() + ">");
+        attachment.setContentType("application/xml");
+        
+        soapResponse.getSaajMessage().addAttachmentPart(attachment);
+
+        log.info("Added binary attachment with Content-ID: {}", mockResponse.getAttachmentContentId());
+
+        // Return SOAP body
+        return parseXmlStringToElement(mockResponse.getSoapBodyContent());
+    }
+
+    /**
+     * Parse XML string to DOM Element
+     */
+    private Element parseXmlStringToElement(String xml) throws Exception {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setNamespaceAware(true);
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        Document doc = builder.parse(
+                new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8))
+        );
+        return doc.getDocumentElement();
+    }
+}
+```
+
+### **6. MockResponseService.java**
+
+```java
+package com.example.soapmock.service;
+
+import com.example.soapmock.model.MockResponse;
+import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StreamUtils;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+
+/**
+ * Service to parse and provide mock MTOM response
+ */
+@Slf4j
+@Service
+public class MockResponseService {
+
+    private MockResponse mockResponse;
+
+    @PostConstruct
+    public void init() throws IOException {
+        log.info("Loading mock response from classpath...");
+        
+        ClassPathResource resource = new ClassPathResource("mock/response.txt");
+        String content = StreamUtils.copyToString(
+                resource.getInputStream(),
+                StandardCharsets.UTF_8
+        );
+
+        this.mockResponse = parseMtomResponse(content);
+        log.info("Mock response loaded successfully");
+    }
+
+    public MockResponse getMockResponse() {
+        return mockResponse;
+    }
+
+    /**
+     * Parse MTOM multipart response
+     */
+    private MockResponse parseMtomResponse(String content) {
+        String[] parts = content.split("--uuid:cdd815dd-2ca2-40f5-ba23-5f5b0f1d9ff7");
+
+        String soapBody = null;
+        String attachmentContent = null;
+        String attachmentContentId = "39379f5a-a83b-4226-851e-fe9e5f9aa9f3";
+
+        for (String part : parts) {
+            if (part.trim().isEmpty() || part.trim().equals("--")) {
+                continue;
+            }
+
+            // Find SOAP Body
+            if (part.contains("<SOAP-ENV:Body>")) {
+                int bodyStart = part.indexOf("<GetAckResponse");
+                int bodyEnd = part.indexOf("</GetAckResponse>") + "</GetAckResponse>".length();
+                if (bodyStart != -1 && bodyEnd != -1) {
+                    soapBody = part.substring(bodyStart, bodyEnd);
+                }
+            }
+
+            // Find attachment content
+            if (part.contains("Content-Type: application/octet-stream")) {
+                int contentStart = part.indexOf("<AppHdr");
+                if (contentStart != -1) {
+                    attachmentContent = part.substring(contentStart).trim();
+                    // Remove trailing boundary if exists
+                    if (attachmentContent.endsWith("--")) {
+                        attachmentContent = attachmentContent.substring(0, attachmentContent.lastIndexOf("--")).trim();
+                    }
+                }
+            }
+        }
+
+        log.debug("Parsed SOAP Body length: {}", soapBody != null ? soapBody.length() : 0);
+        log.debug("Parsed Attachment length: {}", attachmentContent != null ? attachmentContent.length() : 0);
+
+        return new MockResponse(soapBody, attachmentContent, attachmentContentId);
+    }
+}
+```
+
+### **7. MockResponse.java**
+
+```java
+package com.example.soapmock.model;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+/**
+ * Model class for mock SOAP response with attachment
+ */
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class MockResponse {
+    
+    /**
+     * SOAP Body content (GetAckResponse)
+     */
+    private String soapBodyContent;
+    
+    /**
+     * Binary attachment content (camt.053 document)
+     */
+    private String attachmentContent;
+    
+    /**
+     * Content-ID for the attachment
+     */
+    private String attachmentContentId;
+}
+```
+
+### **8. application.yml**
+
+```yaml
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+spring:
+  application:
+    name: soap-mock-server-mtom
+  
+  # MTOM Configuration
+  ws:
+    mtom:
+      enabled: true
+
+logging:
+  level:
+    root: INFO
+    com.example.soapmock: DEBUG
+    org.springframework.ws: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+
+# Actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+
+info:
+  app:
+    name: SOAP Mock Server with MTOM
+    description: Returns SOAP responses with binary attachments
+    version: 1.0.0
+```
+
+### **9. Proje Yapısı**
+
+```
+soap-mock-server-mtom/
+├── pom.xml
+├── README.md
+└── src/
+    ├── main/
+    │   ├── java/
+    │   │   └── com/
+    │   │       └── example/
+    │   │           └── soapmock/
+    │   │               ├── SoapMockServerApplication.java
+    │   │               ├── config/
+    │   │               │   ├── WebServiceConfig.java
+    │   │               │   └── SoapLoggingInterceptor.java
+    │   │               ├── endpoint/
+    │   │               │   └── MockSoapEndpoint.java
+    │   │               ├── service/
+    │   │               │   └── MockResponseService.java
+    │   │               └── model/
+    │   │                   └── MockResponse.java
+    │   └── resources/
+    │       ├── application.yml
+    │       ├── wsdl/
+    │       │   └── soapha.wsdl
+    │       └── mock/
+    │           └── response.txt  (Untitled-1.txt dosyanızı buraya koyun)
+    └── test/
+        └── java/
+            └── com/
+                └── example/
+                    └── soapmock/
+                        └── SoapMockServerApplicationTests.java
+```
+
+### **10. README.md**
+
+```markdown
+# SOAP Mock Server with MTOM Support
+
+Professional SOAP mock server supporting **MTOM (Message Transmission Optimization Mechanism)** for binary attachments.
+
+## 🚀 Features
+
+- ✅ **MTOM Support** - Binary attachment handling
+- ✅ **SOAP 1.1 Protocol**
+- ✅ **Spring Boot 3.x + Java 17**
+- ✅ **Clean Architecture**
+- ✅ **Comprehensive Logging**
+- ✅ **Health Monitoring**
+
+## 📋 Prerequisites
+
+- Java 17+
+- Maven 3.8+
+
+## 🛠️ Setup
+
+1. **Place files:**
+   - Copy your WSDL to: `src/main/resources/wsdl/soapha.wsdl`
+   - Copy Untitled-1.txt to: `src/main/resources/mock/response.txt`
+
+2. **Build:**
+```bash
+mvn clean install
+```
+
+3. **Run:**
+```bash
+mvn spring-boot:run
+```
+
+## 📡 Endpoints
+
+- **SOAP Endpoint**: `http://localhost:8080/ws`
+- **WSDL**: `http://localhost:8080/ws/soapha.wsdl`
+- **Health**: `http://localhost:8080/actuator/health`
+
+## 🧪 Testing with SoapUI
+
+1. Create SOAP project
+2. Import WSDL: `http://localhost:8080/ws/soapha.wsdl`
+3. Send request - server returns MTOM response with attachment
+
+## 🧪 Testing with cURL
+
+```bash
+curl -X POST http://localhost:8080/ws \
+  -H "Content-Type: text/xml; charset=utf-8" \
+  -H "SOAPAction: GetAck" \
+  -d '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:saa="urn:swift:saa:xsd:soapha">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <saa:GetAck>
+         <saa:SessionToken>test-token</saa:SessionToken>
+      </saa:GetAck>
+   </soapenv:Body>
+</soapenv:Envelope>'
+```
+
+## 📊 Response Format
+
+Server returns multipart SOAP response:
+- **Part 1**: SOAP Envelope with GetAckResponse
+- **Part 2**: Binary attachment (camt.053 document) referenced by `cid:39379f5a-a83b-4226-851e-fe9e5f9aa9f3`
+
+## 🏗️ Architecture
+
+- **Clean Code**: SOLID principles
+- **Separation of Concerns**: Config, Service, Endpoint layers
+- **Logging**: SLF4J with detailed tracing
+- **Error Handling**: Graceful fault management
+- **Production Ready**: Actuator health checks
+
+## 📝 License
+
+MIT
+```
+
+### **11. Test Class**
+
+```java
+package com.example.soapmock;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+
+@SpringBootTest
+class SoapMockServerApplicationTests {
+
+    @Test
+    void contextLoads() {
+        // Context loads successfully with MTOM enabled
+    }
+}
+```
+
+## 🎯 Kullanım Talimatları
+
+1. **Dosyaları yerleştirin:**
+   - `wsdl.txt` → `src/main/resources/wsdl/soapha.wsdl`
+   - `Untitled-1.txt` → `src/main/resources/mock/response.txt`
+
+2. **Projeyi çalıştırın:**
+```bash
+mvn clean install
+mvn spring-boot:run
+```
+
+3. **Test edin:**
+```bash
+curl http://localhost:8080/ws/soapha.wsdl
+```
+
+Bu yapı ile **MTOM binary attachment** destekli profesyonel bir SOAP mock server'ınız hazır! 🎉
