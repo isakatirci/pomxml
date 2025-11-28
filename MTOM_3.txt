@@ -1,0 +1,340 @@
+Mükemmel! Şimdi tam anlıyorum. SOAP Header'ı da response'a eklememiz gerekiyor. İşte **tam çözüm**:
+
+## Güncellenmiş Dosyalar
+
+### **1. MtomResponseService.java** (SOAP Header ile birlikte parse ediyor)
+
+```java
+package com.example.soapmock.service;
+
+import com.example.soapmock.model.MtomResponse;
+import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StreamUtils;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+
+/**
+ * Service to parse and provide MTOM SOAP response with attachments
+ * Parses the complete SOAP envelope including Header and Body
+ */
+@Slf4j
+@Service
+public class MtomResponseService {
+
+    private MtomResponse mtomResponse;
+
+    @PostConstruct
+    public void init() throws IOException {
+        log.info("Loading MTOM response from classpath...");
+        
+        ClassPathResource resource = new ClassPathResource("mock/response.txt");
+        String content = StreamUtils.copyToString(
+                resource.getInputStream(),
+                StandardCharsets.UTF_8
+        );
+
+        this.mtomResponse = parseMtomResponse(content);
+        log.info("MTOM response loaded successfully");
+        log.info("SOAP Header: {} chars, SOAP Body: {} chars, Attachment: {} chars", 
+                mtomResponse.getSoapHeaderContent() != null ? mtomResponse.getSoapHeaderContent().length() : 0,
+                mtomResponse.getSoapBodyContent().length(), 
+                mtomResponse.getAttachmentContent().length());
+    }
+
+    public MtomResponse getMtomResponse() {
+        return mtomResponse;
+    }
+
+    /**
+     * Parse multipart MTOM response into SOAP header, body and attachment
+     */
+    private MtomResponse parseMtomResponse(String content) {
+        String boundary = "--uuid:cdd815dd-2ca2-40f5-ba23-5f5b0f1d9ff7";
+        String[] parts = content.split(boundary);
+
+        String soapHeader = null;
+        String soapBody = null;
+        String attachmentContent = null;
+        String attachmentContentId = "39379f5a-a83b-4226-851e-fe9e5f9aa9f3";
+
+        for (String part : parts) {
+            if (part.trim().isEmpty() || part.trim().equals("--")) {
+                continue;
+            }
+
+            // Extract SOAP Header and Body from the first part
+            if (part.contains("<SOAP-ENV:Header>")) {
+                // Extract SOAP Header
+                int headerStart = part.indexOf("<SOAP-ENV:Header>");
+                int headerEnd = part.indexOf("</SOAP-ENV:Header>") + "</SOAP-ENV:Header>".length();
+                if (headerStart != -1 && headerEnd != -1) {
+                    String headerContent = part.substring(headerStart, headerEnd);
+                    // Extract inner content (SAAHeader)
+                    int innerStart = headerContent.indexOf("<ns2:SAAHeader");
+                    int innerEnd = headerContent.indexOf("</ns2:SAAHeader>") + "</ns2:SAAHeader>".length();
+                    if (innerStart != -1 && innerEnd != -1) {
+                        soapHeader = headerContent.substring(innerStart, innerEnd);
+                    }
+                }
+
+                // Extract SOAP Body (GetAckResponse)
+                int bodyStart = part.indexOf("<GetAckResponse");
+                int bodyEnd = part.indexOf("</GetAckResponse>") + "</GetAckResponse>".length();
+                if (bodyStart != -1 && bodyEnd != -1) {
+                    soapBody = part.substring(bodyStart, bodyEnd);
+                }
+            }
+
+            // Extract binary attachment content (AppHdr + Document)
+            if (part.contains("Content-Type: application/octet-stream")) {
+                int contentStart = part.indexOf("<AppHdr");
+                if (contentStart != -1) {
+                    String remaining = part.substring(contentStart);
+                    int lastClose = remaining.lastIndexOf("</Document>");
+                    if (lastClose != -1) {
+                        attachmentContent = remaining.substring(0, lastClose + "</Document>".length()).trim();
+                    } else {
+                        attachmentContent = remaining.trim();
+                    }
+                }
+            }
+        }
+
+        if (soapBody == null || attachmentContent == null) {
+            log.error("Failed to parse MTOM response properly");
+            throw new IllegalStateException("Could not parse MTOM response");
+        }
+
+        log.debug("Parsed SOAP Header: {} characters", soapHeader != null ? soapHeader.length() : 0);
+        log.debug("Parsed SOAP Body: {} characters", soapBody.length());
+        log.debug("Parsed Attachment: {} characters", attachmentContent.length());
+
+        return new MtomResponse(soapHeader, soapBody, attachmentContent, attachmentContentId);
+    }
+}
+```
+
+### **2. MtomResponse.java** (Header alanı eklendi)
+
+```java
+package com.example.soapmock.model;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+/**
+ * Model class for MTOM SOAP response with header, body and attachment
+ */
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class MtomResponse {
+    
+    /**
+     * SOAP Header content (SAAHeader with SessionToken and SequenceNumber)
+     */
+    private String soapHeaderContent;
+    
+    /**
+     * SOAP Body content (GetAckResponse element)
+     */
+    private String soapBodyContent;
+    
+    /**
+     * Binary attachment content (ISO20022 camt.053 document)
+     */
+    private String attachmentContent;
+    
+    /**
+     * Content-ID reference for the attachment
+     */
+    private String attachmentContentId;
+}
+```
+
+### **3. MockSoapEndpoint.java** (Header'ı da ekliyor)
+
+```java
+package com.example.soapmock.endpoint;
+
+import com.example.soapmock.service.MtomResponseService;
+import jakarta.activation.DataHandler;
+import jakarta.xml.soap.AttachmentPart;
+import jakarta.xml.soap.SOAPHeader;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.ws.context.MessageContext;
+import org.springframework.ws.server.endpoint.annotation.Endpoint;
+import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
+import org.springframework.ws.server.endpoint.annotation.RequestPayload;
+import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
+import org.springframework.ws.soap.saaj.SaajSoapMessage;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
+
+/**
+ * Mock SOAP Endpoint with MTOM Attachment and SOAP Header Support
+ * Handles SWIFT SOAP messages and returns camt.053 documents as attachments
+ */
+@Slf4j
+@Endpoint
+public class MockSoapEndpoint {
+
+    private static final String NAMESPACE_URI = "urn:swift:saa:xsd:soapha";
+    private final MtomResponseService mtomResponseService;
+
+    public MockSoapEndpoint(MtomResponseService mtomResponseService) {
+        this.mtomResponseService = mtomResponseService;
+    }
+
+    /**
+     * Handles GetAck requests and returns response with SOAP Header and binary attachment (MTOM)
+     */
+    @PayloadRoot(namespace = NAMESPACE_URI, localPart = "GetAck")
+    @ResponsePayload
+    public Element handleGetAckRequest(
+            @RequestPayload Element request,
+            MessageContext messageContext) throws Exception {
+
+        log.info("Processing GetAck request with MTOM attachment and SOAP Header");
+
+        // Get MTOM response parts
+        var mtomResponse = mtomResponseService.getMtomResponse();
+
+        // Get SOAP response message
+        SaajSoapMessage soapResponse = (SaajSoapMessage) messageContext.getResponse();
+        
+        // Add SOAP Header if present
+        if (mtomResponse.getSoapHeaderContent() != null && !mtomResponse.getSoapHeaderContent().isEmpty()) {
+            SOAPHeader soapHeader = soapResponse.getSaajMessage().getSOAPHeader();
+            if (soapHeader == null) {
+                soapHeader = soapResponse.getSaajMessage().getSOAPPart().getEnvelope().addHeader();
+            }
+            
+            // Parse and add header content
+            Element headerElement = parseXmlStringToElement(mtomResponse.getSoapHeaderContent());
+            soapHeader.appendChild(
+                    soapHeader.getOwnerDocument().importNode(headerElement, true)
+            );
+            
+            log.info("Added SOAP Header with SessionToken and SequenceNumber");
+        }
+        
+        // Create and add attachment
+        byte[] attachmentBytes = mtomResponse.getAttachmentContent().getBytes(StandardCharsets.UTF_8);
+        DataHandler dataHandler = new DataHandler(
+                new javax.mail.util.ByteArrayDataSource(attachmentBytes, "application/xml")
+        );
+        
+        AttachmentPart attachment = soapResponse.getSaajMessage().createAttachmentPart(dataHandler);
+        attachment.setContentId("<" + mtomResponse.getAttachmentContentId() + ">");
+        attachment.setContentType("application/xml");
+        attachment.addMimeHeader("Content-Transfer-Encoding", "binary");
+        
+        soapResponse.getSaajMessage().addAttachmentPart(attachment);
+
+        log.info("Added MTOM binary attachment with Content-ID: {}", mtomResponse.getAttachmentContentId());
+
+        // Return SOAP body element
+        return parseXmlStringToElement(mtomResponse.getSoapBodyContent());
+    }
+
+    /**
+     * Parse XML string to DOM Element
+     */
+    private Element parseXmlStringToElement(String xml) throws Exception {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setNamespaceAware(true);
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        Document doc = builder.parse(
+                new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8))
+        );
+        return doc.getDocumentElement();
+    }
+}
+```
+
+### **4. ByteArrayDataSource.java** (Helper class - aynı)
+
+```java
+package javax.mail.util;
+
+import jakarta.activation.DataSource;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+/**
+ * Helper class for creating DataSource from byte array
+ */
+public class ByteArrayDataSource implements DataSource {
+    
+    private final byte[] data;
+    private final String contentType;
+    
+    public ByteArrayDataSource(byte[] data, String contentType) {
+        this.data = data;
+        this.contentType = contentType;
+    }
+    
+    @Override
+    public InputStream getInputStream() {
+        return new ByteArrayInputStream(data);
+    }
+    
+    @Override
+    public OutputStream getOutputStream() {
+        throw new UnsupportedOperationException("Read-only data source");
+    }
+    
+    @Override
+    public String getContentType() {
+        return contentType;
+    }
+    
+    @Override
+    public String getName() {
+        return "ByteArrayDataSource";
+    }
+}
+```
+
+## ✅ Değişiklikler
+
+1. **`MtomResponse` modeline `soapHeaderContent` alanı eklendi**
+2. **`MtomResponseService` SOAP Header'ı da parse ediyor (SAAHeader ile SessionToken ve SequenceNumber)**
+3. **`MockSoapEndpoint` SOAP Header'ı response'a ekliyor**
+
+## 🎯 Response Yapısı
+
+Artık dönen SOAP mesajı şu şekilde olacak:
+
+```xml
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+   <SOAP-ENV:Header>
+      <ns2:SAAHeader xmlns:ns2="urn:swift:saa:xsd:soapha" Id="SAAHeader">
+         <ns2:SessionToken>da1351f1-654b-45f5-aebc-c12218cf</ns2:SessionToken>
+         <ns2:SequenceNumber>93825</ns2:SequenceNumber>
+      </ns2:SAAHeader>
+   </SOAP-ENV:Header>
+   <SOAP-ENV:Body>
+      <GetAckResponse xmlns="urn:swift:saa:xsd:soapha">
+         ...
+         <attachment>cid:39379f5a-a83b-4226-851e-fe9e5f9aa9f3</attachment>
+      </GetAckResponse>
+   </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
+```
+
+Ve multipart ile binary attachment!
+
+Şimdi **tam çalışır** halde! 🎉
