@@ -1,2504 +1,1200 @@
+XML dosyasını inceledim. Bu, SWIFT SAA (SWIFT Alliance Access) formatında bir SOAP response'u ve multipart MIME attachment içeriyor. SOAP body içinde `GetAckResponse` ve içinde `DataPDU`, ayrıca ek olarak ISO 20022 `camt.053.001.08` (Bank to Customer Statement) mesajı var.
 
---uuid:cdd815dd-2ca2-40f5-ba23-5f5b0f1d9ff7
-Content-Type: text/xml; charset=UTF-8
-Content-Transfer-Encoding: binary
-Content-ID:
-<root.message@cxf.apache.org>
-    <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
-        <SOAP-ENV:Header>
-            <ns2:SAAHeader xmlns:ns2="urn:swift:saa:xsd:soapha" Id="SAAHeader">
-                <ns2:SessionToken>da1351f1-654b-45f5-aebc-c12218cf</ns2:SessionToken>
-                <ns2:SequenceNumber>93825</ns2:SequenceNumber>
-            </ns2:SAAHeader>
-        </SOAP-ENV:Header>
-        <SOAP-ENV:Body>
-            <GetAckResponse xmlns="urn:swift:saa:xsd:soapha">
-                <Saa:DataPDU xmlns:Saa="urn:swift:saa:xsd:saa.2.0" xmlns:Sw="urn:swift:snl:ns.Sw" xmlns:SwGbl="urn:swift:snl:ns.SwGbl" xmlns:SwInt="urn:swift:snl:ns.SwInt" xmlns:SwSec="urn:swift:snl:ns.SwSec">
-                    <Saa:Revision>2.0.7</Saa:Revision>
-                    <Saa:Header>
-                        <Saa:Message>
-                            <Saa:SenderReference>OTRGTXEPMXXX053$2511242151610</Saa:SenderReference>
-                            <Saa:MessageIdentifier>camt.053.001.08</Saa:MessageIdentifier>
-                            <Saa:Format>File</Saa:Format>
-                            <Saa:SubFormat>Output</Saa:SubFormat>
-                            <Saa:Sender>
-                                <Saa:DN>cn=rtgs,o=trgtxepm,o=swift</Saa:DN>
-                                <Saa:FullName>
-                                    <Saa:X1>TRGTXEPMXXX</Saa:X1>
-                                </Saa:FullName>
-                            </Saa:Sender>
-                            <Saa:Receiver>
-                                <Saa:DN>cn=t2a2aprod,o=kabanl2a,o=swift</Saa:DN>
-                                <Saa:FullName>
-                                    <Saa:X1>KABANL2AXXX</Saa:X1>
-                                </Saa:FullName>
-                            </Saa:Receiver>
-                            <Saa:InterfaceInfo>
-                                <Saa:MessageCreator>SWIFTNetInterface</Saa:MessageCreator>
-                                <Saa:MessageContext>Copy</Saa:MessageContext>
-                                <Saa:MessageNature>Financial</Saa:MessageNature>
-                                <Saa:Sumid>16DB4721FFDF2B45</Saa:Sumid>
-                            </Saa:InterfaceInfo>
-                            <Saa:NetworkInfo>
-                                <Saa:Priority>Normal</Saa:Priority>
-                                <Saa:IsPossibleDuplicate>true</Saa:IsPossibleDuplicate>
-                                <Saa:Service>esmig.t2.fast</Saa:Service>
-                                <Saa:Network>SWIFTNet</Saa:Network>
-                                <Saa:SessionNr>000615</Saa:SessionNr>
-                                <Saa:SeqNr>000000705</Saa:SeqNr>
-                                <Saa:SWIFTNetNetworkInfo>
-                                    <Saa:RequestType>camt.053.001.08</Saa:RequestType>
-                                    <Saa:SNLRef>snp02145-2025-11-24T19:53:28.32451.608679Z</Saa:SNLRef>
-                                    <Saa:SnFQueueName>kabanl2a_t2file</Saa:SnFQueueName>
-                                    <Saa:SnFInputTime>0102:2025-11-24T19:53:28</Saa:SnFInputTime>
-                                    <Saa:SnFDeliveryTime>2025-11-24T19:54:05Z</Saa:SnFDeliveryTime>
-                                    <Saa:TransferRef>SNL51616D11764014045671568C</Saa:TransferRef>
-                                    <Saa:StoredTransferRef>snp02145D11764014008677451S</Saa:StoredTransferRef>
-                                    <Saa:FileInfo>SwCompression=None;ESMIGMessageId=tgw201.84864f34-8dfb-4647-a08d-6816db6be9a4</Saa:FileInfo>
-                                    <Saa:FileStartTime>20251124205405</Saa:FileStartTime>
-                                    <Saa:FileEndTime>20251124205407</Saa:FileEndTime>
-                                </Saa:SWIFTNetNetworkInfo>
-                            </Saa:NetworkInfo>
-                            <Saa:SecurityInfo>
-                                <Saa:SWIFTNetSecurityInfo>
-                                    <Saa:FileDigestAlgorithm>SHA-256</Saa:FileDigestAlgorithm>
-                                    <Saa:FileDigestValue>72voJYePENeYmW8xh8lKhVgmHCcbuRaQ6+yzn5sOMEo=</Saa:FileDigestValue>
-                                </Saa:SWIFTNetSecurityInfo>
-                            </Saa:SecurityInfo>
-                            <Saa:FileLogicalName>snp02145D11764014008677451</Saa:FileLogicalName>
-                            <Saa:ExpiryDateTime>20251214195407</Saa:ExpiryDateTime>
-                        </Saa:Message>
-                    </Saa:Header>
-                </Saa:DataPDU>
-                <attachment>cid:39379f5a-a83b-4226-851e-fe9e5f9aa9f3</attachment>
-            </GetAckResponse>
-        </SOAP-ENV:Body>
-    </SOAP-ENV:Envelope>
---uuid:cdd815dd-2ca2-40f5-ba23-5f5b0f1d9ff7
-Content-Type: application/octet-stream
-Content-Transfer-Encoding: binary
-Content-ID:
-    <39379f5a-a83b-4226-851e-fe9e5f9aa9f3>
-        <AppHdr xmlns="urn:iso:std:iso:20022:tech:xsd:head.001.001.01">
-            <Fr>
-                <FIId>
-                    <FinInstnId>
-                        <BICFI>TRGTXEPMRTG</BICFI>
-                    </FinInstnId>
-                </FIId>
-            </Fr>
-            <To>
-                <FIId>
-                    <FinInstnId>
-                        <BICFI>KABANL2AXXX</BICFI>
-                    </FinInstnId>
-                </FIId>
-            </To>
-            <BizMsgIdr>864993564</BizMsgIdr>
-            <MsgDefIdr>camt.053.001.08</MsgDefIdr>
-            <CreDt>2025-11-24T19:53:06.338Z</CreDt>
-            <Sgntr>
-                <ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#" Id="signature_c7f61e8b-475a-48a6-accf-7dc68cc25569">
-                    <ds:SignedInfo>
-                        <ds:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
-                        <ds:SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"/>
-                        <ds:Reference URI="#keyinfo_687fd734-d399-49c8-944d-db8cb7fd2d81">
-                            <ds:Transforms>
-                                <ds:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
-                            </ds:Transforms>
-                            <ds:DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"/>
-                            <ds:DigestValue>iF8CgmZ+7jZW/OFQd6KZ/cFrtHl1F06cguWMI1ZgTGw=</ds:DigestValue>
-                        </ds:Reference>
-                        <ds:Reference URI="">
-                            <ds:Transforms>
-                                <ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
-                                <ds:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
-                            </ds:Transforms>
-                            <ds:DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"/>
-                            <ds:DigestValue>fSTNoZr4knmf+4mRjbDkWNR1NHPMPOVYE0apts6uMW4=</ds:DigestValue>
-                        </ds:Reference>
-                        <ds:Reference>
-                            <ds:Transforms>
-                                <ds:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
-                            </ds:Transforms>
-                            <ds:DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"/>
-                            <ds:DigestValue>Gt7Vl3cGPQEo21nURnn2ZRiCzMC8DN398eOzWke+qT4=</ds:DigestValue>
-                        </ds:Reference>
-                    </ds:SignedInfo>
-                    <ds:SignatureValue Id="signaturevalue_667b2907-84dc-4ca8-86be-54a861092ad1">WRm44jc1by9Vt7fkmXm/wyAZGSJRk99FZCiU9dzN7BvMd+5vO2fDaklv1XMdb510oGwvFyeNP/M3ZpDI1iygu1LMSIbIj94Cy+ydNWzgMnDom+d1Y6EaSOo/bykCINVKjL5B+K81a+0qBz5ydhd/OQ+0VuuYOCmURt1UEFhwz8z7YoNeoBm/V4Ljdbq7aqGp08oUH/PzkE8MmkGeiEW/D9aBKVBKvrN/xhx17odX4UIfLkTPk9I7nNbC+CqoABOtpiyEIQiFglCRyRWbIX08Ec5nEbs3NANzlNjkXy9+2QQvdC4Gdl/FDfkoaDEfvjd/mnjCeHHbyQh8eUMo/KLGUg==</ds:SignatureValue>
-                    <ds:KeyInfo Id="keyinfo_687fd734-d399-49c8-944d-db8cb7fd2d81">
-                        <ds:X509Data>
-                            <ds:X509Certificate>MIIExTCCAq2gAwIBAgIEaM9OKjANBgkqhkiG9w0BAQsFADAQMQ4wDAYDVQQKEwVTV0lGVDAeFw0yNTA5MzAxMDI4NDNaFw0yNzA5MzAxMDU4NDNaMEUxDjAMBgNVBAoTBXN3aWZ0MREwDwYDVQQKEwh0cmd0eGVwbTENMAsGA1UECxMEcHJvZDERMA8GA1UEAxMIc3dpZnQtdDIwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCAWCW9D5KDZff3+CLt2Yw7OCi+TE7ImxJD7jEgBxjTxcy4nvtRLO+BwsfQsbLXTfyEoVWrr3ZQ6rezEteis2T1hNK0polG+TyhinZ6f/IRD39Gd7be/EXCamT2F7saZGwobii/MDkV4nyq8NE8QOxx+vV7XXpGZ5SIWa7XbqTt1KI5YIyGIOiYMOmJ+TIfaWgq9hjS+8nTFG2ltcau3K2I21w24dZStHhdqVT/rs9G6fGgwuLJA7t2Rk1lQZByuMIs4lzY9bYinEdNBQ2wm9UzxGcm1wK1x/iqcLHLAjTHirSVIKc+KStBBGSU0tfXfTJY9GHOG4F0OvXOqEoE/BqTAgMBAAGjgfEwge4wCwYDVR0PBAQDAgTwMBQGA1UdIAQNMAswCQYHKxUGAwpkAjA1BgNVHR8ELjAsMCqgKKAmpCQwIjEOMAwGA1UEChMFU1dJRlQxEDAOBgNVBAMTB0NSTDYxOTgwKwYDVR0QBCQwIoAPMjAyNTA5MzAxMDI4NDNagQ8yMDI3MDkzMDEwNTg0M1owHwYDVR0jBBgwFoAUUqMBKGDZlSdB4hCeCZ+rg9DxlkIwHQYDVR0OBBYEFE2aaj3GEdrykcO4rzTAzbKYHurrMAkGA1UdEwQCMAAwGgYJKoZIhvZ9B0EABA0wCxsFVjEwLjIDAgOoMA0GCSqGSIb3DQEBCwUAA4ICAQACsry74LxrLiXSjcPaK7/ts5J8o+9yJC+SwoHgLvfRN/OZfOt19gapY8c0Gbnw/wwSTfhZ0CVv6Qcx+Bwkigy2Cfr0dJDBtYQ/+/kb7EN6GhuYrq6FrK/jPDwOvi/mfE3krtzMhf//PWFD0o9qq1dbeElC5K4ZWF2Zhl+mE/VA+5KCnNmDRjFq8HmUBJM0CQr2dwwgLY7Q/hISJQyoWFtHie6f26GfktDS6A4est0G3aT/aSdPGUK7F1Tb2gbh4TkwrNrgfkURsZA8WmvZCfUXoGVSf9jz1CoBz1aKUIzBiaVXqZqrreBCyF0HN+f6fSat6zF8Z8mNB6/TWcvjm+vH7GdYt55ymPbLHEZUULwO0cscvfjei7KYUl495iy0NawvRcs4AZjNGEdFfADtGkID3wzcX3ftoStj/Vfo5QQu56I2/UobqjMgp86fqaTBU6k9nXA57SLail9sfImbbuk3H+RnwdnYjZ3RyMdfqq0ORVG35aN6lB9Z3CbHMUmQY/WNp/epeyYZZ6PAXH2Z+Sv7jnF7UujF0vokaxxoXvwpFX4GNhb6u9UdwjzGHWcYfFwUzzmsYH9D/IvaWnQxsxC9LKeTpJKb6bqILVMtDlbyS6QjX7umr7/w7prFBz+hGsG9fG9fOlLTRKNDtGL20EAIwM6GLBN0m8oZWp1ImgKZAA==</ds:X509Certificate>
-                        </ds:X509Data>
-                    </ds:KeyInfo>
-                </ds:Signature>
-            </Sgntr>
-        </AppHdr>
-        <Document xmlns="urn:iso:std:iso:20022:tech:xsd:camt.053.001.08">
-            <BkToCstmrStmt>
-                <GrpHdr>
-                    <MsgId>NONREF</MsgId>
-                    <CreDtTm>2025-11-24T19:53:06.241+00:00</CreDtTm>
-                </GrpHdr>
-                <Stmt>
-                    <Id>230</Id>
-                    <StmtPgntn>
-                        <PgNb>1</PgNb>
-                        <LastPgInd>true</LastPgInd>
-                    </StmtPgntn>
-                    <Acct>
-                        <Id>
-                            <Othr>
-                                <Id>RNLEURKABANL2AXXXRTGS</Id>
-                            </Othr>
-                        </Id>
-                        <Ownr>
+Şimdi Java 17 ve Spring Boot 3.x ile bu SOAP response'u dönen bir web servisi oluşturacağım:
+
+## Proje Yapısı
+
+```
+soap-swift-service/
+├── pom.xml
+├── src/main/java/com/example/soapswift/
+│   ├── SoapSwiftApplication.java
+│   ├── config/
+│   │   └── WebServiceConfig.java
+│   ├── endpoint/
+│   │   └── SwiftSoapEndpoint.java
+│   ├── model/
+│   │   ├── saa/
+│   │   │   ├── SAAHeader.java
+│   │   │   ├── DataPDU.java
+│   │   │   ├── Header.java
+│   │   │   ├── Message.java
+│   │   │   ├── Sender.java
+│   │   │   ├── Receiver.java
+│   │   │   ├── FullName.java
+│   │   │   ├── InterfaceInfo.java
+│   │   │   ├── NetworkInfo.java
+│   │   │   ├── SWIFTNetNetworkInfo.java
+│   │   │   ├── SecurityInfo.java
+│   │   │   └── SWIFTNetSecurityInfo.java
+│   │   └── response/
+│   │       └── GetAckResponse.java
+│   └── service/
+│       └── SwiftService.java
+└── src/main/resources/
+    ├── application.yml
+    └── xsd/
+        └── swift-saa.xsd
+```
+
+---
+
+## 1. pom.xml
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.2.0</version>
+        <relativePath/>
+    </parent>
+
+    <groupId>com.example</groupId>
+    <artifactId>soap-swift-service</artifactId>
+    <version>1.0.0</version>
+    <packaging>jar</packaging>
+
+    <properties>
+        <java.version>17</java.version>
+    </properties>
+
+    <dependencies>
+        <!-- Spring Boot Web Services -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web-services</artifactId>
+        </dependency>
+
+        <!-- Spring Boot Web -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!-- JAXB API for Java 17 -->
+        <dependency>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
+            <version>4.0.0</version>
+        </dependency>
+
+        <!-- JAXB Implementation -->
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+            <version>4.0.4</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- WSDL4J -->
+        <dependency>
+            <groupId>wsdl4j</groupId>
+            <artifactId>wsdl4j</artifactId>
+        </dependency>
+
+        <!-- Lombok (optional) -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- Test -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+</project>
+```
+
+---
+
+## 2. Application Sınıfı
+
+```java
+// src/main/java/com/example/soapswift/SoapSwiftApplication.java
+package com.example.soapswift;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class SoapSwiftApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(SoapSwiftApplication.class, args);
+    }
+}
+```
+
+---
+
+## 3. Model Sınıfları (JAXB)
+
+### SAAHeader.java
+```java
+// src/main/java/com/example/soapswift/model/saa/SAAHeader.java
+package com.example.soapswift.model.saa;
+
+import jakarta.xml.bind.annotation.*;
+import lombok.Data;
+
+@Data
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement(name = "SAAHeader", namespace = "urn:swift:saa:xsd:soapha")
+@XmlType(name = "SAAHeader", namespace = "urn:swift:saa:xsd:soapha")
+public class SAAHeader {
+
+    @XmlElement(name = "SessionToken", namespace = "urn:swift:saa:xsd:soapha")
+    private String sessionToken;
+
+    @XmlElement(name = "SequenceNumber", namespace = "urn:swift:saa:xsd:soapha")
+    private Long sequenceNumber;
+
+    @XmlAttribute(name = "Id")
+    private String id;
+}
+```
+
+### DataPDU.java
+```java
+// src/main/java/com/example/soapswift/model/saa/DataPDU.java
+package com.example.soapswift.model.saa;
+
+import jakarta.xml.bind.annotation.*;
+import lombok.Data;
+
+@Data
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement(name = "DataPDU", namespace = "urn:swift:saa:xsd:saa.2.0")
+@XmlType(name = "DataPDU", namespace = "urn:swift:saa:xsd:saa.2.0")
+public class DataPDU {
+
+    @XmlElement(name = "Revision", namespace = "urn:swift:saa:xsd:saa.2.0")
+    private String revision;
+
+    @XmlElement(name = "Header", namespace = "urn:swift:saa:xsd:saa.2.0")
+    private Header header;
+}
+```
+
+### Header.java
+```java
+// src/main/java/com/example/soapswift/model/saa/Header.java
+package com.example.soapswift.model.saa;
+
+import jakarta.xml.bind.annotation.*;
+import lombok.Data;
+
+@Data
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "Header", namespace = "urn:swift:saa:xsd:saa.2.0")
+public class Header {
+
+    @XmlElement(name = "Message", namespace = "urn:swift:saa:xsd:saa.2.0")
+    private Message message;
+}
+```
+
+### Message.java
+```java
+// src/main/java/com/example/soapswift/model/saa/Message.java
+package com.example.soapswift.model.saa;
+
+import jakarta.xml.bind.annotation.*;
+import lombok.Data;
+
+@Data
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "Message", namespace = "urn:swift:saa:xsd:saa.2.0")
+public class Message {
+
+    @XmlElement(name = "SenderReference", namespace = "urn:swift:saa:xsd:saa.2.0")
+    private String senderReference;
+
+    @XmlElement(name = "MessageIdentifier", namespace = "urn:swift:saa:xsd:saa.2.0")
+    private String messageIdentifier;
+
+    @XmlElement(name = "Format", namespace = "urn:swift:saa:xsd:saa.2.0")
+    private String format;
+
+    @XmlElement(name = "SubFormat", namespace = "urn:swift:saa:xsd:saa.2.0")
+    private String subFormat;
+
+    @XmlElement(name = "Sender", namespace = "urn:swift:saa:xsd:saa.2.0")
+    private Sender sender;
+
+    @XmlElement(name = "Receiver", namespace = "urn:swift:saa:xsd:saa.2.0")
+    private Receiver receiver;
+
+    @XmlElement(name = "InterfaceInfo", namespace = "urn:swift:saa:xsd:saa.2.0")
+    private InterfaceInfo interfaceInfo;
+
+    @XmlElement(name = "NetworkInfo", namespace = "urn:swift:saa:xsd:saa.2.0")
+    private NetworkInfo networkInfo;
+
+    @XmlElement(name = "SecurityInfo", namespace = "urn:swift:saa:xsd:saa.2.0")
+    private SecurityInfo securityInfo;
+
+    @XmlElement(name = "FileLogicalName", namespace = "urn:swift:saa:xsd:saa.2.0")
+    private String fileLogicalName;
+
+    @XmlElement(name = "ExpiryDateTime", namespace = "urn:swift:saa:xsd:saa.2.0")
+    private String expiryDateTime;
+}
+```
+
+### Sender.java
+```java
+// src/main/java/com/example/soapswift/model/saa/Sender.java
+package com.example.soapswift.model.saa;
+
+import jakarta.xml.bind.annotation.*;
+import lombok.Data;
+
+@Data
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "Sender", namespace = "urn:swift:saa:xsd:saa.2.0")
+public class Sender {
+
+    @XmlElement(name = "DN", namespace = "urn:swift:saa:xsd:saa.2.0")
+    private String dn;
+
+    @XmlElement(name = "FullName", namespace = "urn:swift:saa:xsd:saa.2.0")
+    private FullName fullName;
+}
+```
+
+### Receiver.java
+```java
+// src/main/java/com/example/soapswift/model/saa/Receiver.java
+package com.example.soapswift.model.saa;
+
+import jakarta.xml.bind.annotation.*;
+import lombok.Data;
+
+@Data
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "Receiver", namespace = "urn:swift:saa:xsd:saa.2.0")
+public class Receiver {
+
+    @XmlElement(name = "DN", namespace = "urn:swift:saa:xsd:saa.2.0")
+    private String dn;
+
+    @XmlElement(name = "FullName", namespace = "urn:swift:saa:xsd:saa.2.0")
+    private FullName fullName;
+}
+```
+
+### FullName.java
+```java
+// src/main/java/com/example/soapswift/model/saa/FullName.java
+package com.example.soapswift.model.saa;
+
+import jakarta.xml.bind.annotation.*;
+import lombok.Data;
+
+@Data
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "FullName", namespace = "urn:swift:saa:xsd:saa.2.0")
+public class FullName {
+
+    @XmlElement(name = "X1", namespace = "urn:swift:saa:xsd:saa.2.0")
+    private String x1;
+}
+```
+
+### InterfaceInfo.java
+```java
+// src/main/java/com/example/soapswift/model/saa/InterfaceInfo.java
+package com.example.soapswift.model.saa;
+
+import jakarta.xml.bind.annotation.*;
+import lombok.Data;
+
+@Data
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "InterfaceInfo", namespace = "urn:swift:saa:xsd:saa.2.0")
+public class InterfaceInfo {
+
+    @XmlElement(name = "MessageCreator", namespace = "urn:swift:saa:xsd:saa.2.0")
+    private String messageCreator;
+
+    @XmlElement(name = "MessageContext", namespace = "urn:swift:saa:xsd:saa.2.0")
+    private String messageContext;
+
+    @XmlElement(name = "MessageNature", namespace = "urn:swift:saa:xsd:saa.2.0")
+    private String messageNature;
+
+    @XmlElement(name = "Sumid", namespace = "urn:swift:saa:xsd:saa.2.0")
+    private String sumid;
+}
+```
+
+### NetworkInfo.java
+```java
+// src/main/java/com/example/soapswift/model/saa/NetworkInfo.java
+package com.example.soapswift.model.saa;
+
+import jakarta.xml.bind.annotation.*;
+import lombok.Data;
+
+@Data
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "NetworkInfo", namespace = "urn:swift:saa:xsd:saa.2.0")
+public class NetworkInfo {
+
+    @XmlElement(name = "Priority", namespace = "urn:swift:saa:xsd:saa.2.0")
+    private String priority;
+
+    @XmlElement(name = "IsPossibleDuplicate", namespace = "urn:swift:saa:xsd:saa.2.0")
+    private Boolean isPossibleDuplicate;
+
+    @XmlElement(name = "Service", namespace = "urn:swift:saa:xsd:saa.2.0")
+    private String service;
+
+    @XmlElement(name = "Network", namespace = "urn:swift:saa:xsd:saa.2.0")
+    private String network;
+
+    @XmlElement(name = "SessionNr", namespace = "urn:swift:saa:xsd:saa.2.0")
+    private String sessionNr;
+
+    @XmlElement(name = "SeqNr", namespace = "urn:swift:saa:xsd:saa.2.0")
+    private String seqNr;
+
+    @XmlElement(name = "SWIFTNetNetworkInfo", namespace = "urn:swift:saa:xsd:saa.2.0")
+    private SWIFTNetNetworkInfo swiftNetNetworkInfo;
+}
+```
+
+### SWIFTNetNetworkInfo.java
+```java
+// src/main/java/com/example/soapswift/model/saa/SWIFTNetNetworkInfo.java
+package com.example.soapswift.model.saa;
+
+import jakarta.xml.bind.annotation.*;
+import lombok.Data;
+
+@Data
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "SWIFTNetNetworkInfo", namespace = "urn:swift:saa:xsd:saa.2.0")
+public class SWIFTNetNetworkInfo {
+
+    @XmlElement(name = "RequestType", namespace = "urn:swift:saa:xsd:saa.2.0")
+    private String requestType;
+
+    @XmlElement(name = "SNLRef", namespace = "urn:swift:saa:xsd:saa.2.0")
+    private String snlRef;
+
+    @XmlElement(name = "SnFQueueName", namespace = "urn:swift:saa:xsd:saa.2.0")
+    private String snfQueueName;
+
+    @XmlElement(name = "SnFInputTime", namespace = "urn:swift:saa:xsd:saa.2.0")
+    private String snfInputTime;
+
+    @XmlElement(name = "SnFDeliveryTime", namespace = "urn:swift:saa:xsd:saa.2.0")
+    private String snfDeliveryTime;
+
+    @XmlElement(name = "TransferRef", namespace = "urn:swift:saa:xsd:saa.2.0")
+    private String transferRef;
+
+    @XmlElement(name = "StoredTransferRef", namespace = "urn:swift:saa:xsd:saa.2.0")
+    private String storedTransferRef;
+
+    @XmlElement(name = "FileInfo", namespace = "urn:swift:saa:xsd:saa.2.0")
+    private String fileInfo;
+
+    @XmlElement(name = "FileStartTime", namespace = "urn:swift:saa:xsd:saa.2.0")
+    private String fileStartTime;
+
+    @XmlElement(name = "FileEndTime", namespace = "urn:swift:saa:xsd:saa.2.0")
+    private String fileEndTime;
+}
+```
+
+### SecurityInfo.java
+```java
+// src/main/java/com/example/soapswift/model/saa/SecurityInfo.java
+package com.example.soapswift.model.saa;
+
+import jakarta.xml.bind.annotation.*;
+import lombok.Data;
+
+@Data
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "SecurityInfo", namespace = "urn:swift:saa:xsd:saa.2.0")
+public class SecurityInfo {
+
+    @XmlElement(name = "SWIFTNetSecurityInfo", namespace = "urn:swift:saa:xsd:saa.2.0")
+    private SWIFTNetSecurityInfo swiftNetSecurityInfo;
+}
+```
+
+### SWIFTNetSecurityInfo.java
+```java
+// src/main/java/com/example/soapswift/model/saa/SWIFTNetSecurityInfo.java
+package com.example.soapswift.model.saa;
+
+import jakarta.xml.bind.annotation.*;
+import lombok.Data;
+
+@Data
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "SWIFTNetSecurityInfo", namespace = "urn:swift:saa:xsd:saa.2.0")
+public class SWIFTNetSecurityInfo {
+
+    @XmlElement(name = "FileDigestAlgorithm", namespace = "urn:swift:saa:xsd:saa.2.0")
+    private String fileDigestAlgorithm;
+
+    @XmlElement(name = "FileDigestValue", namespace = "urn:swift:saa:xsd:saa.2.0")
+    private String fileDigestValue;
+}
+```
+
+### GetAckResponse.java
+```java
+// src/main/java/com/example/soapswift/model/response/GetAckResponse.java
+package com.example.soapswift.model.response;
+
+import com.example.soapswift.model.saa.DataPDU;
+import jakarta.xml.bind.annotation.*;
+import lombok.Data;
+
+@Data
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement(name = "GetAckResponse", namespace = "urn:swift:saa:xsd:soapha")
+@XmlType(name = "GetAckResponse", namespace = "urn:swift:saa:xsd:soapha")
+public class GetAckResponse {
+
+    @XmlElement(name = "DataPDU", namespace = "urn:swift:saa:xsd:saa.2.0")
+    private DataPDU dataPDU;
+
+    @XmlElement(name = "attachment", namespace = "urn:swift:saa:xsd:soapha")
+    private String attachment;
+}
+```
+
+### GetAckRequest.java
+```java
+// src/main/java/com/example/soapswift/model/request/GetAckRequest.java
+package com.example.soapswift.model.request;
+
+import jakarta.xml.bind.annotation.*;
+import lombok.Data;
+
+@Data
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement(name = "GetAckRequest", namespace = "urn:swift:saa:xsd:soapha")
+@XmlType(name = "GetAckRequest", namespace = "urn:swift:saa:xsd:soapha")
+public class GetAckRequest {
+
+    @XmlElement(name = "SessionToken", namespace = "urn:swift:saa:xsd:soapha")
+    private String sessionToken;
+
+    @XmlElement(name = "RequestId", namespace = "urn:swift:saa:xsd:soapha")
+    private String requestId;
+}
+```
+
+---
+
+## 4. Service Sınıfı
+
+```java
+// src/main/java/com/example/soapswift/service/SwiftService.java
+package com.example.soapswift.service;
+
+import com.example.soapswift.model.response.GetAckResponse;
+import com.example.soapswift.model.saa.*;
+import org.springframework.stereotype.Service;
+
+@Service
+public class SwiftService {
+
+    public GetAckResponse buildGetAckResponse() {
+        GetAckResponse response = new GetAckResponse();
+        
+        // DataPDU oluştur
+        DataPDU dataPDU = new DataPDU();
+        dataPDU.setRevision("2.0.7");
+        
+        // Header oluştur
+        Header header = new Header();
+        Message message = new Message();
+        
+        message.setSenderReference("OTRGTXEPMXXX053$2511242151610");
+        message.setMessageIdentifier("camt.053.001.08");
+        message.setFormat("File");
+        message.setSubFormat("Output");
+        
+        // Sender
+        Sender sender = new Sender();
+        sender.setDn("cn=rtgs,o=trgtxepm,o=swift");
+        FullName senderFullName = new FullName();
+        senderFullName.setX1("TRGTXEPMXXX");
+        sender.setFullName(senderFullName);
+        message.setSender(sender);
+        
+        // Receiver
+        Receiver receiver = new Receiver();
+        receiver.setDn("cn=t2a2aprod,o=kabanl2a,o=swift");
+        FullName receiverFullName = new FullName();
+        receiverFullName.setX1("KABANL2AXXX");
+        receiver.setFullName(receiverFullName);
+        message.setReceiver(receiver);
+        
+        // InterfaceInfo
+        InterfaceInfo interfaceInfo = new InterfaceInfo();
+        interfaceInfo.setMessageCreator("SWIFTNetInterface");
+        interfaceInfo.setMessageContext("Copy");
+        interfaceInfo.setMessageNature("Financial");
+        interfaceInfo.setSumid("16DB4721FFDF2B45");
+        message.setInterfaceInfo(interfaceInfo);
+        
+        // NetworkInfo
+        NetworkInfo networkInfo = new NetworkInfo();
+        networkInfo.setPriority("Normal");
+        networkInfo.setIsPossibleDuplicate(true);
+        networkInfo.setService("esmig.t2.fast");
+        networkInfo.setNetwork("SWIFTNet");
+        networkInfo.setSessionNr("000615");
+        networkInfo.setSeqNr("000000705");
+        
+        // SWIFTNetNetworkInfo
+        SWIFTNetNetworkInfo swiftNetNetworkInfo = new SWIFTNetNetworkInfo();
+        swiftNetNetworkInfo.setRequestType("camt.053.001.08");
+        swiftNetNetworkInfo.setSnlRef("snp02145-2025-11-24T19:53:28.32451.608679Z");
+        swiftNetNetworkInfo.setSnfQueueName("kabanl2a_t2file");
+        swiftNetNetworkInfo.setSnfInputTime("0102:2025-11-24T19:53:28");
+        swiftNetNetworkInfo.setSnfDeliveryTime("2025-11-24T19:54:05Z");
+        swiftNetNetworkInfo.setTransferRef("SNL51616D11764014045671568C");
+        swiftNetNetworkInfo.setStoredTransferRef("snp02145D11764014008677451S");
+        swiftNetNetworkInfo.setFileInfo("SwCompression=None;ESMIGMessageId=tgw201.84864f34-8dfb-4647-a08d-6816db6be9a4");
+        swiftNetNetworkInfo.setFileStartTime("20251124205405");
+        swiftNetNetworkInfo.setFileEndTime("20251124205407");
+        networkInfo.setSwiftNetNetworkInfo(swiftNetNetworkInfo);
+        message.setNetworkInfo(networkInfo);
+        
+        // SecurityInfo
+        SecurityInfo securityInfo = new SecurityInfo();
+        SWIFTNetSecurityInfo swiftNetSecurityInfo = new SWIFTNetSecurityInfo();
+        swiftNetSecurityInfo.setFileDigestAlgorithm("SHA-256");
+        swiftNetSecurityInfo.setFileDigestValue("72voJYePENeYmW8xh8lKhVgmHCcbuRaQ6+yzn5sOMEo=");
+        securityInfo.setSwiftNetSecurityInfo(swiftNetSecurityInfo);
+        message.setSecurityInfo(securityInfo);
+        
+        message.setFileLogicalName("snp02145D11764014008677451");
+        message.setExpiryDateTime("20251214195407");
+        
+        header.setMessage(message);
+        dataPDU.setHeader(header);
+        
+        response.setDataPDU(dataPDU);
+        response.setAttachment("cid:39379f5a-a83b-4226-851e-fe9e5f9aa9f3");
+        
+        return response;
+    }
+
+    public SAAHeader buildSAAHeader() {
+        SAAHeader saaHeader = new SAAHeader();
+        saaHeader.setId("SAAHeader");
+        saaHeader.setSessionToken("da1351f1-654b-45f5-aebc-c12218cf");
+        saaHeader.setSequenceNumber(93825L);
+        return saaHeader;
+    }
+}
+```
+
+---
+
+## 5. SOAP Endpoint
+
+```java
+// src/main/java/com/example/soapswift/endpoint/SwiftSoapEndpoint.java
+package com.example.soapswift.endpoint;
+
+import com.example.soapswift.model.request.GetAckRequest;
+import com.example.soapswift.model.response.GetAckResponse;
+import com.example.soapswift.model.saa.SAAHeader;
+import com.example.soapswift.service.SwiftService;
+import org.springframework.ws.server.endpoint.annotation.Endpoint;
+import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
+import org.springframework.ws.server.endpoint.annotation.RequestPayload;
+import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
+import org.springframework.ws.soap.SoapHeader;
+import org.springframework.ws.soap.SoapHeaderElement;
+
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
+import javax.xml.namespace.QName;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMResult;
+
+@Endpoint
+public class SwiftSoapEndpoint {
+
+    private static final String NAMESPACE_URI = "urn:swift:saa:xsd:soapha";
+
+    private final SwiftService swiftService;
+
+    public SwiftSoapEndpoint(SwiftService swiftService) {
+        this.swiftService = swiftService;
+    }
+
+    @PayloadRoot(namespace = NAMESPACE_URI, localPart = "GetAckRequest")
+    @ResponsePayload
+    public GetAckResponse getAck(@RequestPayload GetAckRequest request,
+                                  SoapHeader soapHeader) {
+        
+        // SOAP Header'a SAAHeader ekle
+        addSAAHeader(soapHeader);
+        
+        // Response oluştur
+        return swiftService.buildGetAckResponse();
+    }
+
+    private void addSAAHeader(SoapHeader soapHeader) {
+        try {
+            SAAHeader saaHeader = swiftService.buildSAAHeader();
+            
+            JAXBContext jaxbContext = JAXBContext.newInstance(SAAHeader.class);
+            Marshaller marshaller = jaxbContext.createMarshaller();
+            
+            QName headerQName = new QName(NAMESPACE_URI, "SAAHeader", "ns2");
+            SoapHeaderElement headerElement = soapHeader.addHeaderElement(headerQName);
+            
+            DOMResult result = new DOMResult();
+            marshaller.marshal(saaHeader, result);
+            
+            // Header element'e içeriği ekle
+            org.w3c.dom.Node node = result.getNode().getFirstChild();
+            org.w3c.dom.NodeList children = node.getChildNodes();
+            
+            for (int i = 0; i < children.getLength(); i++) {
+                org.w3c.dom.Node child = children.item(i);
+                headerElement.addChildElement(new QName(NAMESPACE_URI, child.getLocalName()))
+                            .setText(child.getTextContent());
+            }
+            
+        } catch (JAXBException e) {
+            throw new RuntimeException("SOAP Header oluşturulurken hata", e);
+        }
+    }
+}
+```
+
+---
+
+## 6. Web Service Config
+
+```java
+// src/main/java/com/example/soapswift/config/WebServiceConfig.java
+package com.example.soapswift.config;
+
+import org.springframework.boot.web.servlet.ServletRegistrationBean;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.ws.config.annotation.EnableWs;
+import org.springframework.ws.config.annotation.WsConfigurerAdapter;
+import org.springframework.ws.transport.http.MessageDispatcherServlet;
+import org.springframework.ws.wsdl.wsdl11.DefaultWsdl11Definition;
+import org.springframework.xml.xsd.SimpleXsdSchema;
+import org.springframework.xml.xsd.XsdSchema;
+
+@EnableWs
+@Configuration
+public class WebServiceConfig extends WsConfigurerAdapter {
+
+    @Bean
+    public ServletRegistrationBean<MessageDispatcherServlet> messageDispatcherServlet(
+            ApplicationContext applicationContext) {
+        MessageDispatcherServlet servlet = new MessageDispatcherServlet();
+        servlet.setApplicationContext(applicationContext);
+        servlet.setTransformWsdlLocations(true);
+        return new ServletRegistrationBean<>(servlet, "/ws/*");
+    }
+
+    @Bean(name = "swiftSaa")
+    public DefaultWsdl11Definition defaultWsdl11Definition(XsdSchema swiftSchema) {
+        DefaultWsdl11Definition wsdl11Definition = new DefaultWsdl11Definition();
+        wsdl11Definition.setPortTypeName("SwiftSaaPort");
+        wsdl11Definition.setLocationUri("/ws");
+        wsdl11Definition.setTargetNamespace("urn:swift:saa:xsd:soapha");
+        wsdl11Definition.setSchema(swiftSchema);
+        return wsdl11Definition;
+    }
+
+    @Bean
+    public XsdSchema swiftSchema() {
+        return new SimpleXsdSchema(new ClassPathResource("xsd/swift-saa.xsd"));
+    }
+}
+```
+
+---
+
+## 7. XSD Dosyası
+
+```xml
+<!-- src/main/resources/xsd/swift-saa.xsd -->
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:tns="urn:swift:saa:xsd:soapha"
+           xmlns:saa="urn:swift:saa:xsd:saa.2.0"
+           targetNamespace="urn:swift:saa:xsd:soapha"
+           elementFormDefault="qualified">
+
+    <xs:import namespace="urn:swift:saa:xsd:saa.2.0" schemaLocation="swift-saa-2.0.xsd"/>
+
+    <!-- GetAckRequest -->
+    <xs:element name="GetAckRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="SessionToken" type="xs:string" minOccurs="0"/>
+                <xs:element name="RequestId" type="xs:string" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- GetAckResponse -->
+    <xs:element name="GetAckResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="saa:DataPDU"/>
+                <xs:element name="attachment" type="xs:string" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- SAAHeader -->
+    <xs:element name="SAAHeader">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="SessionToken" type="xs:string"/>
+                <xs:element name="SequenceNumber" type="xs:long"/>
+            </xs:sequence>
+            <xs:attribute name="Id" type="xs:string"/>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>
+```
+
+```xml
+<!-- src/main/resources/xsd/swift-saa-2.0.xsd -->
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:tns="urn:swift:saa:xsd:saa.2.0"
+           targetNamespace="urn:swift:saa:xsd:saa.2.0"
+           elementFormDefault="qualified">
+
+    <!-- DataPDU -->
+    <xs:element name="DataPDU">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="Revision" type="xs:string"/>
+                <xs:element name="Header" type="tns:HeaderType"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- HeaderType -->
+    <xs:complexType name="HeaderType">
+        <xs:sequence>
+            <xs:element name="Message" type="tns:MessageType"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- MessageType -->
+    <xs:complexType name="MessageType">
+        <xs:sequence>
+            <xs:element name="SenderReference" type="xs:string"/>
+            <xs:element name="MessageIdentifier" type="xs:string"/>
+            <xs:element name="Format" type="xs:string"/>
+            <xs:element name="SubFormat" type="xs:string"/>
+            <xs:element name="Sender" type="tns:PartyType"/>
+            <xs:element name="Receiver" type="tns:PartyType"/>
+            <xs:element name="InterfaceInfo" type="tns:InterfaceInfoType"/>
+            <xs:element name="NetworkInfo" type="tns:NetworkInfoType"/>
+            <xs:element name="SecurityInfo" type="tns:SecurityInfoType"/>
+            <xs:element name="FileLogicalName" type="xs:string"/>
+            <xs:element name="ExpiryDateTime" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- PartyType -->
+    <xs:complexType name="PartyType">
+        <xs:sequence>
+            <xs:element name="DN" type="xs:string"/>
+            <xs:element name="FullName" type="tns:FullNameType"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- FullNameType -->
+    <xs:complexType name="FullNameType">
+        <xs:sequence>
+            <xs:element name="X1" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- InterfaceInfoType -->
+    <xs:complexType name="InterfaceInfoType">
+        <xs:sequence>
+            <xs:element name="MessageCreator" type="xs:string"/>
+            <xs:element name="MessageContext" type="xs:string"/>
+            <xs:element name="MessageNature" type="xs:string"/>
+            <xs:element name="Sumid" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- NetworkInfoType -->
+    <xs:complexType name="NetworkInfoType">
+        <xs:sequence>
+            <xs:element name="Priority" type="xs:string"/>
+            <xs:element name="IsPossibleDuplicate" type="xs:boolean"/>
+            <xs:element name="Service" type="xs:string"/>
+            <xs:element name="Network" type="xs:string"/>
+            <xs:element name="SessionNr" type="xs:string"/>
+            <xs:element name="SeqNr" type="xs:string"/>
+            <xs:element name="SWIFTNetNetworkInfo" type="tns:SWIFTNetNetworkInfoType"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- SWIFTNetNetworkInfoType -->
+    <xs:complexType name="SWIFTNetNetworkInfoType">
+        <xs:sequence>
+            <xs:element name="RequestType" type="xs:string"/>
+            <xs:element name="SNLRef" type="xs:string"/>
+            <xs:element name="SnFQueueName" type="xs:string"/>
+            <xs:element name="SnFInputTime" type="xs:string"/>
+            <xs:element name="SnFDeliveryTime" type="xs:string"/>
+            <xs:element name="TransferRef" type="xs:string"/>
+            <xs:element name="StoredTransferRef" type="xs:string"/>
+            <xs:element name="FileInfo" type="xs:string"/>
+            <xs:element name="FileStartTime" type="xs:string"/>
+            <xs:element name="FileEndTime" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- SecurityInfoType -->
+    <xs:complexType name="SecurityInfoType">
+        <xs:sequence>
+            <xs:element name="SWIFTNetSecurityInfo" type="tns:SWIFTNetSecurityInfoType"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- SWIFTNetSecurityInfoType -->
+    <xs:complexType name="SWIFTNetSecurityInfoType">
+        <xs:sequence>
+            <xs:element name="FileDigestAlgorithm" type="xs:string"/>
+            <xs:element name="FileDigestValue" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+</xs:schema>
+```
+
+---
+
+## 8. Application.yml
+
+```yaml
+# src/main/resources/application.yml
+server:
+  port: 8080
+
+spring:
+  application:
+    name: soap-swift-service
+
+logging:
+  level:
+    org.springframework.ws: DEBUG
+    com.example.soapswift: DEBUG
+```
+
+---
+
+## 9. Alternatif: Raw XML Response Dönen Controller
+
+Eğer tam olarak verilen XML formatını döndürmek istiyorsanız, alternatif olarak şu controller'ı kullanabilirsiniz:
+
+```java
+// src/main/java/com/example/soapswift/controller/RawSoapController.java
+package com.example.soapswift.controller;
+
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/soap")
+public class RawSoapController {
+
+    private static final String MULTIPART_BOUNDARY = "uuid:cdd815dd-2ca2-40f5-ba23-5f5b0f1d9ff7";
+
+    @PostMapping(value = "/getAck", 
+                 consumes = MediaType.TEXT_XML_VALUE,
+                 produces = "multipart/related; boundary=" + MULTIPART_BOUNDARY)
+    public ResponseEntity<String> getAck(@RequestBody String request) {
+        
+        String response = buildFullResponse();
+        
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(
+                    "multipart/related; type=\"text/xml\"; boundary=" + MULTIPART_BOUNDARY))
+                .body(response);
+    }
+
+    private String buildFullResponse() {
+        StringBuilder sb = new StringBuilder();
+        
+        // MIME boundary başlangıç
+        sb.append("--").append(MULTIPART_BOUNDARY).append("\r\n");
+        sb.append("Content-Type: text/xml; charset=UTF-8\r\n");
+        sb.append("Content-Transfer-Encoding: binary\r\n");
+        sb.append("Content-ID: <root.message@cxf.apache.org>\r\n\r\n");
+        
+        // SOAP Envelope
+        sb.append(buildSoapEnvelope());
+        
+        sb.append("\r\n");
+        
+        // Attachment part
+        sb.append("--").append(MULTIPART_BOUNDARY).append("\r\n");
+        sb.append("Content-Type: application/octet-stream\r\n");
+        sb.append("Content-Transfer-Encoding: binary\r\n");
+        sb.append("Content-ID: <39379f5a-a83b-4226-851e-fe9e5f9aa9f3>\r\n\r\n");
+        
+        // Attachment içeriği (AppHdr ve Document)
+        sb.append(buildAttachmentContent());
+        
+        // Bitiş
+        sb.append("\r\n--").append(MULTIPART_BOUNDARY).append("--");
+        
+        return sb.toString();
+    }
+
+    private String buildSoapEnvelope() {
+        return """
+            <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+                <SOAP-ENV:Header>
+                    <ns2:SAAHeader xmlns:ns2="urn:swift:saa:xsd:soapha" Id="SAAHeader">
+                        <ns2:SessionToken>da1351f1-654b-45f5-aebc-c12218cf</ns2:SessionToken>
+                        <ns2:SequenceNumber>93825</ns2:SequenceNumber>
+                    </ns2:SAAHeader>
+                </SOAP-ENV:Header>
+                <SOAP-ENV:Body>
+                    <GetAckResponse xmlns="urn:swift:saa:xsd:soapha">
+                        <Saa:DataPDU xmlns:Saa="urn:swift:saa:xsd:saa.2.0" xmlns:Sw="urn:swift:snl:ns.Sw" xmlns:SwGbl="urn:swift:snl:ns.SwGbl" xmlns:SwInt="urn:swift:snl:ns.SwInt" xmlns:SwSec="urn:swift:snl:ns.SwSec">
+                            <Saa:Revision>2.0.7</Saa:Revision>
+                            <Saa:Header>
+                                <Saa:Message>
+                                    <Saa:SenderReference>OTRGTXEPMXXX053$2511242151610</Saa:SenderReference>
+                                    <Saa:MessageIdentifier>camt.053.001.08</Saa:MessageIdentifier>
+                                    <Saa:Format>File</Saa:Format>
+                                    <Saa:SubFormat>Output</Saa:SubFormat>
+                                    <Saa:Sender>
+                                        <Saa:DN>cn=rtgs,o=trgtxepm,o=swift</Saa:DN>
+                                        <Saa:FullName>
+                                            <Saa:X1>TRGTXEPMXXX</Saa:X1>
+                                        </Saa:FullName>
+                                    </Saa:Sender>
+                                    <Saa:Receiver>
+                                        <Saa:DN>cn=t2a2aprod,o=kabanl2a,o=swift</Saa:DN>
+                                        <Saa:FullName>
+                                            <Saa:X1>KABANL2AXXX</Saa:X1>
+                                        </Saa:FullName>
+                                    </Saa:Receiver>
+                                    <Saa:InterfaceInfo>
+                                        <Saa:MessageCreator>SWIFTNetInterface</Saa:MessageCreator>
+                                        <Saa:MessageContext>Copy</Saa:MessageContext>
+                                        <Saa:MessageNature>Financial</Saa:MessageNature>
+                                        <Saa:Sumid>16DB4721FFDF2B45</Saa:Sumid>
+                                    </Saa:InterfaceInfo>
+                                    <Saa:NetworkInfo>
+                                        <Saa:Priority>Normal</Saa:Priority>
+                                        <Saa:IsPossibleDuplicate>true</Saa:IsPossibleDuplicate>
+                                        <Saa:Service>esmig.t2.fast</Saa:Service>
+                                        <Saa:Network>SWIFTNet</Saa:Network>
+                                        <Saa:SessionNr>000615</Saa:SessionNr>
+                                        <Saa:SeqNr>000000705</Saa:SeqNr>
+                                        <Saa:SWIFTNetNetworkInfo>
+                                            <Saa:RequestType>camt.053.001.08</Saa:RequestType>
+                                            <Saa:SNLRef>snp02145-2025-11-24T19:53:28.32451.608679Z</Saa:SNLRef>
+                                            <Saa:SnFQueueName>kabanl2a_t2file</Saa:SnFQueueName>
+                                            <Saa:SnFInputTime>0102:2025-11-24T19:53:28</Saa:SnFInputTime>
+                                            <Saa:SnFDeliveryTime>2025-11-24T19:54:05Z</Saa:SnFDeliveryTime>
+                                            <Saa:TransferRef>SNL51616D11764014045671568C</Saa:TransferRef>
+                                            <Saa:StoredTransferRef>snp02145D11764014008677451S</Saa:StoredTransferRef>
+                                            <Saa:FileInfo>SwCompression=None;ESMIGMessageId=tgw201.84864f34-8dfb-4647-a08d-6816db6be9a4</Saa:FileInfo>
+                                            <Saa:FileStartTime>20251124205405</Saa:FileStartTime>
+                                            <Saa:FileEndTime>20251124205407</Saa:FileEndTime>
+                                        </Saa:SWIFTNetNetworkInfo>
+                                    </Saa:NetworkInfo>
+                                    <Saa:SecurityInfo>
+                                        <Saa:SWIFTNetSecurityInfo>
+                                            <Saa:FileDigestAlgorithm>SHA-256</Saa:FileDigestAlgorithm>
+                                            <Saa:FileDigestValue>72voJYePENeYmW8xh8lKhVgmHCcbuRaQ6+yzn5sOMEo=</Saa:FileDigestValue>
+                                        </Saa:SWIFTNetSecurityInfo>
+                                    </Saa:SecurityInfo>
+                                    <Saa:FileLogicalName>snp02145D11764014008677451</Saa:FileLogicalName>
+                                    <Saa:ExpiryDateTime>20251214195407</Saa:ExpiryDateTime>
+                                </Saa:Message>
+                            </Saa:Header>
+                        </Saa:DataPDU>
+                        <attachment>cid:39379f5a-a83b-4226-851e-fe9e5f9aa9f3</attachment>
+                    </GetAckResponse>
+                </SOAP-ENV:Body>
+            </SOAP-ENV:Envelope>
+            """;
+    }
+
+    private String buildAttachmentContent() {
+        // ISO 20022 camt.053.001.08 içeriği
+        return """
+            <AppHdr xmlns="urn:iso:std:iso:20022:tech:xsd:head.001.001.01">
+                <Fr>
+                    <FIId>
+                        <FinInstnId>
+                            <BICFI>TRGTXEPMRTG</BICFI>
+                        </FinInstnId>
+                    </FIId>
+                </Fr>
+                <To>
+                    <FIId>
+                        <FinInstnId>
+                            <BICFI>KABANL2AXXX</BICFI>
+                        </FinInstnId>
+                    </FIId>
+                </To>
+                <BizMsgIdr>864993564</BizMsgIdr>
+                <MsgDefIdr>camt.053.001.08</MsgDefIdr>
+                <CreDt>2025-11-24T19:53:06.338Z</CreDt>
+            </AppHdr>
+            <Document xmlns="urn:iso:std:iso:20022:tech:xsd:camt.053.001.08">
+                <BkToCstmrStmt>
+                    <GrpHdr>
+                        <MsgId>NONREF</MsgId>
+                        <CreDtTm>2025-11-24T19:53:06.241+00:00</CreDtTm>
+                    </GrpHdr>
+                    <Stmt>
+                        <Id>230</Id>
+                        <StmtPgntn>
+                            <PgNb>1</PgNb>
+                            <LastPgInd>true</LastPgInd>
+                        </StmtPgntn>
+                        <Acct>
                             <Id>
-                                <OrgId>
-                                    <AnyBIC>KABANL2AXXX</AnyBIC>
-                                </OrgId>
+                                <Othr>
+                                    <Id>RNLEURKABANL2AXXXRTGS</Id>
+                                </Othr>
                             </Id>
-                        </Ownr>
-                    </Acct>
-                    <Bal>
-                        <Tp>
-                            <CdOrPrtry>
-                                <Cd>OPBD</Cd>
-                            </CdOrPrtry>
-                        </Tp>
-                        <Amt Ccy="EUR">17957329.31</Amt>
-                        <CdtDbtInd>CRDT</CdtDbtInd>
-                        <Dt>
-                            <Dt>2025-11-24</Dt>
-                        </Dt>
-                    </Bal>
-                    <Bal>
-                        <Tp>
-                            <CdOrPrtry>
-                                <Cd>CLBD</Cd>
-                            </CdOrPrtry>
-                        </Tp>
-                        <Amt Ccy="EUR">19846729.29</Amt>
-                        <CdtDbtInd>CRDT</CdtDbtInd>
-                        <Dt>
-                            <Dt>2025-11-24</Dt>
-                        </Dt>
-                    </Bal>
-                    <TxsSummry>
-                        <TtlNtries>
-                            <NbOfNtries>43</NbOfNtries>
-                        </TtlNtries>
-                    </TxsSummry>
-                    <Ntry>
-                        <NtryRef>300502071</NtryRef>
-                        <Amt Ccy="EUR">91960.58</Amt>
-                        <CdtDbtInd>DBIT</CdtDbtInd>
-                        <Sts>
-                            <Cd>BOOK</Cd>
-                        </Sts>
-                        <BookgDt>
-                            <DtTm>2025-11-24T06:13:00.646+00:00</DtTm>
-                        </BookgDt>
-                        <ValDt>
-                            <Dt>2025-11-24</Dt>
-                        </ValDt>
-                        <BkTxCd>
-                            <Prtry>
-                                <Cd>ASTI</Cd>
-                            </Prtry>
-                        </BkTxCd>
-                        <NtryDtls>
-                            <TxDtls>
-                                <Refs>
-                                    <InstrId>CC53280004400022</InstrId>
-                                    <EndToEndId>CC53280004400022</EndToEndId>
-                                </Refs>
-                                <Amt Ccy="EUR">91960.58</Amt>
-                                <RltdAgts>
-                                    <InstgAgt>
-                                        <FinInstnId>
-                                            <BICFI>KABANL2AXXX</BICFI>
-                                        </FinInstnId>
-                                    </InstgAgt>
-                                    <InstdAgt>
-                                        <FinInstnId>
-                                            <BICFI>INNDNL2USCR</BICFI>
-                                        </FinInstnId>
-                                    </InstdAgt>
-                                    <DbtrAgt>
-                                        <FinInstnId>
-                                            <BICFI>INNDNL2UEQU</BICFI>
-                                        </FinInstnId>
-                                    </DbtrAgt>
-                                </RltdAgts>
-                                <LclInstrm>
-                                    <Cd>ASTI</Cd>
-                                </LclInstrm>
-                            </TxDtls>
-                        </NtryDtls>
-                    </Ntry>
-                    <Ntry>
-                        <NtryRef>300503611</NtryRef>
-                        <Amt Ccy="EUR">221.00</Amt>
-                        <CdtDbtInd>DBIT</CdtDbtInd>
-                        <Sts>
-                            <Cd>BOOK</Cd>
-                        </Sts>
-                        <BookgDt>
-                            <DtTm>2025-11-24T06:14:00.563+00:00</DtTm>
-                        </BookgDt>
-                        <ValDt>
-                            <Dt>2025-11-24</Dt>
-                        </ValDt>
-                        <BkTxCd>
-                            <Prtry>
-                                <Cd>ASTI</Cd>
-                            </Prtry>
-                        </BkTxCd>
-                        <NtryDtls>
-                            <TxDtls>
-                                <Refs>
-                                    <InstrId>CC53280004600025</InstrId>
-                                    <EndToEndId>CC53280004600025</EndToEndId>
-                                </Refs>
-                                <Amt Ccy="EUR">221.00</Amt>
-                                <RltdAgts>
-                                    <InstgAgt>
-                                        <FinInstnId>
-                                            <BICFI>KABANL2AXXX</BICFI>
-                                        </FinInstnId>
-                                    </InstgAgt>
-                                    <InstdAgt>
-                                        <FinInstnId>
-                                            <BICFI>INNDNL2USCR</BICFI>
-                                        </FinInstnId>
-                                    </InstdAgt>
-                                    <DbtrAgt>
-                                        <FinInstnId>
-                                            <BICFI>INNDNL2UEQU</BICFI>
-                                        </FinInstnId>
-                                    </DbtrAgt>
-                                </RltdAgts>
-                                <LclInstrm>
-                                    <Cd>ASTI</Cd>
-                                </LclInstrm>
-                            </TxDtls>
-                        </NtryDtls>
-                    </Ntry>
-                    <Ntry>
-                        <NtryRef>300612258</NtryRef>
-                        <Amt Ccy="EUR">144658.81</Amt>
-                        <CdtDbtInd>DBIT</CdtDbtInd>
-                        <Sts>
-                            <Cd>BOOK</Cd>
-                        </Sts>
-                        <BookgDt>
-                            <DtTm>2025-11-24T07:49:00.588+00:00</DtTm>
-                        </BookgDt>
-                        <ValDt>
-                            <Dt>2025-11-24</Dt>
-                        </ValDt>
-                        <BkTxCd>
-                            <Prtry>
-                                <Cd>ASTI</Cd>
-                            </Prtry>
-                        </BkTxCd>
-                        <NtryDtls>
-                            <TxDtls>
-                                <Refs>
-                                    <InstrId>CC53280007200021</InstrId>
-                                    <EndToEndId>CC53280007200021</EndToEndId>
-                                </Refs>
-                                <Amt Ccy="EUR">144658.81</Amt>
-                                <RltdAgts>
-                                    <InstgAgt>
-                                        <FinInstnId>
-                                            <BICFI>KABANL2AXXX</BICFI>
-                                        </FinInstnId>
-                                    </InstgAgt>
-                                    <InstdAgt>
-                                        <FinInstnId>
-                                            <BICFI>INNDNL2USCR</BICFI>
-                                        </FinInstnId>
-                                    </InstdAgt>
-                                    <DbtrAgt>
-                                        <FinInstnId>
-                                            <BICFI>INNDNL2UEQU</BICFI>
-                                        </FinInstnId>
-                                    </DbtrAgt>
-                                </RltdAgts>
-                                <LclInstrm>
-                                    <Cd>ASTI</Cd>
-                                </LclInstrm>
-                            </TxDtls>
-                        </NtryDtls>
-                    </Ntry>
-                    <Ntry>
-                        <NtryRef>300715597</NtryRef>
-                        <Amt Ccy="EUR">25010.00</Amt>
-                        <CdtDbtInd>DBIT</CdtDbtInd>
-                        <Sts>
-                            <Cd>BOOK</Cd>
-                        </Sts>
-                        <BookgDt>
-                            <DtTm>2025-11-24T10:03:00.463+00:00</DtTm>
-                        </BookgDt>
-                        <ValDt>
-                            <Dt>2025-11-24</Dt>
-                        </ValDt>
-                        <BkTxCd>
-                            <Prtry>
-                                <Cd>ASTI</Cd>
-                            </Prtry>
-                        </BkTxCd>
-                        <NtryDtls>
-                            <TxDtls>
-                                <Refs>
-                                    <InstrId>CC53280008700027</InstrId>
-                                    <EndToEndId>CC53280008700027</EndToEndId>
-                                </Refs>
-                                <Amt Ccy="EUR">25010.00</Amt>
-                                <RltdAgts>
-                                    <InstgAgt>
-                                        <FinInstnId>
-                                            <BICFI>KABANL2AXXX</BICFI>
-                                        </FinInstnId>
-                                    </InstgAgt>
-                                    <InstdAgt>
-                                        <FinInstnId>
-                                            <BICFI>INNDNL2USCR</BICFI>
-                                        </FinInstnId>
-                                    </InstdAgt>
-                                    <DbtrAgt>
-                                        <FinInstnId>
-                                            <BICFI>INNDNL2UEQU</BICFI>
-                                        </FinInstnId>
-                                    </DbtrAgt>
-                                </RltdAgts>
-                                <LclInstrm>
-                                    <Cd>ASTI</Cd>
-                                </LclInstrm>
-                            </TxDtls>
-                        </NtryDtls>
-                    </Ntry>
-                    <Ntry>
-                        <NtryRef>300742336</NtryRef>
-                        <Amt Ccy="EUR">33745.91</Amt>
-                        <CdtDbtInd>DBIT</CdtDbtInd>
-                        <Sts>
-                            <Cd>BOOK</Cd>
-                        </Sts>
-                        <BookgDt>
-                            <DtTm>2025-11-24T10:49:03.678+00:00</DtTm>
-                        </BookgDt>
-                        <ValDt>
-                            <Dt>2025-11-24</Dt>
-                        </ValDt>
-                        <BkTxCd>
-                            <Prtry>
-                                <Cd>PMNT</Cd>
-                            </Prtry>
-                        </BkTxCd>
-                        <NtryDtls>
-                            <TxDtls>
-                                <Refs>
-                                    <InstrId>PA2511240340</InstrId>
-                                    <EndToEndId>PA2511240340</EndToEndId>
-                                    <UETR>3dc8068d-f052-4232-96b6-78d2e1709ab8</UETR>
-                                </Refs>
-                                <Amt Ccy="EUR">33745.91</Amt>
-                                <RltdPties>
-                                    <Dbtr>
-                                        <Pty>
-                                            <Id>
-                                                <OrgId>
-                                                    <AnyBIC>KABANL2AXXX</AnyBIC>
-                                                </OrgId>
-                                            </Id>
-                                        </Pty>
-                                    </Dbtr>
-                                    <Cdtr>
-                                        <Pty>
-                                            <Id>
-                                                <OrgId>
-                                                    <AnyBIC>ISBKTRISXXX</AnyBIC>
-                                                </OrgId>
-                                            </Id>
-                                        </Pty>
-                                    </Cdtr>
-                                </RltdPties>
-                                <RltdAgts>
-                                    <InstgAgt>
-                                        <FinInstnId>
-                                            <BICFI>KABANL2AXXX</BICFI>
-                                        </FinInstnId>
-                                    </InstgAgt>
-                                    <InstdAgt>
-                                        <FinInstnId>
-                                            <BICFI>DEUTDEFFXXX</BICFI>
-                                        </FinInstnId>
-                                    </InstdAgt>
-                                </RltdAgts>
-                            </TxDtls>
-                        </NtryDtls>
-                    </Ntry>
-                    <Ntry>
-                        <NtryRef>300779816</NtryRef>
-                        <Amt Ccy="EUR">779.88</Amt>
-                        <CdtDbtInd>DBIT</CdtDbtInd>
-                        <Sts>
-                            <Cd>BOOK</Cd>
-                        </Sts>
-                        <BookgDt>
-                            <DtTm>2025-11-24T12:03:00.583+00:00</DtTm>
-                        </BookgDt>
-                        <ValDt>
-                            <Dt>2025-11-24</Dt>
-                        </ValDt>
-                        <BkTxCd>
-                            <Prtry>
-                                <Cd>ASTI</Cd>
-                            </Prtry>
-                        </BkTxCd>
-                        <NtryDtls>
-                            <TxDtls>
-                                <Refs>
-                                    <InstrId>CC53280010100026</InstrId>
-                                    <EndToEndId>CC53280010100026</EndToEndId>
-                                </Refs>
-                                <Amt Ccy="EUR">779.88</Amt>
-                                <RltdAgts>
-                                    <InstgAgt>
-                                        <FinInstnId>
-                                            <BICFI>KABANL2AXXX</BICFI>
-                                        </FinInstnId>
-                                    </InstgAgt>
-                                    <InstdAgt>
-                                        <FinInstnId>
-                                            <BICFI>INNDNL2USCR</BICFI>
-                                        </FinInstnId>
-                                    </InstdAgt>
-                                    <DbtrAgt>
-                                        <FinInstnId>
-                                            <BICFI>INNDNL2UEQU</BICFI>
-                                        </FinInstnId>
-                                    </DbtrAgt>
-                                </RltdAgts>
-                                <LclInstrm>
-                                    <Cd>ASTI</Cd>
-                                </LclInstrm>
-                            </TxDtls>
-                        </NtryDtls>
-                    </Ntry>
-                    <Ntry>
-                        <NtryRef>300790446</NtryRef>
-                        <Amt Ccy="EUR">3750.00</Amt>
-                        <CdtDbtInd>DBIT</CdtDbtInd>
-                        <Sts>
-                            <Cd>BOOK</Cd>
-                        </Sts>
-                        <BookgDt>
-                            <DtTm>2025-11-24T12:26:12.874+00:00</DtTm>
-                        </BookgDt>
-                        <ValDt>
-                            <Dt>2025-11-24</Dt>
-                        </ValDt>
-                        <BkTxCd>
-                            <Prtry>
-                                <Cd>PMNT</Cd>
-                            </Prtry>
-                        </BkTxCd>
-                        <NtryDtls>
-                            <TxDtls>
-                                <Refs>
-                                    <InstrId>PACA06992A78444C</InstrId>
-                                    <EndToEndId>PACA06992A78444C</EndToEndId>
-                                    <UETR>61a1db5a-d007-4b5a-bc9e-1fa162c1608b</UETR>
-                                </Refs>
-                                <Amt Ccy="EUR">3750.00</Amt>
-                                <RltdPties>
-                                    <Dbtr>
-                                        <Pty>
-                                            <Id>
-                                                <OrgId>
-                                                    <AnyBIC>KABANL2AXXX</AnyBIC>
-                                                </OrgId>
-                                            </Id>
-                                        </Pty>
-                                    </Dbtr>
-                                    <Cdtr>
-                                        <Pty>
-                                            <Id>
-                                                <OrgId>
-                                                    <AnyBIC>TCZBTR2AXXX</AnyBIC>
-                                                </OrgId>
-                                            </Id>
-                                        </Pty>
-                                    </Cdtr>
-                                </RltdPties>
-                                <RltdAgts>
-                                    <InstgAgt>
-                                        <FinInstnId>
-                                            <BICFI>KABANL2AXXX</BICFI>
-                                        </FinInstnId>
-                                    </InstgAgt>
-                                    <InstdAgt>
-                                        <FinInstnId>
-                                            <BICFI>DEUTDEFFXXX</BICFI>
-                                        </FinInstnId>
-                                    </InstdAgt>
-                                </RltdAgts>
-                            </TxDtls>
-                        </NtryDtls>
-                    </Ntry>
-                    <Ntry>
-                        <NtryRef>300791601</NtryRef>
-                        <Amt Ccy="EUR">56587.44</Amt>
-                        <CdtDbtInd>DBIT</CdtDbtInd>
-                        <Sts>
-                            <Cd>BOOK</Cd>
-                        </Sts>
-                        <BookgDt>
-                            <DtTm>2025-11-24T12:28:47.081+00:00</DtTm>
-                        </BookgDt>
-                        <ValDt>
-                            <Dt>2025-11-24</Dt>
-                        </ValDt>
-                        <BkTxCd>
-                            <Prtry>
-                                <Cd>PMNT</Cd>
-                            </Prtry>
-                        </BkTxCd>
-                        <NtryDtls>
-                            <TxDtls>
-                                <Refs>
-                                    <InstrId>PA2511240342</InstrId>
-                                    <EndToEndId>PA2511240342</EndToEndId>
-                                    <UETR>25ea6362-ed1c-4648-9e26-cfbd1e4238e8</UETR>
-                                </Refs>
-                                <Amt Ccy="EUR">56587.44</Amt>
-                                <RltdPties>
-                                    <Dbtr>
-                                        <Pty>
-                                            <Id>
-                                                <OrgId>
-                                                    <AnyBIC>KABANL2AXXX</AnyBIC>
-                                                </OrgId>
-                                            </Id>
-                                        </Pty>
-                                    </Dbtr>
-                                    <Cdtr>
-                                        <Pty>
-                                            <Id>
-                                                <OrgId>
-                                                    <AnyBIC>TVBATR2AXXX</AnyBIC>
-                                                </OrgId>
-                                            </Id>
-                                        </Pty>
-                                    </Cdtr>
-                                </RltdPties>
-                                <RltdAgts>
-                                    <InstgAgt>
-                                        <FinInstnId>
-                                            <BICFI>KABANL2AXXX</BICFI>
-                                        </FinInstnId>
-                                    </InstgAgt>
-                                    <InstdAgt>
-                                        <FinInstnId>
-                                            <BICFI>DEUTDEFFXXX</BICFI>
-                                        </FinInstnId>
-                                    </InstdAgt>
-                                </RltdAgts>
-                            </TxDtls>
-                        </NtryDtls>
-                    </Ntry>
-                    <Ntry>
-                        <NtryRef>300806058</NtryRef>
-                        <Amt Ccy="EUR">4900000.00</Amt>
-                        <CdtDbtInd>DBIT</CdtDbtInd>
-                        <Sts>
-                            <Cd>BOOK</Cd>
-                        </Sts>
-                        <BookgDt>
-                            <DtTm>2025-11-24T12:59:47.091+00:00</DtTm>
-                        </BookgDt>
-                        <ValDt>
-                            <Dt>2025-11-24</Dt>
-                        </ValDt>
-                        <BkTxCd>
-                            <Prtry>
-                                <Cd>PMNT</Cd>
-                            </Prtry>
-                        </BkTxCd>
-                        <NtryDtls>
-                            <TxDtls>
-                                <Refs>
-                                    <InstrId>PA2511240343</InstrId>
-                                    <EndToEndId>19965</EndToEndId>
-                                    <UETR>489a0d35-949b-41e1-a282-d5538426c7aa</UETR>
-                                </Refs>
-                                <Amt Ccy="EUR">4900000.00</Amt>
-                                <RltdPties>
-                                    <Dbtr>
-                                        <Pty>
-                                            <Id>
-                                                <OrgId>
-                                                    <AnyBIC>KABANL2AXXX</AnyBIC>
-                                                </OrgId>
-                                            </Id>
-                                        </Pty>
-                                    </Dbtr>
-                                    <Cdtr>
-                                        <Pty>
-                                            <Id>
-                                                <OrgId>
-                                                    <AnyBIC>KABANL2AXXX</AnyBIC>
-                                                </OrgId>
-                                            </Id>
-                                        </Pty>
-                                    </Cdtr>
-                                </RltdPties>
-                                <RltdAgts>
-                                    <InstgAgt>
-                                        <FinInstnId>
-                                            <BICFI>KABANL2AXXX</BICFI>
-                                        </FinInstnId>
-                                    </InstgAgt>
-                                    <InstdAgt>
-                                        <FinInstnId>
-                                            <BICFI>COBADEFFXXX</BICFI>
-                                        </FinInstnId>
-                                    </InstdAgt>
-                                </RltdAgts>
-                            </TxDtls>
-                        </NtryDtls>
-                    </Ntry>
-                    <Ntry>
-                        <NtryRef>300828792</NtryRef>
-                        <Amt Ccy="EUR">800000.00</Amt>
-                        <CdtDbtInd>DBIT</CdtDbtInd>
-                        <Sts>
-                            <Cd>BOOK</Cd>
-                        </Sts>
-                        <BookgDt>
-                            <DtTm>2025-11-24T13:35:26.511+00:00</DtTm>
-                        </BookgDt>
-                        <ValDt>
-                            <Dt>2025-11-24</Dt>
-                        </ValDt>
-                        <BkTxCd>
-                            <Prtry>
-                                <Cd>PMNT</Cd>
-                            </Prtry>
-                        </BkTxCd>
-                        <NtryDtls>
-                            <TxDtls>
-                                <Refs>
-                                    <InstrId>PA7D9F13D1EFE047</InstrId>
-                                    <EndToEndId>19967 DNB TO YKBEUR</EndToEndId>
-                                    <UETR>d4d2d9ec-d622-454d-b709-2da0bb5383b3</UETR>
-                                </Refs>
-                                <Amt Ccy="EUR">800000.00</Amt>
-                                <RltdPties>
-                                    <Dbtr>
-                                        <Pty>
-                                            <Id>
-                                                <OrgId>
-                                                    <AnyBIC>KABANL2AXXX</AnyBIC>
-                                                </OrgId>
-                                            </Id>
-                                        </Pty>
-                                    </Dbtr>
-                                    <Cdtr>
-                                        <Pty>
-                                            <Id>
-                                                <OrgId>
-                                                    <AnyBIC>KABANL2AXXX</AnyBIC>
-                                                </OrgId>
-                                            </Id>
-                                        </Pty>
-                                    </Cdtr>
-                                </RltdPties>
-                                <RltdAgts>
-                                    <InstgAgt>
-                                        <FinInstnId>
-                                            <BICFI>KABANL2AXXX</BICFI>
-                                        </FinInstnId>
-                                    </InstgAgt>
-                                    <InstdAgt>
-                                        <FinInstnId>
-                                            <BICFI>COBADEFFXXX</BICFI>
-                                        </FinInstnId>
-                                    </InstdAgt>
-                                </RltdAgts>
-                            </TxDtls>
-                        </NtryDtls>
-                    </Ntry>
-                    <Ntry>
-                        <NtryRef>300834056</NtryRef>
-                        <Amt Ccy="EUR">161959.67</Amt>
-                        <CdtDbtInd>DBIT</CdtDbtInd>
-                        <Sts>
-                            <Cd>BOOK</Cd>
-                        </Sts>
-                        <BookgDt>
-                            <DtTm>2025-11-24T13:42:39.390+00:00</DtTm>
-                        </BookgDt>
-                        <ValDt>
-                            <Dt>2025-11-24</Dt>
-                        </ValDt>
-                        <BkTxCd>
-                            <Prtry>
-                                <Cd>PMNT</Cd>
-                            </Prtry>
-                        </BkTxCd>
-                        <NtryDtls>
-                            <TxDtls>
-                                <Refs>
-                                    <InstrId>PA2511240347</InstrId>
-                                    <EndToEndId>PA2511240347</EndToEndId>
-                                    <UETR>0b453473-f486-4a56-a30d-820a179c5961</UETR>
-                                </Refs>
-                                <Amt Ccy="EUR">161959.67</Amt>
-                                <RltdPties>
-                                    <Dbtr>
-                                        <Pty>
-                                            <Id>
-                                                <OrgId>
-                                                    <AnyBIC>KABANL2AXXX</AnyBIC>
-                                                </OrgId>
-                                            </Id>
-                                        </Pty>
-                                    </Dbtr>
-                                    <Cdtr>
-                                        <Pty>
-                                            <Id>
-                                                <OrgId>
-                                                    <AnyBIC>TVBATR2AXXX</AnyBIC>
-                                                </OrgId>
-                                            </Id>
-                                        </Pty>
-                                    </Cdtr>
-                                </RltdPties>
-                                <RltdAgts>
-                                    <InstgAgt>
-                                        <FinInstnId>
-                                            <BICFI>KABANL2AXXX</BICFI>
-                                        </FinInstnId>
-                                    </InstgAgt>
-                                    <InstdAgt>
-                                        <FinInstnId>
-                                            <BICFI>DEUTDEFFXXX</BICFI>
-                                        </FinInstnId>
-                                    </InstdAgt>
-                                </RltdAgts>
-                            </TxDtls>
-                        </NtryDtls>
-                    </Ntry>
-                    <Ntry>
-                        <NtryRef>300841529</NtryRef>
-                        <Amt Ccy="EUR">18528.54</Amt>
-                        <CdtDbtInd>DBIT</CdtDbtInd>
-                        <Sts>
-                            <Cd>BOOK</Cd>
-                        </Sts>
-                        <BookgDt>
-                            <DtTm>2025-11-24T13:56:36.977+00:00</DtTm>
-                        </BookgDt>
-                        <ValDt>
-                            <Dt>2025-11-24</Dt>
-                        </ValDt>
-                        <BkTxCd>
-                            <Prtry>
-                                <Cd>PMNT</Cd>
-                            </Prtry>
-                        </BkTxCd>
-                        <NtryDtls>
-                            <TxDtls>
-                                <Refs>
-                                    <InstrId>PA2511240348</InstrId>
-                                    <EndToEndId>PA2511240348</EndToEndId>
-                                    <UETR>2e2c88a2-847c-417e-ac7b-fc134a7a4470</UETR>
-                                </Refs>
-                                <Amt Ccy="EUR">18528.54</Amt>
-                                <RltdPties>
-                                    <Dbtr>
-                                        <Pty>
-                                            <Id>
-                                                <OrgId>
-                                                    <AnyBIC>KABANL2AXXX</AnyBIC>
-                                                </OrgId>
-                                            </Id>
-                                        </Pty>
-                                    </Dbtr>
-                                    <Cdtr>
-                                        <Pty>
-                                            <Id>
-                                                <OrgId>
-                                                    <AnyBIC>ISBKTRISXXX</AnyBIC>
-                                                </OrgId>
-                                            </Id>
-                                        </Pty>
-                                    </Cdtr>
-                                </RltdPties>
-                                <RltdAgts>
-                                    <InstgAgt>
-                                        <FinInstnId>
-                                            <BICFI>KABANL2AXXX</BICFI>
-                                        </FinInstnId>
-                                    </InstgAgt>
-                                    <InstdAgt>
-                                        <FinInstnId>
-                                            <BICFI>DEUTDEFFXXX</BICFI>
-                                        </FinInstnId>
-                                    </InstdAgt>
-                                </RltdAgts>
-                            </TxDtls>
-                        </NtryDtls>
-                    </Ntry>
-                    <Ntry>
-                        <NtryRef>300848163</NtryRef>
-                        <Amt Ccy="EUR">749.88</Amt>
-                        <CdtDbtInd>DBIT</CdtDbtInd>
-                        <Sts>
-                            <Cd>BOOK</Cd>
-                        </Sts>
-                        <BookgDt>
-                            <DtTm>2025-11-24T14:07:58.726+00:00</DtTm>
-                        </BookgDt>
-                        <ValDt>
-                            <Dt>2025-11-24</Dt>
-                        </ValDt>
-                        <BkTxCd>
-                            <Prtry>
-                                <Cd>PMNT</Cd>
-                            </Prtry>
-                        </BkTxCd>
-                        <NtryDtls>
-                            <TxDtls>
-                                <Refs>
-                                    <InstrId>PA2511240352</InstrId>
-                                    <EndToEndId>PA2511240352</EndToEndId>
-                                    <UETR>83416f82-1ccb-4449-9272-2e5dbd3de4ca</UETR>
-                                </Refs>
-                                <Amt Ccy="EUR">749.88</Amt>
-                                <RltdPties>
-                                    <Dbtr>
-                                        <Pty>
-                                            <Id>
-                                                <OrgId>
-                                                    <AnyBIC>KABANL2AXXX</AnyBIC>
-                                                </OrgId>
-                                            </Id>
-                                        </Pty>
-                                    </Dbtr>
-                                    <Cdtr>
-                                        <Pty>
-                                            <Id>
-                                                <OrgId>
-                                                    <AnyBIC>TVBATR2AXXX</AnyBIC>
-                                                </OrgId>
-                                            </Id>
-                                        </Pty>
-                                    </Cdtr>
-                                </RltdPties>
-                                <RltdAgts>
-                                    <InstgAgt>
-                                        <FinInstnId>
-                                            <BICFI>KABANL2AXXX</BICFI>
-                                        </FinInstnId>
-                                    </InstgAgt>
-                                    <InstdAgt>
-                                        <FinInstnId>
-                                            <BICFI>DEUTDEFFXXX</BICFI>
-                                        </FinInstnId>
-                                    </InstdAgt>
-                                </RltdAgts>
-                            </TxDtls>
-                        </NtryDtls>
-                    </Ntry>
-                    <Ntry>
-                        <NtryRef>300876335</NtryRef>
-                        <Amt Ccy="EUR">2852.53</Amt>
-                        <CdtDbtInd>DBIT</CdtDbtInd>
-                        <Sts>
-                            <Cd>BOOK</Cd>
-                        </Sts>
-                        <BookgDt>
-                            <DtTm>2025-11-24T15:03:00.375+00:00</DtTm>
-                        </BookgDt>
-                        <ValDt>
-                            <Dt>2025-11-24</Dt>
-                        </ValDt>
-                        <BkTxCd>
-                            <Prtry>
-                                <Cd>ASTI</Cd>
-                            </Prtry>
-                        </BkTxCd>
-                        <NtryDtls>
-                            <TxDtls>
-                                <Refs>
-                                    <InstrId>CC53280012300017</InstrId>
-                                    <EndToEndId>CC53280012300017</EndToEndId>
-                                </Refs>
-                                <Amt Ccy="EUR">2852.53</Amt>
-                                <RltdAgts>
-                                    <InstgAgt>
-                                        <FinInstnId>
-                                            <BICFI>KABANL2AXXX</BICFI>
-                                        </FinInstnId>
-                                    </InstgAgt>
-                                    <InstdAgt>
-                                        <FinInstnId>
-                                            <BICFI>INNDNL2USCR</BICFI>
-                                        </FinInstnId>
-                                    </InstdAgt>
-                                    <DbtrAgt>
-                                        <FinInstnId>
-                                            <BICFI>INNDNL2UEQU</BICFI>
-                                        </FinInstnId>
-                                    </DbtrAgt>
-                                </RltdAgts>
-                                <LclInstrm>
-                                    <Cd>ASTI</Cd>
-                                </LclInstrm>
-                            </TxDtls>
-                        </NtryDtls>
-                    </Ntry>
-                    <Ntry>
-                        <NtryRef>300885340</NtryRef>
-                        <Amt Ccy="EUR">402.00</Amt>
-                        <CdtDbtInd>DBIT</CdtDbtInd>
-                        <Sts>
-                            <Cd>BOOK</Cd>
-                        </Sts>
-                        <BookgDt>
-                            <DtTm>2025-11-24T15:19:00.929+00:00</DtTm>
-                        </BookgDt>
-                        <ValDt>
-                            <Dt>2025-11-24</Dt>
-                        </ValDt>
-                        <BkTxCd>
-                            <Prtry>
-                                <Cd>ASTI</Cd>
-                            </Prtry>
-                        </BkTxCd>
-                        <NtryDtls>
-                            <TxDtls>
-                                <Refs>
-                                    <InstrId>CC53280012400001</InstrId>
-                                    <EndToEndId>CC53280012400001</EndToEndId>
-                                </Refs>
-                                <Amt Ccy="EUR">402.00</Amt>
-                                <RltdAgts>
-                                    <InstgAgt>
-                                        <FinInstnId>
-                                            <BICFI>KABANL2AXXX</BICFI>
-                                        </FinInstnId>
-                                    </InstgAgt>
-                                    <InstdAgt>
-                                        <FinInstnId>
-                                            <BICFI>INNDNL2USCR</BICFI>
-                                        </FinInstnId>
-                                    </InstdAgt>
-                                    <DbtrAgt>
-                                        <FinInstnId>
-                                            <BICFI>INNDNL2UEQU</BICFI>
-                                        </FinInstnId>
-                                    </DbtrAgt>
-                                </RltdAgts>
-                                <LclInstrm>
-                                    <Cd>ASTI</Cd>
-                                </LclInstrm>
-                            </TxDtls>
-                        </NtryDtls>
-                    </Ntry>
-                    <Ntry>
-                        <NtryRef>300887345</NtryRef>
-                        <Amt Ccy="EUR">25000000.00</Amt>
-                        <CdtDbtInd>DBIT</CdtDbtInd>
-                        <Sts>
-                            <Cd>BOOK</Cd>
-                        </Sts>
-                        <BookgDt>
-                            <DtTm>2025-11-24T15:22:53.852+00:00</DtTm>
-                        </BookgDt>
-                        <ValDt>
-                            <Dt>2025-11-24</Dt>
-                        </ValDt>
-                        <BkTxCd>
-                            <Prtry>
-                                <Cd>PMNT</Cd>
-                            </Prtry>
-                        </BkTxCd>
-                        <NtryDtls>
-                            <TxDtls>
-                                <Refs>
-                                    <InstrId>251617745101</InstrId>
-                                    <EndToEndId>251617745101</EndToEndId>
-                                    <UETR>3054b66b-258d-45bf-8064-9ec2f9454f32</UETR>
-                                </Refs>
-                                <Amt Ccy="EUR">25000000.00</Amt>
-                                <RltdPties>
-                                    <Dbtr>
-                                        <Pty>
-                                            <Id>
-                                                <OrgId>
-                                                    <AnyBIC>KABANL2AXXX</AnyBIC>
-                                                </OrgId>
-                                            </Id>
-                                        </Pty>
-                                    </Dbtr>
-                                    <Cdtr>
-                                        <Pty>
-                                            <Id>
-                                                <OrgId>
-                                                    <AnyBIC>BNPAFRPPXXX</AnyBIC>
-                                                </OrgId>
-                                            </Id>
-                                        </Pty>
-                                    </Cdtr>
-                                </RltdPties>
-                                <RltdAgts>
-                                    <InstgAgt>
-                                        <FinInstnId>
-                                            <BICFI>KABANL2AXXX</BICFI>
-                                        </FinInstnId>
-                                    </InstgAgt>
-                                    <InstdAgt>
-                                        <FinInstnId>
-                                            <BICFI>BNPAFRPPXXX</BICFI>
-                                        </FinInstnId>
-                                    </InstdAgt>
-                                </RltdAgts>
-                            </TxDtls>
-                        </NtryDtls>
-                    </Ntry>
-                    <Ntry>
-                        <NtryRef>300895264</NtryRef>
-                        <Amt Ccy="EUR">40000000.00</Amt>
-                        <CdtDbtInd>DBIT</CdtDbtInd>
-                        <Sts>
-                            <Cd>BOOK</Cd>
-                        </Sts>
-                        <BookgDt>
-                            <DtTm>2025-11-24T15:45:07.394+00:00</DtTm>
-                        </BookgDt>
-                        <ValDt>
-                            <Dt>2025-11-24</Dt>
-                        </ValDt>
-                        <BkTxCd>
-                            <Prtry>
-                                <Cd>PMNT</Cd>
-                            </Prtry>
-                        </BkTxCd>
-                        <NtryDtls>
-                            <TxDtls>
-                                <Refs>
-                                    <InstrId>251617744641</InstrId>
-                                    <EndToEndId>ING/NET/2411</EndToEndId>
-                                    <UETR>0deb0b5a-32ff-45a7-a970-1c1f13fbc372</UETR>
-                                </Refs>
-                                <Amt Ccy="EUR">40000000.00</Amt>
-                                <RltdPties>
-                                    <Dbtr>
-                                        <Pty>
-                                            <Id>
-                                                <OrgId>
-                                                    <AnyBIC>KABANL2AXXX</AnyBIC>
-                                                </OrgId>
-                                            </Id>
-                                        </Pty>
-                                    </Dbtr>
-                                    <Cdtr>
-                                        <Pty>
-                                            <Id>
-                                                <OrgId>
-                                                    <AnyBIC>INGBNL2AXXX</AnyBIC>
-                                                </OrgId>
-                                            </Id>
-                                        </Pty>
-                                    </Cdtr>
-                                </RltdPties>
-                                <RltdAgts>
-                                    <InstgAgt>
-                                        <FinInstnId>
-                                            <BICFI>KABANL2AXXX</BICFI>
-                                        </FinInstnId>
-                                    </InstgAgt>
-                                    <InstdAgt>
-                                        <FinInstnId>
-                                            <BICFI>INGBNL2AXXX</BICFI>
-                                        </FinInstnId>
-                                    </InstdAgt>
-                                </RltdAgts>
-                            </TxDtls>
-                        </NtryDtls>
-                    </Ntry>
-                    <Ntry>
-                        <NtryRef>300895777</NtryRef>
-                        <Amt Ccy="EUR">16468606.96</Amt>
-                        <CdtDbtInd>DBIT</CdtDbtInd>
-                        <Sts>
-                            <Cd>BOOK</Cd>
-                        </Sts>
-                        <BookgDt>
-                            <DtTm>2025-11-24T15:46:39.486+00:00</DtTm>
-                        </BookgDt>
-                        <ValDt>
-                            <Dt>2025-11-24</Dt>
-                        </ValDt>
-                        <BkTxCd>
-                            <Prtry>
-                                <Cd>PMNT</Cd>
-                            </Prtry>
-                        </BkTxCd>
-                        <NtryDtls>
-                            <TxDtls>
-                                <Refs>
-                                    <InstrId>251407643461</InstrId>
-                                    <EndToEndId>HSBC/NET/2411</EndToEndId>
-                                    <UETR>6cfed112-fbe3-4bb5-acb0-c6b6492ec9b1</UETR>
-                                </Refs>
-                                <Amt Ccy="EUR">16468606.96</Amt>
-                                <RltdPties>
-                                    <Dbtr>
-                                        <Pty>
-                                            <Id>
-                                                <OrgId>
-                                                    <AnyBIC>KABANL2AXXX</AnyBIC>
-                                                </OrgId>
-                                            </Id>
-                                        </Pty>
-                                    </Dbtr>
-                                    <Cdtr>
-                                        <Pty>
-                                            <Id>
-                                                <OrgId>
-                                                    <AnyBIC>CCFRFRPPXXX</AnyBIC>
-                                                </OrgId>
-                                            </Id>
-                                        </Pty>
-                                    </Cdtr>
-                                </RltdPties>
-                                <RltdAgts>
-                                    <InstgAgt>
-                                        <FinInstnId>
-                                            <BICFI>KABANL2AXXX</BICFI>
-                                        </FinInstnId>
-                                    </InstgAgt>
-                                    <InstdAgt>
-                                        <FinInstnId>
-                                            <BICFI>CCFRFRPPXXX</BICFI>
-                                        </FinInstnId>
-                                    </InstdAgt>
-                                </RltdAgts>
-                            </TxDtls>
-                        </NtryDtls>
-                    </Ntry>
-                    <Ntry>
-                        <NtryRef>300899466</NtryRef>
-                        <Amt Ccy="EUR">260000000.00</Amt>
-                        <CdtDbtInd>DBIT</CdtDbtInd>
-                        <Sts>
-                            <Cd>BOOK</Cd>
-                        </Sts>
-                        <BookgDt>
-                            <DtTm>2025-11-24T16:05:07.345+00:00</DtTm>
-                        </BookgDt>
-                        <ValDt>
-                            <Dt>2025-11-24</Dt>
-                        </ValDt>
-                        <BkTxCd>
-                            <Prtry>
-                                <Cd>LIQT</Cd>
-                            </Prtry>
-                        </BkTxCd>
-                        <NtryDtls>
-                            <TxDtls>
-                                <Refs>
-                                    <InstrId>288531457</InstrId>
-                                    <EndToEndId>RTGS NAAR OD</EndToEndId>
-                                </Refs>
-                                <Amt Ccy="EUR">260000000.00</Amt>
-                                <RltdPties>
-                                    <DbtrAcct>
-                                        <Id>
-                                            <Othr>
-                                                <Id>RNLEURKABANL2AXXXRTGS</Id>
-                                            </Othr>
-                                        </Id>
-                                    </DbtrAcct>
-                                    <CdtrAcct>
-                                        <Id>
-                                            <Othr>
-                                                <Id>DNLEURFLORNL2AXXX-OD-KABANL2AXXX</Id>
-                                            </Othr>
-                                        </Id>
-                                    </CdtrAcct>
-                                </RltdPties>
-                                <LclInstrm>
-                                    <Prtry>LIIE</Prtry>
-                                </LclInstrm>
-                            </TxDtls>
-                        </NtryDtls>
-                    </Ntry>
-                    <Ntry>
-                        <NtryRef>300488816</NtryRef>
-                        <Amt Ccy="EUR">400000.00</Amt>
-                        <CdtDbtInd>CRDT</CdtDbtInd>
-                        <Sts>
-                            <Cd>BOOK</Cd>
-                        </Sts>
-                        <BookgDt>
-                            <DtTm>2025-11-24T06:01:52.441+00:00</DtTm>
-                        </BookgDt>
-                        <ValDt>
-                            <Dt>2025-11-24</Dt>
-                        </ValDt>
-                        <BkTxCd>
-                            <Prtry>
-                                <Cd>PMNT</Cd>
-                            </Prtry>
-                        </BkTxCd>
-                        <NtryDtls>
-                            <TxDtls>
-                                <Refs>
-                                    <InstrId>FPC10ZDM78001001</InstrId>
-                                    <EndToEndId>NOTPROVIDED</EndToEndId>
-                                    <UETR>7f3dd56a-f484-4b74-b086-4ffe81cff40d</UETR>
-                                </Refs>
-                                <Amt Ccy="EUR">400000.00</Amt>
-                                <RltdPties>
-                                    <Dbtr>
-                                        <Pty>
-                                            <Id>
-                                                <OrgId>
-                                                    <AnyBIC>BNPAFRPPXXX</AnyBIC>
-                                                </OrgId>
-                                            </Id>
-                                        </Pty>
-                                    </Dbtr>
-                                    <Cdtr>
-                                        <Pty>
-                                            <Id>
-                                                <OrgId>
-                                                    <AnyBIC>KABANL2AXXX</AnyBIC>
-                                                </OrgId>
-                                            </Id>
-                                        </Pty>
-                                    </Cdtr>
-                                </RltdPties>
-                                <RltdAgts>
-                                    <InstgAgt>
-                                        <FinInstnId>
-                                            <BICFI>BNPAFRPPXXX</BICFI>
-                                        </FinInstnId>
-                                    </InstgAgt>
-                                    <InstdAgt>
-                                        <FinInstnId>
-                                            <BICFI>KABANL2AXXX</BICFI>
-                                        </FinInstnId>
-                                    </InstdAgt>
-                                </RltdAgts>
-                            </TxDtls>
-                        </NtryDtls>
-                    </Ntry>
-                    <Ntry>
-                        <NtryRef>300502016</NtryRef>
-                        <Amt Ccy="EUR">861.00</Amt>
-                        <CdtDbtInd>CRDT</CdtDbtInd>
-                        <Sts>
-                            <Cd>BOOK</Cd>
-                        </Sts>
-                        <BookgDt>
-                            <DtTm>2025-11-24T06:13:00.646+00:00</DtTm>
-                        </BookgDt>
-                        <ValDt>
-                            <Dt>2025-11-24</Dt>
-                        </ValDt>
-                        <BkTxCd>
-                            <Prtry>
-                                <Cd>ASTI</Cd>
-                            </Prtry>
-                        </BkTxCd>
-                        <NtryDtls>
-                            <TxDtls>
-                                <Refs>
-                                    <InstrId>CC53280005500023</InstrId>
-                                    <EndToEndId>CC53280005500023</EndToEndId>
-                                </Refs>
-                                <Amt Ccy="EUR">861.00</Amt>
-                                <RltdAgts>
-                                    <InstgAgt>
-                                        <FinInstnId>
-                                            <BICFI>INNDNL2USCR</BICFI>
-                                        </FinInstnId>
-                                    </InstgAgt>
-                                    <InstdAgt>
-                                        <FinInstnId>
-                                            <BICFI>KABANL2AXXX</BICFI>
-                                        </FinInstnId>
-                                    </InstdAgt>
-                                    <DbtrAgt>
-                                        <FinInstnId>
-                                            <BICFI>INNDNL2UEQU</BICFI>
-                                        </FinInstnId>
-                                    </DbtrAgt>
-                                </RltdAgts>
-                                <LclInstrm>
-                                    <Cd>ASTI</Cd>
-                                </LclInstrm>
-                            </TxDtls>
-                        </NtryDtls>
-                    </Ntry>
-                    <Ntry>
-                        <NtryRef>300502270</NtryRef>
-                        <Amt Ccy="EUR">1790.62</Amt>
-                        <CdtDbtInd>CRDT</CdtDbtInd>
-                        <Sts>
-                            <Cd>BOOK</Cd>
-                        </Sts>
-                        <BookgDt>
-                            <DtTm>2025-11-24T06:14:00.563+00:00</DtTm>
-                        </BookgDt>
-                        <ValDt>
-                            <Dt>2025-11-24</Dt>
-                        </ValDt>
-                        <BkTxCd>
-                            <Prtry>
-                                <Cd>ASTI</Cd>
-                            </Prtry>
-                        </BkTxCd>
-                        <NtryDtls>
-                            <TxDtls>
-                                <Refs>
-                                    <InstrId>CC53280004000027</InstrId>
-                                    <EndToEndId>CC53280004000027</EndToEndId>
-                                </Refs>
-                                <Amt Ccy="EUR">1790.62</Amt>
-                                <RltdAgts>
-                                    <InstgAgt>
-                                        <FinInstnId>
-                                            <BICFI>INNDNL2USCR</BICFI>
-                                        </FinInstnId>
-                                    </InstgAgt>
-                                    <InstdAgt>
-                                        <FinInstnId>
-                                            <BICFI>KABANL2AXXX</BICFI>
-                                        </FinInstnId>
-                                    </InstdAgt>
-                                    <DbtrAgt>
-                                        <FinInstnId>
-                                            <BICFI>INNDNL2UEQU</BICFI>
-                                        </FinInstnId>
-                                    </DbtrAgt>
-                                </RltdAgts>
-                                <LclInstrm>
-                                    <Cd>ASTI</Cd>
-                                </LclInstrm>
-                            </TxDtls>
-                        </NtryDtls>
-                    </Ntry>
-                    <Ntry>
-                        <NtryRef>300502304</NtryRef>
-                        <Amt Ccy="EUR">10180.00</Amt>
-                        <CdtDbtInd>CRDT</CdtDbtInd>
-                        <Sts>
-                            <Cd>BOOK</Cd>
-                        </Sts>
-                        <BookgDt>
-                            <DtTm>2025-11-24T06:14:00.563+00:00</DtTm>
-                        </BookgDt>
-                        <ValDt>
-                            <Dt>2025-11-24</Dt>
-                        </ValDt>
-                        <BkTxCd>
-                            <Prtry>
-                                <Cd>ASTI</Cd>
-                            </Prtry>
-                        </BkTxCd>
-                        <NtryDtls>
-                            <TxDtls>
-                                <Refs>
-                                    <InstrId>CC53280004300014</InstrId>
-                                    <EndToEndId>CC53280004300014</EndToEndId>
-                                </Refs>
-                                <Amt Ccy="EUR">10180.00</Amt>
-                                <RltdAgts>
-                                    <InstgAgt>
-                                        <FinInstnId>
-                                            <BICFI>INNDNL2USCR</BICFI>
-                                        </FinInstnId>
-                                    </InstgAgt>
-                                    <InstdAgt>
-                                        <FinInstnId>
-                                            <BICFI>KABANL2AXXX</BICFI>
-                                        </FinInstnId>
-                                    </InstdAgt>
-                                    <DbtrAgt>
-                                        <FinInstnId>
-                                            <BICFI>INNDNL2UEQU</BICFI>
-                                        </FinInstnId>
-                                    </DbtrAgt>
-                                </RltdAgts>
-                                <LclInstrm>
-                                    <Cd>ASTI</Cd>
-                                </LclInstrm>
-                            </TxDtls>
-                        </NtryDtls>
-                    </Ntry>
-                    <Ntry>
-                        <NtryRef>300502462</NtryRef>
-                        <Amt Ccy="EUR">500.00</Amt>
-                        <CdtDbtInd>CRDT</CdtDbtInd>
-                        <Sts>
-                            <Cd>BOOK</Cd>
-                        </Sts>
-                        <BookgDt>
-                            <DtTm>2025-11-24T06:14:00.563+00:00</DtTm>
-                        </BookgDt>
-                        <ValDt>
-                            <Dt>2025-11-24</Dt>
-                        </ValDt>
-                        <BkTxCd>
-                            <Prtry>
-                                <Cd>ASTI</Cd>
-                            </Prtry>
-                        </BkTxCd>
-                        <NtryDtls>
-                            <TxDtls>
-                                <Refs>
-                                    <InstrId>CC53280004200020</InstrId>
-                                    <EndToEndId>CC53280004200020</EndToEndId>
-                                </Refs>
-                                <Amt Ccy="EUR">500.00</Amt>
-                                <RltdAgts>
-                                    <InstgAgt>
-                                        <FinInstnId>
-                                            <BICFI>INNDNL2USCR</BICFI>
-                                        </FinInstnId>
-                                    </InstgAgt>
-                                    <InstdAgt>
-                                        <FinInstnId>
-                                            <BICFI>KABANL2AXXX</BICFI>
-                                        </FinInstnId>
-                                    </InstdAgt>
-                                    <DbtrAgt>
-                                        <FinInstnId>
-                                            <BICFI>INNDNL2UEQU</BICFI>
-                                        </FinInstnId>
-                                    </DbtrAgt>
-                                </RltdAgts>
-                                <LclInstrm>
-                                    <Cd>ASTI</Cd>
-                                </LclInstrm>
-                            </TxDtls>
-                        </NtryDtls>
-                    </Ntry>
-                    <Ntry>
-                        <NtryRef>300502533</NtryRef>
-                        <Amt Ccy="EUR">6414.30</Amt>
-                        <CdtDbtInd>CRDT</CdtDbtInd>
-                        <Sts>
-                            <Cd>BOOK</Cd>
-                        </Sts>
-                        <BookgDt>
-                            <DtTm>2025-11-24T06:14:00.563+00:00</DtTm>
-                        </BookgDt>
-                        <ValDt>
-                            <Dt>2025-11-24</Dt>
-                        </ValDt>
-                        <BkTxCd>
-                            <Prtry>
-                                <Cd>ASTI</Cd>
-                            </Prtry>
-                        </BkTxCd>
-                        <NtryDtls>
-                            <TxDtls>
-                                <Refs>
-                                    <InstrId>CC53280006000023</InstrId>
-                                    <EndToEndId>CC53280006000023</EndToEndId>
-                                </Refs>
-                                <Amt Ccy="EUR">6414.30</Amt>
-                                <RltdAgts>
-                                    <InstgAgt>
-                                        <FinInstnId>
-                                            <BICFI>INNDNL2USCR</BICFI>
-                                        </FinInstnId>
-                                    </InstgAgt>
-                                    <InstdAgt>
-                                        <FinInstnId>
-                                            <BICFI>KABANL2AXXX</BICFI>
-                                        </FinInstnId>
-                                    </InstdAgt>
-                                    <DbtrAgt>
-                                        <FinInstnId>
-                                            <BICFI>INNDNL2UEQU</BICFI>
-                                        </FinInstnId>
-                                    </DbtrAgt>
-                                </RltdAgts>
-                                <LclInstrm>
-                                    <Cd>ASTI</Cd>
-                                </LclInstrm>
-                            </TxDtls>
-                        </NtryDtls>
-                    </Ntry>
-                    <Ntry>
-                        <NtryRef>300504029</NtryRef>
-                        <Amt Ccy="EUR">8600000.00</Amt>
-                        <CdtDbtInd>CRDT</CdtDbtInd>
-                        <Sts>
-                            <Cd>BOOK</Cd>
-                        </Sts>
-                        <BookgDt>
-                            <DtTm>2025-11-24T06:14:18.869+00:00</DtTm>
-                        </BookgDt>
-                        <ValDt>
-                            <Dt>2025-11-24</Dt>
-                        </ValDt>
-                        <BkTxCd>
-                            <Prtry>
-                                <Cd>PMNT</Cd>
-                            </Prtry>
-                        </BkTxCd>
-                        <NtryDtls>
-                            <TxDtls>
-                                <Refs>
-                                    <InstrId>FPC10ZDDH9001001</InstrId>
-                                    <EndToEndId>NOTPROVIDED</EndToEndId>
-                                    <UETR>aa827886-5e1f-439d-b948-403019228d32</UETR>
-                                </Refs>
-                                <Amt Ccy="EUR">8600000.00</Amt>
-                                <RltdPties>
-                                    <Dbtr>
-                                        <Pty>
-                                            <Id>
-                                                <OrgId>
-                                                    <AnyBIC>BNPAFRPPXXX</AnyBIC>
-                                                </OrgId>
-                                            </Id>
-                                        </Pty>
-                                    </Dbtr>
-                                    <Cdtr>
-                                        <Pty>
-                                            <Id>
-                                                <OrgId>
-                                                    <AnyBIC>KABANL2AXXX</AnyBIC>
-                                                </OrgId>
-                                            </Id>
-                                        </Pty>
-                                    </Cdtr>
-                                </RltdPties>
-                                <RltdAgts>
-                                    <InstgAgt>
-                                        <FinInstnId>
-                                            <BICFI>BNPAFRPPXXX</BICFI>
-                                        </FinInstnId>
-                                    </InstgAgt>
-                                    <InstdAgt>
-                                        <FinInstnId>
-                                            <BICFI>KABANL2AXXX</BICFI>
-                                        </FinInstnId>
-                                    </InstdAgt>
-                                </RltdAgts>
-                            </TxDtls>
-                        </NtryDtls>
-                    </Ntry>
-                    <Ntry>
-                        <NtryRef>300579445</NtryRef>
-                        <Amt Ccy="EUR">86147.08</Amt>
-                        <CdtDbtInd>CRDT</CdtDbtInd>
-                        <Sts>
-                            <Cd>BOOK</Cd>
-                        </Sts>
-                        <BookgDt>
-                            <DtTm>2025-11-24T07:17:00.462+00:00</DtTm>
-                        </BookgDt>
-                        <ValDt>
-                            <Dt>2025-11-24</Dt>
-                        </ValDt>
-                        <BkTxCd>
-                            <Prtry>
-                                <Cd>ASTI</Cd>
-                            </Prtry>
-                        </BkTxCd>
-                        <NtryDtls>
-                            <TxDtls>
-                                <Refs>
-                                    <InstrId>CC53280006800016</InstrId>
-                                    <EndToEndId>CC53280006800016</EndToEndId>
-                                </Refs>
-                                <Amt Ccy="EUR">86147.08</Amt>
-                                <RltdAgts>
-                                    <InstgAgt>
-                                        <FinInstnId>
-                                            <BICFI>INNDNL2USCR</BICFI>
-                                        </FinInstnId>
-                                    </InstgAgt>
-                                    <InstdAgt>
-                                        <FinInstnId>
-                                            <BICFI>KABANL2AXXX</BICFI>
-                                        </FinInstnId>
-                                    </InstdAgt>
-                                    <DbtrAgt>
-                                        <FinInstnId>
-                                            <BICFI>INNDNL2UEQU</BICFI>
-                                        </FinInstnId>
-                                    </DbtrAgt>
-                                </RltdAgts>
-                                <LclInstrm>
-                                    <Cd>ASTI</Cd>
-                                </LclInstrm>
-                            </TxDtls>
-                        </NtryDtls>
-                    </Ntry>
-                    <Ntry>
-                        <NtryRef>300595619</NtryRef>
-                        <Amt Ccy="EUR">210234470.98</Amt>
-                        <CdtDbtInd>CRDT</CdtDbtInd>
-                        <Sts>
-                            <Cd>BOOK</Cd>
-                        </Sts>
-                        <BookgDt>
-                            <DtTm>2025-11-24T07:30:52.141+00:00</DtTm>
-                        </BookgDt>
-                        <ValDt>
-                            <Dt>2025-11-24</Dt>
-                        </ValDt>
-                        <BkTxCd>
-                            <Prtry>
-                                <Cd>LIQT</Cd>
-                            </Prtry>
-                        </BkTxCd>
-                        <NtryDtls>
-                            <TxDtls>
-                                <Refs>
-                                    <InstrId>288250086</InstrId>
-                                    <EndToEndId>mca naar rtgs</EndToEndId>
-                                </Refs>
-                                <Amt Ccy="EUR">210234470.98</Amt>
-                                <RltdPties>
-                                    <DbtrAcct>
-                                        <Id>
-                                            <Othr>
-                                                <Id>MNLEURKABANL2AXXXMCA</Id>
-                                            </Othr>
-                                        </Id>
-                                    </DbtrAcct>
-                                    <CdtrAcct>
-                                        <Id>
-                                            <Othr>
-                                                <Id>RNLEURKABANL2AXXXRTGS</Id>
-                                            </Othr>
-                                        </Id>
-                                    </CdtrAcct>
-                                </RltdPties>
-                                <LclInstrm>
-                                    <Prtry>LIIE</Prtry>
-                                </LclInstrm>
-                            </TxDtls>
-                        </NtryDtls>
-                    </Ntry>
-                    <Ntry>
-                        <NtryRef>300657051</NtryRef>
-                        <Amt Ccy="EUR">400.00</Amt>
-                        <CdtDbtInd>CRDT</CdtDbtInd>
-                        <Sts>
-                            <Cd>BOOK</Cd>
-                        </Sts>
-                        <BookgDt>
-                            <DtTm>2025-11-24T08:34:00.219+00:00</DtTm>
-                        </BookgDt>
-                        <ValDt>
-                            <Dt>2025-11-24</Dt>
-                        </ValDt>
-                        <BkTxCd>
-                            <Prtry>
-                                <Cd>ASTI</Cd>
-                            </Prtry>
-                        </BkTxCd>
-                        <NtryDtls>
-                            <TxDtls>
-                                <Refs>
-                                    <InstrId>CC53280007800021</InstrId>
-                                    <EndToEndId>CC53280007800021</EndToEndId>
-                                </Refs>
-                                <Amt Ccy="EUR">400.00</Amt>
-                                <RltdAgts>
-                                    <InstgAgt>
-                                        <FinInstnId>
-                                            <BICFI>INNDNL2USCR</BICFI>
-                                        </FinInstnId>
-                                    </InstgAgt>
-                                    <InstdAgt>
-                                        <FinInstnId>
-                                            <BICFI>KABANL2AXXX</BICFI>
-                                        </FinInstnId>
-                                    </InstdAgt>
-                                    <DbtrAgt>
-                                        <FinInstnId>
-                                            <BICFI>INNDNL2UEQU</BICFI>
-                                        </FinInstnId>
-                                    </DbtrAgt>
-                                </RltdAgts>
-                                <LclInstrm>
-                                    <Cd>ASTI</Cd>
-                                </LclInstrm>
-                            </TxDtls>
-                        </NtryDtls>
-                    </Ntry>
-                    <Ntry>
-                        <NtryRef>300694945</NtryRef>
-                        <Amt Ccy="EUR">1200.00</Amt>
-                        <CdtDbtInd>CRDT</CdtDbtInd>
-                        <Sts>
-                            <Cd>BOOK</Cd>
-                        </Sts>
-                        <BookgDt>
-                            <DtTm>2025-11-24T09:33:00.294+00:00</DtTm>
-                        </BookgDt>
-                        <ValDt>
-                            <Dt>2025-11-24</Dt>
-                        </ValDt>
-                        <BkTxCd>
-                            <Prtry>
-                                <Cd>ASTI</Cd>
-                            </Prtry>
-                        </BkTxCd>
-                        <NtryDtls>
-                            <TxDtls>
-                                <Refs>
-                                    <InstrId>CC53280008400021</InstrId>
-                                    <EndToEndId>CC53280008400021</EndToEndId>
-                                </Refs>
-                                <Amt Ccy="EUR">1200.00</Amt>
-                                <RltdAgts>
-                                    <InstgAgt>
-                                        <FinInstnId>
-                                            <BICFI>INNDNL2USCR</BICFI>
-                                        </FinInstnId>
-                                    </InstgAgt>
-                                    <InstdAgt>
-                                        <FinInstnId>
-                                            <BICFI>KABANL2AXXX</BICFI>
-                                        </FinInstnId>
-                                    </InstdAgt>
-                                    <DbtrAgt>
-                                        <FinInstnId>
-                                            <BICFI>INNDNL2UEQU</BICFI>
-                                        </FinInstnId>
-                                    </DbtrAgt>
-                                </RltdAgts>
-                                <LclInstrm>
-                                    <Cd>ASTI</Cd>
-                                </LclInstrm>
-                            </TxDtls>
-                        </NtryDtls>
-                    </Ntry>
-                    <Ntry>
-                        <NtryRef>300719141</NtryRef>
-                        <Amt Ccy="EUR">103111.81</Amt>
-                        <CdtDbtInd>CRDT</CdtDbtInd>
-                        <Sts>
-                            <Cd>BOOK</Cd>
-                        </Sts>
-                        <BookgDt>
-                            <DtTm>2025-11-24T10:08:06.259+00:00</DtTm>
-                        </BookgDt>
-                        <ValDt>
-                            <Dt>2025-11-24</Dt>
-                        </ValDt>
-                        <BkTxCd>
-                            <Prtry>
-                                <Cd>PMNT</Cd>
-                            </Prtry>
-                        </BkTxCd>
-                        <NtryDtls>
-                            <TxDtls>
-                                <Refs>
-                                    <InstrId>4295ZVP9227417</InstrId>
-                                    <EndToEndId>FAS159389102</EndToEndId>
-                                    <UETR>13ca2eb9-e9a3-49ea-99d8-ae86d97e7218</UETR>
-                                </Refs>
-                                <Amt Ccy="EUR">103111.81</Amt>
-                                <RltdPties>
-                                    <Dbtr>
-                                        <Pty>
-                                            <Id>
-                                                <OrgId>
-                                                    <AnyBIC>BYLADEMMXXX</AnyBIC>
-                                                </OrgId>
-                                            </Id>
-                                        </Pty>
-                                    </Dbtr>
-                                    <Cdtr>
-                                        <Pty>
-                                            <Id>
-                                                <OrgId>
-                                                    <AnyBIC>KABANL2AXXX</AnyBIC>
-                                                </OrgId>
-                                            </Id>
-                                        </Pty>
-                                    </Cdtr>
-                                </RltdPties>
-                                <RltdAgts>
-                                    <InstgAgt>
-                                        <FinInstnId>
-                                            <BICFI>BYLADEMMXXX</BICFI>
-                                        </FinInstnId>
-                                    </InstgAgt>
-                                    <InstdAgt>
-                                        <FinInstnId>
-                                            <BICFI>KABANL2AXXX</BICFI>
-                                        </FinInstnId>
-                                    </InstdAgt>
-                                </RltdAgts>
-                            </TxDtls>
-                        </NtryDtls>
-                    </Ntry>
-                    <Ntry>
-                        <NtryRef>300733279</NtryRef>
-                        <Amt Ccy="EUR">39183.00</Amt>
-                        <CdtDbtInd>CRDT</CdtDbtInd>
-                        <Sts>
-                            <Cd>BOOK</Cd>
-                        </Sts>
-                        <BookgDt>
-                            <DtTm>2025-11-24T10:33:00.624+00:00</DtTm>
-                        </BookgDt>
-                        <ValDt>
-                            <Dt>2025-11-24</Dt>
-                        </ValDt>
-                        <BkTxCd>
-                            <Prtry>
-                                <Cd>ASTI</Cd>
-                            </Prtry>
-                        </BkTxCd>
-                        <NtryDtls>
-                            <TxDtls>
-                                <Refs>
-                                    <InstrId>CC53280009000014</InstrId>
-                                    <EndToEndId>CC53280009000014</EndToEndId>
-                                </Refs>
-                                <Amt Ccy="EUR">39183.00</Amt>
-                                <RltdAgts>
-                                    <InstgAgt>
-                                        <FinInstnId>
-                                            <BICFI>INNDNL2USCR</BICFI>
-                                        </FinInstnId>
-                                    </InstgAgt>
-                                    <InstdAgt>
-                                        <FinInstnId>
-                                            <BICFI>KABANL2AXXX</BICFI>
-                                        </FinInstnId>
-                                    </InstdAgt>
-                                    <DbtrAgt>
-                                        <FinInstnId>
-                                            <BICFI>INNDNL2UEQU</BICFI>
-                                        </FinInstnId>
-                                    </DbtrAgt>
-                                </RltdAgts>
-                                <LclInstrm>
-                                    <Cd>ASTI</Cd>
-                                </LclInstrm>
-                            </TxDtls>
-                        </NtryDtls>
-                    </Ntry>
-                    <Ntry>
-                        <NtryRef>300760305</NtryRef>
-                        <Amt Ccy="EUR">4167.12</Amt>
-                        <CdtDbtInd>CRDT</CdtDbtInd>
-                        <Sts>
-                            <Cd>BOOK</Cd>
-                        </Sts>
-                        <BookgDt>
-                            <DtTm>2025-11-24T11:22:58.920+00:00</DtTm>
-                        </BookgDt>
-                        <ValDt>
-                            <Dt>2025-11-24</Dt>
-                        </ValDt>
-                        <BkTxCd>
-                            <Prtry>
-                                <Cd>PMNT</Cd>
-                            </Prtry>
-                        </BkTxCd>
-                        <NtryDtls>
-                            <TxDtls>
-                                <Refs>
-                                    <InstrId>001TG540465100GO</InstrId>
-                                    <EndToEndId>NOTPROVIDED</EndToEndId>
-                                    <UETR>3d2e7425-5efe-43e5-bc5c-46530fefdec1</UETR>
-                                </Refs>
-                                <Amt Ccy="EUR">4167.12</Amt>
-                                <RltdPties>
-                                    <Dbtr>
-                                        <Pty>
-                                            <Nm>FACTORIT SPA</Nm>
-                                        </Pty>
-                                    </Dbtr>
-                                    <Cdtr>
-                                        <Pty>
-                                            <Nm>YAPI KREDI FAKTORING A.S.</Nm>
-                                        </Pty>
-                                    </Cdtr>
-                                </RltdPties>
-                                <RltdAgts>
-                                    <InstgAgt>
-                                        <FinInstnId>
-                                            <BICFI>POSOIT22XXX</BICFI>
-                                        </FinInstnId>
-                                    </InstgAgt>
-                                    <InstdAgt>
-                                        <FinInstnId>
-                                            <BICFI>KABANL2AXXX</BICFI>
-                                        </FinInstnId>
-                                    </InstdAgt>
-                                </RltdAgts>
-                            </TxDtls>
-                        </NtryDtls>
-                    </Ntry>
-                    <Ntry>
-                        <NtryRef>300768515</NtryRef>
-                        <Amt Ccy="EUR">24738.24</Amt>
-                        <CdtDbtInd>CRDT</CdtDbtInd>
-                        <Sts>
-                            <Cd>BOOK</Cd>
-                        </Sts>
-                        <BookgDt>
-                            <DtTm>2025-11-24T11:38:37.980+00:00</DtTm>
-                        </BookgDt>
-                        <ValDt>
-                            <Dt>2025-11-24</Dt>
-                        </ValDt>
-                        <BkTxCd>
-                            <Prtry>
-                                <Cd>PMNT</Cd>
-                            </Prtry>
-                        </BkTxCd>
-                        <NtryDtls>
-                            <TxDtls>
-                                <Refs>
-                                    <InstrId>001TG54047102295</InstrId>
-                                    <EndToEndId>NOTPROVIDED</EndToEndId>
-                                    <UETR>010a462d-c786-4e80-a32b-da3706f28557</UETR>
-                                </Refs>
-                                <Amt Ccy="EUR">24738.24</Amt>
-                                <RltdPties>
-                                    <Dbtr>
-                                        <Pty>
-                                            <Nm>FACTORIT SPA</Nm>
-                                        </Pty>
-                                    </Dbtr>
-                                    <Cdtr>
-                                        <Pty>
-                                            <Nm>YAPI KREDI FAKTORING A.S.</Nm>
-                                        </Pty>
-                                    </Cdtr>
-                                </RltdPties>
-                                <RltdAgts>
-                                    <InstgAgt>
-                                        <FinInstnId>
-                                            <BICFI>POSOIT22XXX</BICFI>
-                                        </FinInstnId>
-                                    </InstgAgt>
-                                    <InstdAgt>
-                                        <FinInstnId>
-                                            <BICFI>KABANL2AXXX</BICFI>
-                                        </FinInstnId>
-                                    </InstdAgt>
-                                </RltdAgts>
-                            </TxDtls>
-                        </NtryDtls>
-                    </Ntry>
-                    <Ntry>
-                        <NtryRef>300768665</NtryRef>
-                        <Amt Ccy="EUR">12834.47</Amt>
-                        <CdtDbtInd>CRDT</CdtDbtInd>
-                        <Sts>
-                            <Cd>BOOK</Cd>
-                        </Sts>
-                        <BookgDt>
-                            <DtTm>2025-11-24T11:38:38.222+00:00</DtTm>
-                        </BookgDt>
-                        <ValDt>
-                            <Dt>2025-11-24</Dt>
-                        </ValDt>
-                        <BkTxCd>
-                            <Prtry>
-                                <Cd>PMNT</Cd>
-                            </Prtry>
-                        </BkTxCd>
-                        <NtryDtls>
-                            <TxDtls>
-                                <Refs>
-                                    <InstrId>001TG54047092295</InstrId>
-                                    <EndToEndId>NOTPROVIDED</EndToEndId>
-                                    <UETR>feaf17b3-e75d-4a22-9b1c-e61d74f3a146</UETR>
-                                </Refs>
-                                <Amt Ccy="EUR">12834.47</Amt>
-                                <RltdPties>
-                                    <Dbtr>
-                                        <Pty>
-                                            <Nm>FACTORIT SPA</Nm>
-                                        </Pty>
-                                    </Dbtr>
-                                    <Cdtr>
-                                        <Pty>
-                                            <Nm>YAPI KREDI FAKTORING A.S.</Nm>
-                                        </Pty>
-                                    </Cdtr>
-                                </RltdPties>
-                                <RltdAgts>
-                                    <InstgAgt>
-                                        <FinInstnId>
-                                            <BICFI>POSOIT22XXX</BICFI>
-                                        </FinInstnId>
-                                    </InstgAgt>
-                                    <InstdAgt>
-                                        <FinInstnId>
-                                            <BICFI>KABANL2AXXX</BICFI>
-                                        </FinInstnId>
-                                    </InstdAgt>
-                                </RltdAgts>
-                            </TxDtls>
-                        </NtryDtls>
-                    </Ntry>
-                    <Ntry>
-                        <NtryRef>300774343</NtryRef>
-                        <Amt Ccy="EUR">54549.25</Amt>
-                        <CdtDbtInd>CRDT</CdtDbtInd>
-                        <Sts>
-                            <Cd>BOOK</Cd>
-                        </Sts>
-                        <BookgDt>
-                            <DtTm>2025-11-24T11:51:07.175+00:00</DtTm>
-                        </BookgDt>
-                        <ValDt>
-                            <Dt>2025-11-24</Dt>
-                        </ValDt>
-                        <BkTxCd>
-                            <Prtry>
-                                <Cd>PMNT</Cd>
-                            </Prtry>
-                        </BkTxCd>
-                        <NtryDtls>
-                            <TxDtls>
-                                <Refs>
-                                    <InstrId>001TG54047112295</InstrId>
-                                    <EndToEndId>NOTPROVIDED</EndToEndId>
-                                    <UETR>6994fb78-acdc-4304-8432-688c68d08dfa</UETR>
-                                </Refs>
-                                <Amt Ccy="EUR">54549.25</Amt>
-                                <RltdPties>
-                                    <Dbtr>
-                                        <Pty>
-                                            <Nm>FACTORIT SPA</Nm>
-                                        </Pty>
-                                    </Dbtr>
-                                    <Cdtr>
-                                        <Pty>
-                                            <Nm>YAPI KREDI FAKTORING A.S.</Nm>
-                                        </Pty>
-                                    </Cdtr>
-                                </RltdPties>
-                                <RltdAgts>
-                                    <InstgAgt>
-                                        <FinInstnId>
-                                            <BICFI>POSOIT22XXX</BICFI>
-                                        </FinInstnId>
-                                    </InstgAgt>
-                                    <InstdAgt>
-                                        <FinInstnId>
-                                            <BICFI>KABANL2AXXX</BICFI>
-                                        </FinInstnId>
-                                    </InstdAgt>
-                                </RltdAgts>
-                            </TxDtls>
-                        </NtryDtls>
-                    </Ntry>
-                    <Ntry>
-                        <NtryRef>300774280</NtryRef>
-                        <Amt Ccy="EUR">96725.25</Amt>
-                        <CdtDbtInd>CRDT</CdtDbtInd>
-                        <Sts>
-                            <Cd>BOOK</Cd>
-                        </Sts>
-                        <BookgDt>
-                            <DtTm>2025-11-24T11:51:07.625+00:00</DtTm>
-                        </BookgDt>
-                        <ValDt>
-                            <Dt>2025-11-24</Dt>
-                        </ValDt>
-                        <BkTxCd>
-                            <Prtry>
-                                <Cd>PMNT</Cd>
-                            </Prtry>
-                        </BkTxCd>
-                        <NtryDtls>
-                            <TxDtls>
-                                <Refs>
-                                    <InstrId>001TG54047132295</InstrId>
-                                    <EndToEndId>NOTPROVIDED</EndToEndId>
-                                    <UETR>06d7de9f-9a2b-4e16-9f0d-b07f464871d2</UETR>
-                                </Refs>
-                                <Amt Ccy="EUR">96725.25</Amt>
-                                <RltdPties>
-                                    <Dbtr>
-                                        <Pty>
-                                            <Nm>FACTORIT SPA</Nm>
-                                        </Pty>
-                                    </Dbtr>
-                                    <Cdtr>
-                                        <Pty>
-                                            <Nm>IS FAKTORING A.S.</Nm>
-                                        </Pty>
-                                    </Cdtr>
-                                </RltdPties>
-                                <RltdAgts>
-                                    <InstgAgt>
-                                        <FinInstnId>
-                                            <BICFI>POSOIT22XXX</BICFI>
-                                        </FinInstnId>
-                                    </InstgAgt>
-                                    <InstdAgt>
-                                        <FinInstnId>
-                                            <BICFI>KABANL2AXXX</BICFI>
-                                        </FinInstnId>
-                                    </InstdAgt>
-                                </RltdAgts>
-                            </TxDtls>
-                        </NtryDtls>
-                    </Ntry>
-                    <Ntry>
-                        <NtryRef>300824936</NtryRef>
-                        <Amt Ccy="EUR">56237.22</Amt>
-                        <CdtDbtInd>CRDT</CdtDbtInd>
-                        <Sts>
-                            <Cd>BOOK</Cd>
-                        </Sts>
-                        <BookgDt>
-                            <DtTm>2025-11-24T13:30:16.333+00:00</DtTm>
-                        </BookgDt>
-                        <ValDt>
-                            <Dt>2025-11-24</Dt>
-                        </ValDt>
-                        <BkTxCd>
-                            <Prtry>
-                                <Cd>PMNT</Cd>
-                            </Prtry>
-                        </BkTxCd>
-                        <NtryDtls>
-                            <TxDtls>
-                                <Refs>
-                                    <InstrId>5328100873</InstrId>
-                                    <EndToEndId>NOTPROVIDED</EndToEndId>
-                                    <UETR>ce755e8e-304f-48f6-8ac2-853a3605de42</UETR>
-                                </Refs>
-                                <Amt Ccy="EUR">56237.22</Amt>
-                                <RltdPties>
-                                    <Dbtr>
-                                        <Pty>
-                                            <Nm>ALCAO EOOD</Nm>
-                                        </Pty>
-                                    </Dbtr>
-                                    <Cdtr>
-                                        <Pty>
-                                            <Nm>ALCAO EOOD</Nm>
-                                        </Pty>
-                                    </Cdtr>
-                                </RltdPties>
-                                <RltdAgts>
-                                    <InstgAgt>
-                                        <FinInstnId>
-                                            <BICFI>UNCRBGSFXXX</BICFI>
-                                        </FinInstnId>
-                                    </InstgAgt>
-                                    <InstdAgt>
-                                        <FinInstnId>
-                                            <BICFI>KABANL2AXXX</BICFI>
-                                        </FinInstnId>
-                                    </InstdAgt>
-                                </RltdAgts>
-                            </TxDtls>
-                        </NtryDtls>
-                    </Ntry>
-                    <Ntry>
-                        <NtryRef>300831754</NtryRef>
-                        <Amt Ccy="EUR">2000.00</Amt>
-                        <CdtDbtInd>CRDT</CdtDbtInd>
-                        <Sts>
-                            <Cd>BOOK</Cd>
-                        </Sts>
-                        <BookgDt>
-                            <DtTm>2025-11-24T13:39:00.431+00:00</DtTm>
-                        </BookgDt>
-                        <ValDt>
-                            <Dt>2025-11-24</Dt>
-                        </ValDt>
-                        <BkTxCd>
-                            <Prtry>
-                                <Cd>ASTI</Cd>
-                            </Prtry>
-                        </BkTxCd>
-                        <NtryDtls>
-                            <TxDtls>
-                                <Refs>
-                                    <InstrId>CC53280011300026</InstrId>
-                                    <EndToEndId>CC53280011300026</EndToEndId>
-                                </Refs>
-                                <Amt Ccy="EUR">2000.00</Amt>
-                                <RltdAgts>
-                                    <InstgAgt>
-                                        <FinInstnId>
-                                            <BICFI>INNDNL2USCR</BICFI>
-                                        </FinInstnId>
-                                    </InstgAgt>
-                                    <InstdAgt>
-                                        <FinInstnId>
-                                            <BICFI>KABANL2AXXX</BICFI>
-                                        </FinInstnId>
-                                    </InstdAgt>
-                                    <DbtrAgt>
-                                        <FinInstnId>
-                                            <BICFI>INNDNL2UEQU</BICFI>
-                                        </FinInstnId>
-                                    </DbtrAgt>
-                                </RltdAgts>
-                                <LclInstrm>
-                                    <Cd>ASTI</Cd>
-                                </LclInstrm>
-                            </TxDtls>
-                        </NtryDtls>
-                    </Ntry>
-                    <Ntry>
-                        <NtryRef>300857964</NtryRef>
-                        <Amt Ccy="EUR">50000000.00</Amt>
-                        <CdtDbtInd>CRDT</CdtDbtInd>
-                        <Sts>
-                            <Cd>BOOK</Cd>
-                        </Sts>
-                        <BookgDt>
-                            <DtTm>2025-11-24T14:28:07.513+00:00</DtTm>
-                        </BookgDt>
-                        <ValDt>
-                            <Dt>2025-11-24</Dt>
-                        </ValDt>
-                        <BkTxCd>
-                            <Prtry>
-                                <Cd>PMNT</Cd>
-                            </Prtry>
-                        </BkTxCd>
-                        <NtryDtls>
-                            <TxDtls>
-                                <Refs>
-                                    <InstrId>FPC10ZYNYM001001</InstrId>
-                                    <EndToEndId>NOTPROVIDED</EndToEndId>
-                                    <UETR>140b0f02-3cf9-4c02-9854-dcc278f254d1</UETR>
-                                </Refs>
-                                <Amt Ccy="EUR">50000000.00</Amt>
-                                <RltdPties>
-                                    <Dbtr>
-                                        <Pty>
-                                            <Id>
-                                                <OrgId>
-                                                    <AnyBIC>BNPAFRPPXXX</AnyBIC>
-                                                </OrgId>
-                                            </Id>
-                                        </Pty>
-                                    </Dbtr>
-                                    <Cdtr>
-                                        <Pty>
-                                            <Id>
-                                                <OrgId>
-                                                    <AnyBIC>KABANL2AXXX</AnyBIC>
-                                                </OrgId>
-                                            </Id>
-                                        </Pty>
-                                    </Cdtr>
-                                </RltdPties>
-                                <RltdAgts>
-                                    <InstgAgt>
-                                        <FinInstnId>
-                                            <BICFI>BNPAFRPPXXX</BICFI>
-                                        </FinInstnId>
-                                    </InstgAgt>
-                                    <InstdAgt>
-                                        <FinInstnId>
-                                            <BICFI>KABANL2AXXX</BICFI>
-                                        </FinInstnId>
-                                    </InstdAgt>
-                                </RltdAgts>
-                            </TxDtls>
-                        </NtryDtls>
-                    </Ntry>
-                    <Ntry>
-                        <NtryRef>300891179</NtryRef>
-                        <Amt Ccy="EUR">29860702.84</Amt>
-                        <CdtDbtInd>CRDT</CdtDbtInd>
-                        <Sts>
-                            <Cd>BOOK</Cd>
-                        </Sts>
-                        <BookgDt>
-                            <DtTm>2025-11-24T15:32:20.068+00:00</DtTm>
-                        </BookgDt>
-                        <ValDt>
-                            <Dt>2025-11-24</Dt>
-                        </ValDt>
-                        <BkTxCd>
-                            <Prtry>
-                                <Cd>PMNT</Cd>
-                            </Prtry>
-                        </BkTxCd>
-                        <NtryDtls>
-                            <TxDtls>
-                                <Refs>
-                                    <InstrId>251124175826</InstrId>
-                                    <EndToEndId>FXZ906444775551</EndToEndId>
-                                    <UETR>8b63d200-4141-4a45-9118-3460a837e4c7</UETR>
-                                </Refs>
-                                <Amt Ccy="EUR">29860702.84</Amt>
-                                <RltdPties>
-                                    <Dbtr>
-                                        <Pty>
-                                            <Nm>STANDARD CHARTERED BANK AG</Nm>
-                                        </Pty>
-                                    </Dbtr>
-                                    <Cdtr>
-                                        <Pty>
-                                            <Id>
-                                                <OrgId>
-                                                    <AnyBIC>KABANL2AXXX</AnyBIC>
-                                                </OrgId>
-                                            </Id>
-                                        </Pty>
-                                    </Cdtr>
-                                </RltdPties>
-                                <RltdAgts>
-                                    <InstgAgt>
-                                        <FinInstnId>
-                                            <BICFI>SCBLDEFXXXX</BICFI>
-                                        </FinInstnId>
-                                    </InstgAgt>
-                                    <InstdAgt>
-                                        <FinInstnId>
-                                            <BICFI>KABANL2AXXX</BICFI>
-                                        </FinInstnId>
-                                    </InstdAgt>
-                                </RltdAgts>
-                            </TxDtls>
-                        </NtryDtls>
-                    </Ntry>
-                    <Ntry>
-                        <NtryRef>300894523</NtryRef>
-                        <Amt Ccy="EUR">3000.00</Amt>
-                        <CdtDbtInd>CRDT</CdtDbtInd>
-                        <Sts>
-                            <Cd>BOOK</Cd>
-                        </Sts>
-                        <BookgDt>
-                            <DtTm>2025-11-24T15:42:01.179+00:00</DtTm>
-                        </BookgDt>
-                        <ValDt>
-                            <Dt>2025-11-24</Dt>
-                        </ValDt>
-                        <BkTxCd>
-                            <Prtry>
-                                <Cd>ASTI</Cd>
-                            </Prtry>
-                        </BkTxCd>
-                        <NtryDtls>
-                            <TxDtls>
-                                <Refs>
-                                    <InstrId>CC53280012500016</InstrId>
-                                    <EndToEndId>CC53280012500016</EndToEndId>
-                                </Refs>
-                                <Amt Ccy="EUR">3000.00</Amt>
-                                <RltdAgts>
-                                    <InstgAgt>
-                                        <FinInstnId>
-                                            <BICFI>INNDNL2USCR</BICFI>
-                                        </FinInstnId>
-                                    </InstgAgt>
-                                    <InstdAgt>
-                                        <FinInstnId>
-                                            <BICFI>KABANL2AXXX</BICFI>
-                                        </FinInstnId>
-                                    </InstdAgt>
-                                    <DbtrAgt>
-                                        <FinInstnId>
-                                            <BICFI>INNDNL2UEQU</BICFI>
-                                        </FinInstnId>
-                                    </DbtrAgt>
-                                </RltdAgts>
-                                <LclInstrm>
-                                    <Cd>ASTI</Cd>
-                                </LclInstrm>
-                            </TxDtls>
-                        </NtryDtls>
-                    </Ntry>
-                    <Ntry>
-                        <NtryRef>300897235</NtryRef>
-                        <Amt Ccy="EUR">50000000.00</Amt>
-                        <CdtDbtInd>CRDT</CdtDbtInd>
-                        <Sts>
-                            <Cd>BOOK</Cd>
-                        </Sts>
-                        <BookgDt>
-                            <DtTm>2025-11-24T15:51:56.904+00:00</DtTm>
-                        </BookgDt>
-                        <ValDt>
-                            <Dt>2025-11-24</Dt>
-                        </ValDt>
-                        <BkTxCd>
-                            <Prtry>
-                                <Cd>PMNT</Cd>
-                            </Prtry>
-                        </BkTxCd>
-                        <NtryDtls>
-                            <TxDtls>
-                                <Refs>
-                                    <InstrId>3523984362</InstrId>
-                                    <EndToEndId>NONREF</EndToEndId>
-                                    <UETR>386c8a2a-971a-4fef-a0ab-82de8978d86f</UETR>
-                                </Refs>
-                                <Amt Ccy="EUR">50000000.00</Amt>
-                                <RltdPties>
-                                    <Dbtr>
-                                        <Pty>
-                                            <Id>
-                                                <OrgId>
-                                                    <AnyBIC>MSSEDEFBFXO</AnyBIC>
-                                                </OrgId>
-                                            </Id>
-                                        </Pty>
-                                    </Dbtr>
-                                    <Cdtr>
-                                        <Pty>
-                                            <Id>
-                                                <OrgId>
-                                                    <AnyBIC>KABANL2AXXX</AnyBIC>
-                                                </OrgId>
-                                            </Id>
-                                        </Pty>
-                                    </Cdtr>
-                                </RltdPties>
-                                <RltdAgts>
-                                    <InstgAgt>
-                                        <FinInstnId>
-                                            <BICFI>CITIIE2XXXX</BICFI>
-                                        </FinInstnId>
-                                    </InstgAgt>
-                                    <InstdAgt>
-                                        <FinInstnId>
-                                            <BICFI>KABANL2AXXX</BICFI>
-                                        </FinInstnId>
-                                    </InstdAgt>
-                                </RltdAgts>
-                            </TxDtls>
-                        </NtryDtls>
-                    </Ntry>
-                </Stmt>
-            </BkToCstmrStmt>
-        </Document>
---uuid:cdd815dd-2ca2-40f5-ba23-5f5b0f1d9ff7--
+                            <Ownr>
+                                <Id>
+                                    <OrgId>
+                                        <AnyBIC>KABANL2AXXX</AnyBIC>
+                                    </OrgId>
+                                </Id>
+                            </Ownr>
+                        </Acct>
+                        <Bal>
+                            <Tp>
+                                <CdOrPrtry>
+                                    <Cd>OPBD</Cd>
+                                </CdOrPrtry>
+                            </Tp>
+                            <Amt Ccy="EUR">17957329.31</Amt>
+                            <CdtDbtInd>CRDT</CdtDbtInd>
+                            <Dt>
+                                <Dt>2025-11-24</Dt>
+                            </Dt>
+                        </Bal>
+                        <Bal>
+                            <Tp>
+                                <CdOrPrtry>
+                                    <Cd>CLBD</Cd>
+                                </CdOrPrtry>
+                            </Tp>
+                            <Amt Ccy="EUR">19846729.29</Amt>
+                            <CdtDbtInd>CRDT</CdtDbtInd>
+                            <Dt>
+                                <Dt>2025-11-24</Dt>
+                            </Dt>
+                        </Bal>
+                        <TxsSummry>
+                            <TtlNtries>
+                                <NbOfNtries>43</NbOfNtries>
+                            </TtlNtries>
+                        </TxsSummry>
+                    </Stmt>
+                </BkToCstmrStmt>
+            </Document>
+            """;
+    }
+}
+```
+
+---
+
+## Kullanım
+
+### 1. Projeyi çalıştırın:
+```bash
+mvn spring-boot:run
+```
+
+### 2. WSDL'e erişin:
+```
+http://localhost:8080/ws/swiftSaa.wsdl
+```
+
+### 3. SOAP isteği gönderin:
+
+**SoapUI veya Postman ile:**
+
+**URL:** `http://localhost:8080/ws`
+
+**Request:**
+```xml
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" 
+                  xmlns:soap="urn:swift:saa:xsd:soapha">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <soap:GetAckRequest>
+         <soap:SessionToken>test-token</soap:SessionToken>
+         <soap:RequestId>12345</soap:RequestId>
+      </soap:GetAckRequest>
+   </soapenv:Body>
+</soapenv:Envelope>
+```
+
+### 4. Raw endpoint için:
+```
+POST http://localhost:8080/soap/getAck
+Content-Type: text/xml
+```
+
+---
+
+Bu kod, verdiğiniz XML yapısını tam olarak döndüren bir Spring Boot 3.x SOAP web servisi oluşturur. Herhangi bir sorunuz varsa sormaktan çekinmeyin!
