@@ -1,0 +1,584 @@
+Mükemmel! Dosyaları inceledim. Şimdi size profesyonel bir **SOAP Mock Server** projesi oluşturacağım. Bu SWIFT camt.053 mesajını döndüren bir mock server olacak.
+
+## 📁 Proje Yapısı
+
+```
+soap-mock-server/
+├── pom.xml
+├── README.md
+└── src/
+    ├── main/
+    │   ├── java/
+    │   │   └── com/
+    │   │       └── example/
+    │   │           └── soapmock/
+    │   │               ├── SoapMockServerApplication.java
+    │   │               ├── config/
+    │   │               │   ├── WebServiceConfig.java
+    │   │               │   └── SoapLoggingInterceptor.java
+    │   │               └── endpoint/
+    │   │                   └── MockSoapEndpoint.java
+    │   └── resources/
+    │       ├── application.yml
+    │       ├── wsdl/
+    │       │   └── soapha.wsdl
+    │       └── mock/
+    │           └── response.xml
+    └── test/
+        └── java/
+            └── com/
+                └── example/
+                    └── soapmock/
+                        └── SoapMockServerApplicationTests.java
+```
+
+## 1️⃣ **pom.xml**
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+         https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.2.0</version>
+        <relativePath/>
+    </parent>
+
+    <groupId>com.example</groupId>
+    <artifactId>soap-mock-server</artifactId>
+    <version>1.0.0</version>
+    <name>SOAP Mock Server</name>
+    <description>SWIFT SOAP Mock Server for camt.053 Messages</description>
+
+    <properties>
+        <java.version>17</java.version>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <dependencies>
+        <!-- Spring Boot Web Services -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web-services</artifactId>
+        </dependency>
+
+        <!-- WSDL Support -->
+        <dependency>
+            <groupId>wsdl4j</groupId>
+            <artifactId>wsdl4j</artifactId>
+        </dependency>
+
+        <!-- Lombok for cleaner code -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- Spring Boot Actuator for health checks -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+        <!-- Test Dependencies -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.ws</groupId>
+            <artifactId>spring-ws-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
+```
+
+## 2️⃣ **SoapMockServerApplication.java**
+
+```java
+package com.example.soapmock;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+/**
+ * SOAP Mock Server Application
+ * Provides mock responses for SWIFT camt.053 messages
+ */
+@SpringBootApplication
+public class SoapMockServerApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(SoapMockServerApplication.class, args);
+    }
+}
+```
+
+## 3️⃣ **WebServiceConfig.java**
+
+```java
+package com.example.soapmock.config;
+
+import org.springframework.boot.web.servlet.ServletRegistrationBean;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.ws.config.annotation.EnableWs;
+import org.springframework.ws.config.annotation.WsConfigurerAdapter;
+import org.springframework.ws.server.EndpointInterceptor;
+import org.springframework.ws.transport.http.MessageDispatcherServlet;
+import org.springframework.ws.wsdl.wsdl11.SimpleWsdl11Definition;
+import org.springframework.ws.wsdl.wsdl11.Wsdl11Definition;
+
+import java.util.List;
+
+/**
+ * Web Service Configuration
+ * Configures SOAP endpoints and WSDL exposure
+ */
+@EnableWs
+@Configuration
+public class WebServiceConfig extends WsConfigurerAdapter {
+
+    private final SoapLoggingInterceptor loggingInterceptor;
+
+    public WebServiceConfig(SoapLoggingInterceptor loggingInterceptor) {
+        this.loggingInterceptor = loggingInterceptor;
+    }
+
+    /**
+     * Registers the MessageDispatcherServlet
+     */
+    @Bean
+    public ServletRegistrationBean<MessageDispatcherServlet> messageDispatcherServlet(
+            ApplicationContext applicationContext) {
+        MessageDispatcherServlet servlet = new MessageDispatcherServlet();
+        servlet.setApplicationContext(applicationContext);
+        servlet.setTransformWsdlLocations(true);
+        return new ServletRegistrationBean<>(servlet, "/ws/*");
+    }
+
+    /**
+     * Exposes WSDL at /ws/soapha.wsdl
+     */
+    @Bean(name = "soapha")
+    public Wsdl11Definition defaultWsdl11Definition() {
+        SimpleWsdl11Definition wsdl11Definition = new SimpleWsdl11Definition();
+        wsdl11Definition.setWsdl(new ClassPathResource("wsdl/soapha.wsdl"));
+        return wsdl11Definition;
+    }
+
+    /**
+     * Adds logging interceptor to all SOAP requests
+     */
+    @Override
+    public void addInterceptors(List<EndpointInterceptor> interceptors) {
+        interceptors.add(loggingInterceptor);
+    }
+}
+```
+
+## 4️⃣ **SoapLoggingInterceptor.java**
+
+```java
+package com.example.soapmock.config;
+
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
+import org.springframework.ws.context.MessageContext;
+import org.springframework.ws.server.EndpointInterceptor;
+import org.springframework.ws.soap.SoapMessage;
+
+import java.io.ByteArrayOutputStream;
+
+/**
+ * SOAP Logging Interceptor
+ * Logs all incoming and outgoing SOAP messages
+ */
+@Slf4j
+@Component
+public class SoapLoggingInterceptor implements EndpointInterceptor {
+
+    @Override
+    public boolean handleRequest(MessageContext messageContext, Object endpoint) {
+        logSoapMessage("Incoming SOAP Request", messageContext);
+        return true;
+    }
+
+    @Override
+    public boolean handleResponse(MessageContext messageContext, Object endpoint) {
+        logSoapMessage("Outgoing SOAP Response", messageContext);
+        return true;
+    }
+
+    @Override
+    public boolean handleFault(MessageContext messageContext, Object endpoint) {
+        log.error("SOAP Fault occurred");
+        logSoapMessage("SOAP Fault", messageContext);
+        return true;
+    }
+
+    @Override
+    public void afterCompletion(MessageContext messageContext, Object endpoint, Exception ex) {
+        if (ex != null) {
+            log.error("Error processing SOAP message", ex);
+        }
+    }
+
+    private void logSoapMessage(String prefix, MessageContext messageContext) {
+        try {
+            SoapMessage message = (SoapMessage) messageContext.getRequest();
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            message.writeTo(outputStream);
+            String payload = outputStream.toString();
+            log.info("{}: \n{}", prefix, payload);
+        } catch (Exception e) {
+            log.warn("Could not log SOAP message: {}", e.getMessage());
+        }
+    }
+}
+```
+
+## 5️⃣ **MockSoapEndpoint.java**
+
+```java
+package com.example.soapmock.endpoint;
+
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.util.StreamUtils;
+import org.springframework.ws.server.endpoint.annotation.Endpoint;
+import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
+import org.springframework.ws.server.endpoint.annotation.RequestPayload;
+import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+import javax.annotation.PostConstruct;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
+
+/**
+ * Mock SOAP Endpoint
+ * Returns predefined mock response for all SOAP requests
+ */
+@Slf4j
+@Endpoint
+public class MockSoapEndpoint {
+
+    private static final String NAMESPACE_URI = "urn:swift:saa:xsd:soapha";
+    private String mockResponseXml;
+
+    @PostConstruct
+    public void init() throws Exception {
+        ClassPathResource resource = new ClassPathResource("mock/response.xml");
+        mockResponseXml = StreamUtils.copyToString(
+                resource.getInputStream(),
+                StandardCharsets.UTF_8
+        );
+        log.info("Mock response loaded successfully from classpath");
+    }
+
+    /**
+     * Handles GetAck requests
+     */
+    @PayloadRoot(namespace = NAMESPACE_URI, localPart = "GetAck")
+    @ResponsePayload
+    public Element handleGetAckRequest(@RequestPayload Element request) throws Exception {
+        log.info("Received GetAck request, returning mock response");
+        return parseResponseToElement();
+    }
+
+    /**
+     * Handles all other requests with wildcard
+     */
+    @PayloadRoot(namespace = NAMESPACE_URI, localPart = "*")
+    @ResponsePayload
+    public Element handleAllRequests(@RequestPayload Element request) throws Exception {
+        log.info("Received SOAP request: {}, returning mock response", 
+                request.getLocalName());
+        return parseResponseToElement();
+    }
+
+    /**
+     * Parses the mock XML response into a DOM Element
+     */
+    private Element parseResponseToElement() throws Exception {
+        // Extract only the GetAckResponse body content
+        String bodyContent = extractBodyContent(mockResponseXml);
+        
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setNamespaceAware(true);
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        
+        Document doc = builder.parse(
+                new ByteArrayInputStream(bodyContent.getBytes(StandardCharsets.UTF_8))
+        );
+        
+        return doc.getDocumentElement();
+    }
+
+    /**
+     * Extracts SOAP Body content from the complete envelope
+     */
+    private String extractBodyContent(String soapEnvelope) {
+        String bodyStartTag = "<SOAP-ENV:Body>";
+        String bodyEndTag = "</SOAP-ENV:Body>";
+        
+        int startIndex = soapEnvelope.indexOf(bodyStartTag);
+        int endIndex = soapEnvelope.indexOf(bodyEndTag);
+        
+        if (startIndex != -1 && endIndex != -1) {
+            startIndex += bodyStartTag.length();
+            return soapEnvelope.substring(startIndex, endIndex).trim();
+        }
+        
+        log.warn("Could not extract body content, returning entire response");
+        return soapEnvelope;
+    }
+}
+```
+
+## 6️⃣ **application.yml**
+
+```yaml
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+spring:
+  application:
+    name: soap-mock-server
+  
+  web:
+    resources:
+      add-mappings: true
+
+# Logging Configuration
+logging:
+  level:
+    root: INFO
+    com.example.soapmock: DEBUG
+    org.springframework.ws: DEBUG
+    org.springframework.ws.server.endpoint: TRACE
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+# Actuator Configuration
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+
+# Application Info
+info:
+  app:
+    name: SOAP Mock Server
+    description: Mock server for SWIFT camt.053 messages
+    version: 1.0.0
+```
+
+## 7️⃣ **SoapMockServerApplicationTests.java**
+
+```java
+package com.example.soapmock;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+
+@SpringBootTest
+@ActiveProfiles("test")
+class SoapMockServerApplicationTests {
+
+    @Test
+    void contextLoads() {
+        // Verifies that the application context loads successfully
+    }
+}
+```
+
+## 8️⃣ **README.md**
+
+```markdown
+# SOAP Mock Server
+
+Mock server for SWIFT camt.053 SOAP messages using Spring Boot 3.x and Java 17.
+
+## 🚀 Features
+
+- ✅ Returns fixed SWIFT camt.053 response
+- ✅ WSDL exposure at `/ws/soapha.wsdl`
+- ✅ Request/Response logging
+- ✅ Health check endpoints
+- ✅ Clean code architecture
+- ✅ Java 17 & Spring Boot 3.x
+
+## 📋 Prerequisites
+
+- Java 17+
+- Maven 3.8+
+
+## 🛠️ Build & Run
+
+```bash
+# Build the project
+mvn clean install
+
+# Run the application
+mvn spring-boot:run
+```
+
+The server will start on `http://localhost:8080`
+
+## 📡 Endpoints
+
+- **SOAP Endpoint**: `http://localhost:8080/ws`
+- **WSDL**: `http://localhost:8080/ws/soapha.wsdl`
+- **Health Check**: `http://localhost:8080/actuator/health`
+
+## 🧪 Testing with cURL
+
+```bash
+curl -X POST http://localhost:8080/ws \
+  -H "Content-Type: text/xml; charset=utf-8" \
+  -H "SOAPAction: GetAck" \
+  -d @request.xml
+```
+
+## 🧪 Testing with SoapUI
+
+1. Create new SOAP project
+2. Import WSDL: `http://localhost:8080/ws/soapha.wsdl`
+3. Send request to: `http://localhost:8080/ws`
+
+## 📁 Project Structure
+
+```
+src/
+├── main/
+│   ├── java/
+│   │   └── com/example/soapmock/
+│   │       ├── SoapMockServerApplication.java
+│   │       ├── config/
+│   │       │   ├── WebServiceConfig.java
+│   │       │   └── SoapLoggingInterceptor.java
+│   │       └── endpoint/
+│   │           └── MockSoapEndpoint.java
+│   └── resources/
+│       ├── application.yml
+│       ├── wsdl/
+│       │   └── soapha.wsdl
+│       └── mock/
+│           └── response.xml
+```
+
+## 🔧 Configuration
+
+Edit `application.yml` to customize:
+- Server port
+- Logging levels
+- Context path
+
+## 📝 License
+
+MIT License
+```
+
+## 9️⃣ **Dosya Yerleştirme Talimatları**
+
+### **WSDL Dosyası**
+`wsdl.txt` dosyanızı şu şekilde yerleştirin:
+```
+src/main/resources/wsdl/soapha.wsdl
+```
+
+### **Response Dosyası**
+`Untitled-1.txt` dosyanızı şu şekilde yerleştirin:
+```
+src/main/resources/mock/response.xml
+```
+
+## 🎯 Kullanım
+
+```bash
+# 1. Projeyi build edin
+mvn clean package
+
+# 2. Çalıştırın
+java -jar target/soap-mock-server-1.0.0.jar
+
+# veya
+mvn spring-boot:run
+```
+
+## ✅ Test
+
+```bash
+# WSDL kontrolü
+curl http://localhost:8080/ws/soapha.wsdl
+
+# Health check
+curl http://localhost:8080/actuator/health
+
+# SOAP Request (örnek)
+curl -X POST http://localhost:8080/ws \
+  -H "Content-Type: text/xml" \
+  -d '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:saa="urn:swift:saa:xsd:soapha">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <saa:GetAck>
+         <saa:SessionToken>test-token</saa:SessionToken>
+      </saa:GetAck>
+   </soapenv:Body>
+</soapenv:Envelope>'
+```
+
+## 🎨 Clean Code Özellikleri
+
+1. ✅ **SOLID Principles** - Single responsibility, dependency injection
+2. ✅ **Separation of Concerns** - Config, endpoint, interceptor ayrımı
+3. ✅ **Meaningful Names** - Açıklayıcı sınıf ve metod isimleri
+4. ✅ **Logging** - Comprehensive logging with SLF4J
+5. ✅ **Error Handling** - Exception handling ve graceful degradation
+6. ✅ **Documentation** - JavaDoc ve README
+7. ✅ **Testing Ready** - Test infrastructure hazır
+
+Bu yapı ile production-ready, maintainable ve scalable bir SOAP mock server'ınız olacak! 🚀
